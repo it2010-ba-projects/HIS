@@ -20,11 +20,12 @@ package his.model;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -32,8 +33,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -47,24 +46,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Groups.findAll", query = "SELECT g FROM Groups g"),
     @NamedQuery(name = "Groups.findById", query = "SELECT g FROM Groups g WHERE g.id = :id"),
-    @NamedQuery(name = "Groups.findByName", query = "SELECT g FROM Groups g WHERE g.name = :name"),
-    @NamedQuery(name = "Groups.findByCreatedAt", query = "SELECT g FROM Groups g WHERE g.createdAt = :createdAt"),
-    @NamedQuery(name = "Groups.findByUpdatedAt", query = "SELECT g FROM Groups g WHERE g.updatedAt = :updatedAt")})
+    @NamedQuery(name = "Groups.findByName", query = "SELECT g FROM Groups g WHERE g.name = :name")})
 public class Groups implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Short id;
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
     @JoinTable(name = "groups_users", joinColumns = {
         @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)})
@@ -97,22 +89,6 @@ public class Groups implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @XmlTransient

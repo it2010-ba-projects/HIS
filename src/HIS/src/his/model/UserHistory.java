@@ -20,11 +20,12 @@ package his.model;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -32,8 +33,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -47,23 +46,16 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "UserHistory.findAll", query = "SELECT u FROM UserHistory u"),
     @NamedQuery(name = "UserHistory.findById", query = "SELECT u FROM UserHistory u WHERE u.id = :id"),
-    @NamedQuery(name = "UserHistory.findByEntry", query = "SELECT u FROM UserHistory u WHERE u.entry = :entry"),
-    @NamedQuery(name = "UserHistory.findByCreatedAt", query = "SELECT u FROM UserHistory u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "UserHistory.findByUpdatedAt", query = "SELECT u FROM UserHistory u WHERE u.updatedAt = :updatedAt")})
+    @NamedQuery(name = "UserHistory.findByEntry", query = "SELECT u FROM UserHistory u WHERE u.entry = :entry")})
 public class UserHistory implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Short id;
     @Column(name = "entry", length = 2147483647)
     private String entry;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
     @JoinTable(name = "user_history_users", joinColumns = {
         @JoinColumn(name = "user_history_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)})
@@ -91,22 +83,6 @@ public class UserHistory implements Serializable {
 
     public void setEntry(String entry) {
         this.entry = entry;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @XmlTransient

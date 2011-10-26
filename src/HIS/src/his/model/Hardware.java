@@ -25,6 +25,8 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -54,14 +56,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Hardware.findByInventoryNumber", query = "SELECT h FROM Hardware h WHERE h.inventoryNumber = :inventoryNumber"),
     @NamedQuery(name = "Hardware.findByName", query = "SELECT h FROM Hardware h WHERE h.name = :name"),
     @NamedQuery(name = "Hardware.findByPurchaseDate", query = "SELECT h FROM Hardware h WHERE h.purchaseDate = :purchaseDate"),
-    @NamedQuery(name = "Hardware.findByWarrantyEnd", query = "SELECT h FROM Hardware h WHERE h.warrantyEnd = :warrantyEnd"),
-    @NamedQuery(name = "Hardware.findByCreatedAt", query = "SELECT h FROM Hardware h WHERE h.createdAt = :createdAt"),
-    @NamedQuery(name = "Hardware.findByUpdatedAt", query = "SELECT h FROM Hardware h WHERE h.updatedAt = :updatedAt")})
+    @NamedQuery(name = "Hardware.findByWarrantyEnd", query = "SELECT h FROM Hardware h WHERE h.warrantyEnd = :warrantyEnd")})
 public class Hardware implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Short id;
     @Basic(optional = false)
     @Column(name = "inventory_number", nullable = false, length = 50)
@@ -76,12 +77,6 @@ public class Hardware implements Serializable {
     @Column(name = "warranty_end")
     @Temporal(TemporalType.DATE)
     private Date warrantyEnd;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
     @JoinTable(name = "hardware_history_log_hardware", joinColumns = {
         @JoinColumn(name = "hardware_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "hardware_history_log_id", referencedColumnName = "id", nullable = false)})
@@ -159,22 +154,6 @@ public class Hardware implements Serializable {
 
     public void setWarrantyEnd(Date warrantyEnd) {
         this.warrantyEnd = warrantyEnd;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @XmlTransient

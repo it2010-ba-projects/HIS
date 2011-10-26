@@ -20,18 +20,17 @@ package his.model;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -45,24 +44,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Owners.findAll", query = "SELECT o FROM Owners o"),
     @NamedQuery(name = "Owners.findById", query = "SELECT o FROM Owners o WHERE o.id = :id"),
-    @NamedQuery(name = "Owners.findByName", query = "SELECT o FROM Owners o WHERE o.name = :name"),
-    @NamedQuery(name = "Owners.findByCreatedAt", query = "SELECT o FROM Owners o WHERE o.createdAt = :createdAt"),
-    @NamedQuery(name = "Owners.findByUdpatedAt", query = "SELECT o FROM Owners o WHERE o.udpatedAt = :udpatedAt")})
+    @NamedQuery(name = "Owners.findByName", query = "SELECT o FROM Owners o WHERE o.name = :name")})
 public class Owners implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Short id;
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "udpated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date udpatedAt;
     @OneToMany(mappedBy = "ownerId", fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
 
@@ -92,22 +84,6 @@ public class Owners implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUdpatedAt() {
-        return udpatedAt;
-    }
-
-    public void setUdpatedAt(Date udpatedAt) {
-        this.udpatedAt = udpatedAt;
     }
 
     @XmlTransient

@@ -20,18 +20,17 @@ package his.model;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -45,24 +44,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "HardwareHistoryLog.findAll", query = "SELECT h FROM HardwareHistoryLog h"),
     @NamedQuery(name = "HardwareHistoryLog.findById", query = "SELECT h FROM HardwareHistoryLog h WHERE h.id = :id"),
-    @NamedQuery(name = "HardwareHistoryLog.findByEntry", query = "SELECT h FROM HardwareHistoryLog h WHERE h.entry = :entry"),
-    @NamedQuery(name = "HardwareHistoryLog.findByCreatedAt", query = "SELECT h FROM HardwareHistoryLog h WHERE h.createdAt = :createdAt"),
-    @NamedQuery(name = "HardwareHistoryLog.findByUpdatedAt", query = "SELECT h FROM HardwareHistoryLog h WHERE h.updatedAt = :updatedAt")})
+    @NamedQuery(name = "HardwareHistoryLog.findByEntry", query = "SELECT h FROM HardwareHistoryLog h WHERE h.entry = :entry")})
 public class HardwareHistoryLog implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Short id;
     @Basic(optional = false)
     @Column(name = "entry", nullable = false, length = 2147483647)
     private String entry;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
     @ManyToMany(mappedBy = "hardwareHistoryLogCollection", fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
 
@@ -92,22 +84,6 @@ public class HardwareHistoryLog implements Serializable {
 
     public void setEntry(String entry) {
         this.entry = entry;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @XmlTransient
