@@ -56,7 +56,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Hardware.findByInventoryNumber", query = "SELECT h FROM Hardware h WHERE h.inventoryNumber = :inventoryNumber"),
     @NamedQuery(name = "Hardware.findByName", query = "SELECT h FROM Hardware h WHERE h.name = :name"),
     @NamedQuery(name = "Hardware.findByPurchaseDate", query = "SELECT h FROM Hardware h WHERE h.purchaseDate = :purchaseDate"),
-    @NamedQuery(name = "Hardware.findByWarrantyEnd", query = "SELECT h FROM Hardware h WHERE h.warrantyEnd = :warrantyEnd")})
+    @NamedQuery(name = "Hardware.findByWarrantyEnd", query = "SELECT h FROM Hardware h WHERE h.warrantyEnd = :warrantyEnd"),
+    @NamedQuery(name = "Hardware.findByState", query = "SELECT h FROM Hardware h WHERE h.stateID = :stateID")})
 public class Hardware implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
