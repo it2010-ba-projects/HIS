@@ -1,0 +1,7 @@
+# Sample configuration
+# Remove .sample from file extension to activate
+host= 
+port= 
+database= 
+username= 
+password= 

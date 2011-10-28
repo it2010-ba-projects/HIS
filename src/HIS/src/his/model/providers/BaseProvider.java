@@ -19,11 +19,13 @@
 package his.model.providers;
 
 import his.model.interfaces.ICrud;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
@@ -40,8 +42,8 @@ public class BaseProvider<T> implements ICrud<T> {
     @PersistenceContext protected EntityManager entityManager;
         
     protected BaseProvider() {
-        Map properties = new HashMap();
-        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, "jnafoxiz");
+        Map properties = setDatabaseProperties();
+        
         
         this.entityManager = Persistence.createEntityManagerFactory("HISPU", properties)
             .createEntityManager();
@@ -93,11 +95,40 @@ public class BaseProvider<T> implements ICrud<T> {
             return null;
         }
     }
-
+    
     private Class getClassType() {        
         ParameterizedType parametrizedType = (ParameterizedType) getClass().getGenericSuperclass();
         Class clazz = (Class) parametrizedType.getActualTypeArguments()[0];
         
         return clazz;
+    }
+
+    private Map setDatabaseProperties() {
+        Map properties = new HashMap();
+        String url = "";
+        String user = "";
+        String password = "";
+        
+        Properties configFile = new Properties();
+        try {
+            configFile.load(this.getClass().getResourceAsStream("/META-INF/config.properties"));
+            url = "jdbc:postgresql://" + 
+                    configFile.getProperty("host") + ":" + 
+                    configFile.getProperty("port") + "/" +
+                    configFile.getProperty("database");
+            user = configFile.getProperty("username");
+            password = configFile.getProperty("password");
+        }
+        catch(IOException e)
+        {
+            //TODO: Log Exception
+            System.out.println(e.getStackTrace());
+        }
+        // Datenbankverbindung
+        properties.put(PersistenceUnitProperties.JDBC_URL, url);
+        properties.put(PersistenceUnitProperties.JDBC_USER, user);
+        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, password);
+        
+        return properties;
     }
 }
