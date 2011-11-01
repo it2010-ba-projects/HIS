@@ -1,22 +1,53 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+    Copyright 2011 Silvio Wehner, Franziska Staake, Thomas Schulze
+  
+    This file is part of HIS.
 
-/*
- * MainForm.java
- *
- * Created on 25.10.2011, 17:33:54
+    HIS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HIS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HIS.  If not, see <http://www.gnu.org/licenses/>.
+ 
  */
 package his.ui.views;
 
+import his.ui.controls.CategoryData;
+import his.ui.controls.CategoryResult;
+import his.ui.controls.CategorySearch;
+import his.ui.controls.HardwareData;
+import his.ui.controls.HardwareResult;
+import his.ui.controls.HardwareSearch;
+import his.ui.controls.UserData;
+import his.ui.controls.UserResult;
+import his.ui.controls.UserSearch;
+import javax.swing.GroupLayout;
+import javax.swing.JPanel;
+
 /**
  *
- * @author Satzu
+ * @author Franziska Staake
  */
 public class MainForm extends javax.swing.JFrame {
 
     /** Creates new form MainForm */
+   private UserSearch userSearch = new UserSearch();
+   private UserData userData = new UserData();
+   private UserResult userResult = new UserResult();
+   private HardwareSearch hardwareSearch = new HardwareSearch();
+   private HardwareData hardwareData = new HardwareData();
+   private HardwareResult hardwareResult = new HardwareResult();
+   private CategorySearch categorySearch = new CategorySearch();
+   private CategoryData categoryData = new CategoryData();
+   private CategoryResult categoryResult = new CategoryResult();
+    
     public MainForm() {
         initComponents();
     }
@@ -44,10 +75,10 @@ public class MainForm extends javax.swing.JFrame {
         panelResults = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menuItemHardware = new javax.swing.JMenuItem();
+        menuItemUsers = new javax.swing.JMenuItem();
+        menuItemCategories = new javax.swing.JMenuItem();
+        menuItemClose = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -98,6 +129,11 @@ public class MainForm extends javax.swing.JFrame {
         btnQuickSearch.setText("Suchen");
 
         btnNew.setText("Neu");
+        btnNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelQuickSearchLayout = new javax.swing.GroupLayout(panelQuickSearch);
         panelQuickSearch.setLayout(panelQuickSearchLayout);
@@ -164,21 +200,41 @@ public class MainForm extends javax.swing.JFrame {
 
         jMenu1.setText("Menü");
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Hardwareverwaltung");
-        jMenu1.add(jMenuItem3);
+        menuItemHardware.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemHardware.setText("Hardwareverwaltung");
+        menuItemHardware.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemHardwareActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemHardware);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem2.setText("Benutzerverwaltung");
-        jMenu1.add(jMenuItem2);
+        menuItemUsers.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemUsers.setText("Benutzerverwaltung");
+        menuItemUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemUsersActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemUsers);
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem4.setText("Kategorieverwaltung");
-        jMenu1.add(jMenuItem4);
+        menuItemCategories.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemCategories.setText("Kategorieverwaltung");
+        menuItemCategories.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCategoriesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemCategories);
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Beenden");
-        jMenu1.add(jMenuItem1);
+        menuItemClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemClose.setText("Beenden");
+        menuItemClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCloseActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItemClose);
 
         jMenuBar1.add(jMenu1);
 
@@ -213,8 +269,8 @@ public class MainForm extends javax.swing.JFrame {
                 .addComponent(panelQuickSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(panelSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -224,13 +280,80 @@ public class MainForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /*Laden der Controls (child) in die dafür vorgesehenen Panels (parent) */
+    private void addComponentToPanel(JPanel parent, JPanel child){
+        parent.removeAll();
+        
+        GroupLayout layout = new GroupLayout(parent);
+        
+        parent.setLayout(layout);
+        
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+            .addGroup(javax.swing.GroupLayout.Alignment.CENTER, layout.createSequentialGroup()
+                .addComponent(child))
+         );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+            .addGroup(javax.swing.GroupLayout.Alignment.CENTER, layout.createSequentialGroup()
+                .addComponent(child))
+         );
+        
+        parent.validate();
+        parent.repaint();
+    }
+    
+    /*Array mit den zu ladenden Controls wird übergeben
+      Controls (child) werden in die dafür vorgesehenen Panels geladen*/
+    private void loadChildPanels(JPanel[] childs){
+        addComponentToPanel(panelSearch, childs[0]);
+        addComponentToPanel(panelData, childs[1]);
+        addComponentToPanel(panelResults, childs[2]);
+    }
+    
+    /*Login-Fenster wird beim Laden des Programms geöffnet*/
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
         LoginView login = new LoginView(this, true);
         
-        login.setVisible(true);
-       
+        login.setVisible(true);       
     }//GEN-LAST:event_formWindowOpened
+    
+    /*Je nach Verwaltungsbereich wird das entsprechende Fenster zur Eingabe eines neuen 
+      Datensatzes geöffnet*/
+    private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
+        // entsprechende Fenster öffnen:  
+        if(hardwareSearch.isShowing()){
+             NewHardware newH = new NewHardware(this,true);
+             newH.setVisible(true);}
+        else if (userSearch.isShowing()){
+             NewUser newU = new NewUser(this,true);
+             newU.setVisible(true);}
+        else if (categorySearch.isShowing()){
+             NewCategory newC = new NewCategory(this,true);
+             newC.setVisible(true);
+        }else{}        
+    }//GEN-LAST:event_btnNewActionPerformed
+
+    private void menuItemHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHardwareActionPerformed
+        // HardwarePanel anzeigen:
+        loadChildPanels(new JPanel[] {hardwareSearch, hardwareData, hardwareResult} );
+    }//GEN-LAST:event_menuItemHardwareActionPerformed
+
+    private void menuItemUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemUsersActionPerformed
+        // UserPanel anzeigen:
+        loadChildPanels(new JPanel[] {userSearch, userData, userResult} );
+    }//GEN-LAST:event_menuItemUsersActionPerformed
+
+    private void menuItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCategoriesActionPerformed
+        // KategoriePanel anzeigen:
+        loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
+    }//GEN-LAST:event_menuItemCategoriesActionPerformed
+
+    private void menuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCloseActionPerformed
+        // Beenden über Menü:
+        System.exit(0);
+    }//GEN-LAST:event_menuItemCloseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -277,10 +400,10 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem menuItemCategories;
+    private javax.swing.JMenuItem menuItemClose;
+    private javax.swing.JMenuItem menuItemHardware;
+    private javax.swing.JMenuItem menuItemUsers;
     private javax.swing.JPanel panelData;
     private javax.swing.JPanel panelQuickSearch;
     private javax.swing.JPanel panelResults;

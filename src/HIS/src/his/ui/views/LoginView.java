@@ -1,18 +1,27 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+    Copyright 2011 Silvio Wehner, Franziska Staake, Thomas Schulze
+  
+    This file is part of HIS.
 
-/*
- * LoginView.java
- *
- * Created on 25.10.2011, 19:19:14
+    HIS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HIS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HIS.  If not, see <http://www.gnu.org/licenses/>.
+ 
  */
 package his.ui.views;
 
 /**
  *
- * @author Satzu
+ * @author Franziska Staake
  */
 public class LoginView extends javax.swing.JDialog {
 
@@ -46,8 +55,18 @@ public class LoginView extends javax.swing.JDialog {
         jLabel2.setText("Passwort");
 
         btnLogin.setText("Anmelden");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         btnCancel.setText("Abbrechen");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -95,6 +114,19 @@ public class LoginView extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        
+        this.setVisible(false);        
+        System.exit(0);
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        // TODO Benutzeranmeldedaten überprüfen:
+        
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
      * @param args the command line arguments
