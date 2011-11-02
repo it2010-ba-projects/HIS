@@ -18,12 +18,12 @@
  */
 package his.model.providers;
 
-import his.model.Groups;
+import his.model.Manufacturers;
 
 /**
  *
  * @author silvio
  */
-public class GroupsProvider extends BaseProvider<Groups> {
+public class ManufacturersProvider extends BaseProvider<Manufacturers> {
     
 }

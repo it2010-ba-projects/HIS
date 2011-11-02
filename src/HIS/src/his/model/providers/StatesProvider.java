@@ -18,12 +18,27 @@
  */
 package his.model.providers;
 
-import his.model.Groups;
+import his.model.States;
 
 /**
  *
  * @author silvio
  */
-public class GroupsProvider extends BaseProvider<Groups> {
+public class StatesProvider extends BaseProvider<States> {
+    
+    @Override
+    public void update(States state) {
+        // Status können nicht aktualisiert werden
+    }
+    
+    @Override
+    public void delete(States state) {
+        // Status können nicht gelöscht werden
+    }
+    
+    @Override
+    public void create(States state) {
+        // Status können nicht angelegt werden
+    }
     
 }
