@@ -24,7 +24,7 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="txtCategoryName" alignment="0" pref="105" max="32767" attributes="0"/>
+                  <Component id="txtCategoryName" alignment="0" pref="110" max="32767" attributes="0"/>
                   <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="btnSearch" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -41,7 +41,7 @@
               <Component id="txtCategoryName" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
               <Component id="btnSearch" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="86" max="32767" attributes="0"/>
+              <EmptySpace pref="108" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
