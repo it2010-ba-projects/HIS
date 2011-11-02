@@ -393,6 +393,44 @@ public class MainForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnNewActionPerformed
 
+    private void menuItemCloseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuItemCloseMousePressed
+        System.exit(0);
+    }//GEN-LAST:event_menuItemCloseMousePressed
+
+    private void menuItemCloseMenuKeyTyped(javax.swing.event.MenuKeyEvent evt) {//GEN-FIRST:event_menuItemCloseMenuKeyTyped
+        System.exit(0);
+    }//GEN-LAST:event_menuItemCloseMenuKeyTyped
+
+    private void menuItemCategoriesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuItemCategoriesMousePressed
+        // TODO Kategorieverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemCategoriesMousePressed
+
+    private void menuItemCategoriesMenuKeyTyped(javax.swing.event.MenuKeyEvent evt) {//GEN-FIRST:event_menuItemCategoriesMenuKeyTyped
+        // TODO Kategorieverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemCategoriesMenuKeyTyped
+
+    private void menuItemUsersMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuItemUsersMousePressed
+        // TODO Beutzerverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemUsersMousePressed
+
+    private void menuItemUsersMenuKeyTyped(javax.swing.event.MenuKeyEvent evt) {//GEN-FIRST:event_menuItemUsersMenuKeyTyped
+        // TODO Beutzerverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemUsersMenuKeyTyped
+
+    private void menuItemHardwareMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuItemHardwareMousePressed
+        // TODO Hardwareverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemHardwareMousePressed
+
+    private void menuItemHardwareMenuKeyTyped(javax.swing.event.MenuKeyEvent evt) {//GEN-FIRST:event_menuItemHardwareMenuKeyTyped
+         // TODO Hardwareverwaltung anzeigen:
+    }//GEN-LAST:event_menuItemHardwareMenuKeyTyped
+
+    private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
+        // TODO entsprechende Fenster öffnen:
+        
+        
+    }//GEN-LAST:event_btnNewActionPerformed
+
     /**
      * @param args the command line arguments
      */
