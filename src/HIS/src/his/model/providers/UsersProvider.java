@@ -68,7 +68,7 @@ public class UsersProvider extends BaseProvider<Users> {
         try {
             return findSingleResultByQueryName("findByLogin", parameters);
         } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }
         

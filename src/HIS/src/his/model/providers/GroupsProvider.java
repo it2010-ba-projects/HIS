@@ -46,7 +46,7 @@ public class GroupsProvider extends BaseProvider<Groups> {
         try {
             return findSingleResultByQueryName("findByName", parameters);
         } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }
     }

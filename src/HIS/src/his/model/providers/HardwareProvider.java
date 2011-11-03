@@ -39,7 +39,7 @@ public class HardwareProvider extends BaseProvider<Hardware> {
         try {
             return findSingleResultByQueryName("findByInventoryNumber", parameters);
         } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }        
     }
