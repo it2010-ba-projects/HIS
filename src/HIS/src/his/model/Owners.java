@@ -31,6 +31,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -50,7 +51,9 @@ public class Owners implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SEQ_OWNERS")    
+    @TableGenerator(name="SEQ_OWNERS", table="sequence", pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT", pkColumnValue="SEQ_OWNERS", allocationSize=1)
     private Short id;
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)

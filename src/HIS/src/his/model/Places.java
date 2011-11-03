@@ -32,6 +32,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -52,8 +53,10 @@ public class Places implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "id", nullable = false)    
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SEQ_PLACES")    
+    @TableGenerator(name="SEQ_PLACES", table="sequence", pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT", pkColumnValue="SEQ_PLACES", allocationSize=1)
     private Short id;
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 255)
