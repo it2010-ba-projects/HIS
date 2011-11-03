@@ -19,6 +19,7 @@
  */
 package his;
 
+import his.model.Users;
 import his.ui.views.MainForm;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -29,12 +30,26 @@ import org.apache.log4j.Logger;
  */
 public class HIS {
     private static Logger logger = Logger.getRootLogger();
-    
+    private static Users currentUser;
     /**
      * @return the logger
      */
     public static Logger getLogger() {
         return logger;
+    }
+
+    /**
+     * @return the currentUser
+     */
+    public static Users getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
+     * @param aCurrentUser the currentUser to set
+     */
+    public static void setCurrentUser(Users aCurrentUser) {
+        currentUser = aCurrentUser;
     }
     
     /**

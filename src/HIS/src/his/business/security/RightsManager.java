@@ -19,6 +19,11 @@
  */
 package his.business.security;
 
+import his.HIS;
+import his.model.Groups;
+import his.model.Users;
+import java.util.Collection;
+
 /**
  * Beinhaltet statische Funktionen zur Rechtepruefung fuer 
  * einzelne Benutzer
@@ -28,41 +33,44 @@ package his.business.security;
 public class RightsManager {
     /**
      * Prueft, ob fuer den Benutzer das Recht vorhanden ist
-     * @param username Nutzername
-     * @param right zu pruefendes Recht
-     * @return true, falls Recht fuer Nutzer vorhanden
+     * @param user Nutzer
+     * @param group zu pruefende Gruppe
+     * @return true, falls Gruppe fuer Nutzer vorhanden
      */    
-    public static boolean hasRight(String username, Right right)
+    public static boolean isInGroup(Users user, Groups group)
     {
-        return true;
+        if(user.getGroupsCollection().contains(group))        
+            return true;        
+        
+        return false;
     }
     
     /**
-     * Prueft fuer den aktuellen Nutzer, ob das Recht vorhanden ist
-     * @param right zu Pruefendes Recht
-     * @return true, falls Recht vorhanden
+     * Prueft fuer den aktuellen Nutzer, ob er in der Gruppe ist
+     * @param group zu Pruefende Gruppe
+     * @return true, falls Gruppe vorhanden
      */
-    public static boolean hasRight(Right right)
+    public static boolean isInGroup(Groups group)
     {
-        return hasRight("aktueller Nutzer", right);
+        return isInGroup(HIS.getCurrentUser(), group);
     }
     
     /**
      * Gibt alle Rechte fuer den aktuellen Nutzer zurueck
-     * @param username Benutzername
-     * @return Array mit NutzerRechten
+     * @param user Nutzer
+     * @return Collection mit NutzerGruppen
      */
-    public static Right[] getRights(String username)
+    public static Collection<Groups> getGroups(Users user)
     {
-        return null;
+        return user.getGroupsCollection();
     }
     
     /**
      * Gibt alle Rechte fuer den aktuellen Nuter zurueck
      * @return Array mit NutzerRechten
      */
-    public static Right[] getRights()
+    public static Collection<Groups> getGroups()
     {
-        return getRights("aktueller Nutzer");
+        return getGroups(HIS.getCurrentUser());
     }
 }
