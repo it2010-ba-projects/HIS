@@ -18,12 +18,87 @@
  */
 package his.model.providers;
 
+import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.Hardware;
+import his.model.States;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author silvio
  */
 public class HardwareProvider extends BaseProvider<Hardware> {
+    
+    public Hardware findByInventoryNumber(Serializable inventoryNumber) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("inventoryNumber", inventoryNumber);
+        try {
+            return findSingleResultByQueryName("findByInventoryNumber", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }        
+    }
+    
+    public Collection<Hardware> findByName(String name) {
+        Map<String, Object> parameters = new HashMap<>();
+        name = getCleanParameter(name);
+        parameters.put("name", "%" + name + "%");
+        
+        return findCollectionByQueryName("findByName", parameters);
+    }
+    
+    public Hardware findByPurchaseDate(Date purchaseDate) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("purchaseDate", purchaseDate);
+        try {
+            return findSingleResultByQueryName("findByPurchaseDate", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }        
+    }
+    
+    public Hardware findByWarrantyEnd(Date warrantyEnd) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("warrantyEnd", warrantyEnd);
+        try {
+            return findSingleResultByQueryName("findByWarrantyEnd", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }        
+    }
+    
+    public Hardware findByState(String stateName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("stateName", stateName);
+        try {
+            return findSingleResultByQueryName("findByState", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }        
+    }
+    
+    public Hardware findByState(States state) {
+        Hardware hardware = null;
+        
+        if (state != null) {            
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("stateName", state.getName());
+            try {
+                hardware = findSingleResultByQueryName("findByState", parameters);
+            } catch (QueryNotPossibleException ex) {
+                ex.printStackTrace();
+            }      
+        }  
+        
+        return hardware;
+    }
     
 }

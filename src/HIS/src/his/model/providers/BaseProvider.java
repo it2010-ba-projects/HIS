@@ -18,6 +18,7 @@
  */
 package his.model.providers;
 
+import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.interfaces.ICrud;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,6 +26,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -50,22 +52,23 @@ public class BaseProvider<T> implements ICrud<T> {
     }
     
     @Override
-    public T findByID(Serializable id) {
+    public T findById(Serializable id) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
         try {
-            Class<T> clazz = getClassType();
-            String className = clazz.getSimpleName();
-            TypedQuery<T> tQuery = entityManager.createNamedQuery( className + ".findById", clazz);
-            T result = tQuery.setParameter("id", id).getSingleResult();
-            return result;
-        }
-        catch(NoResultException e) {
+            return findSingleResultByQueryName("findById", parameters);
+        } catch (QueryNotPossibleException ex) {
+            // Diese Exception sollte nie auftreten!
+            ex.printStackTrace();
             return null;
         }
     }
 
     @Override
     public void update(T t) {
-        create(t);
+        entityManager.getTransaction().begin();
+        entityManager.flush();
+        entityManager.getTransaction().commit();
     }
 
     @Override
@@ -84,10 +87,23 @@ public class BaseProvider<T> implements ICrud<T> {
 
     @Override
     public Collection<T> findAll() {
-        try {            
+        return findCollectionByQueryName("findById");
+    }
+    
+    protected Collection<T> findCollectionByQueryName(String queryName) {
+        return findCollectionByQueryName(queryName, null);
+    }
+    
+    protected Collection<T> findCollectionByQueryName(String queryName, Map<String, Object> parameters) {
+        try {
             Class<T> clazz = getClassType();
             String className = clazz.getSimpleName();
-            TypedQuery<T> tQuery = entityManager.createNamedQuery( className + ".findById", clazz);
+            TypedQuery<T> tQuery = entityManager.createNamedQuery( className + "." + queryName, clazz);
+            if (parameters != null) {
+                for( Entry<String, Object> entry : parameters.entrySet() ) {
+                    tQuery.setParameter(entry.getKey(), entry.getValue());
+                }
+            }
             Collection<T> result = tQuery.getResultList();
             return result;
         }
@@ -96,13 +112,40 @@ public class BaseProvider<T> implements ICrud<T> {
         }
     }
     
+    protected T findSingleResultByQueryName(String queryName, Map<String, Object> parameters) throws QueryNotPossibleException {
+        try {
+            Class<T> clazz = getClassType();
+            String className = clazz.getSimpleName();
+            TypedQuery<T> tQuery = entityManager.createNamedQuery( className + "." + queryName, clazz);
+            if (parameters != null) {
+                for( Entry<String, Object> entry : parameters.entrySet() ) {
+                    tQuery.setParameter(entry.getKey(), entry.getValue());
+                }
+            } 
+            else {
+                throw new QueryNotPossibleException("Queryparameter müssen angegeben werden.");
+            }
+                
+            T result = tQuery.getSingleResult();
+            return result;
+        }
+        catch(NoResultException e) {
+            return null;
+        }
+    }
+    
+    protected String getCleanParameter(String parameter) {
+        return parameter.replaceAll("%", "\\%").replaceAll("_", "\\_");
+    }
+            
+    
     private Class getClassType() {        
         ParameterizedType parametrizedType = (ParameterizedType) getClass().getGenericSuperclass();
         Class clazz = (Class) parametrizedType.getActualTypeArguments()[0];
         
         return clazz;
     }
-
+    
     private Map setDatabaseProperties() {
         Map properties = new HashMap();
         String url = "";

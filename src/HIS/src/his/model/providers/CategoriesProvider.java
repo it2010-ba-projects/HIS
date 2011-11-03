@@ -18,8 +18,8 @@
  */
 package his.model.providers;
 
-import his.exceptions.modelexceptions.QueryNotPossibleException;
-import his.model.Groups;
+import his.model.Categories;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,27 +27,13 @@ import java.util.Map;
  *
  * @author silvio
  */
-public class GroupsProvider extends BaseProvider<Groups> {
-        
-    @Override
-    public void delete(Groups group) {
-        // Gruppen können nicht gelöscht werden
-    }
+public class CategoriesProvider extends BaseProvider<Categories> {
     
-    @Override
-    public void create(Groups group) {
-        // Gruppen können nicht angelegt werden
-    }
-    
-    public Groups findByName(String name) {
-        
+    public Collection<Categories> findByName(String name) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("name", name);
-        try {
-            return findSingleResultByQueryName("findByName", parameters);
-        } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        name = getCleanParameter(name);        
+        parameters.put("name", "%" + name + "%");
+        
+        return findCollectionByQueryName("findByName", parameters);
     }
 }

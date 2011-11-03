@@ -35,6 +35,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -54,10 +55,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Hardware.findAll", query = "SELECT h FROM Hardware h"),
     @NamedQuery(name = "Hardware.findById", query = "SELECT h FROM Hardware h WHERE h.id = :id"),
     @NamedQuery(name = "Hardware.findByInventoryNumber", query = "SELECT h FROM Hardware h WHERE h.inventoryNumber = :inventoryNumber"),
-    @NamedQuery(name = "Hardware.findByName", query = "SELECT h FROM Hardware h WHERE h.name = :name"),
+    @NamedQuery(name = "Hardware.findByName", query = "SELECT h FROM Hardware h WHERE h.name LIKE :name"),
     @NamedQuery(name = "Hardware.findByPurchaseDate", query = "SELECT h FROM Hardware h WHERE h.purchaseDate = :purchaseDate"),
     @NamedQuery(name = "Hardware.findByWarrantyEnd", query = "SELECT h FROM Hardware h WHERE h.warrantyEnd = :warrantyEnd"),
-    @NamedQuery(name = "Hardware.findByState", query = "SELECT h FROM Hardware h WHERE h.stateId = :stateId")})
+    @NamedQuery(name = "Hardware.findByState", query = "SELECT h FROM Hardware h WHERE h.state.name = :stateName")})
 public class Hardware implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -86,22 +87,22 @@ public class Hardware implements Serializable {
     @ManyToMany(mappedBy = "hardwareCollection", fetch = FetchType.LAZY)
     private Collection<Categories> categoriesCollection;
     @JoinColumn(name = "state_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private States stateId;
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    private States state;
     @JoinColumn(name = "place_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Places placeId;
+    private Places place;
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Owners ownerId;
+    private Owners owner;
     @JoinColumn(name = "manufacturer_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Manufacturers manufacturerId;
-    @OneToMany(mappedBy = "hardwareId", fetch = FetchType.LAZY)
+    private Manufacturers manufacturer;
+    @OneToMany(mappedBy = "hardware", fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
     @JoinColumn(name = "hardware_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Hardware hardwareId;
+    private Hardware hardware;
 
     public Hardware() {
     }
@@ -175,36 +176,36 @@ public class Hardware implements Serializable {
         this.categoriesCollection = categoriesCollection;
     }
 
-    public States getStateId() {
-        return stateId;
+    public States getState() {
+        return state;
     }
 
-    public void setStateId(States stateId) {
-        this.stateId = stateId;
+    public void setState(States state) {
+        this.state = state;
     }
 
-    public Places getPlaceId() {
-        return placeId;
+    public Places getPlace() {
+        return place;
     }
 
-    public void setPlaceId(Places placeId) {
-        this.placeId = placeId;
+    public void setPlace(Places place) {
+        this.place = place;
     }
 
-    public Owners getOwnerId() {
-        return ownerId;
+    public Owners getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(Owners ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(Owners owner) {
+        this.owner = owner;
     }
 
-    public Manufacturers getManufacturerId() {
-        return manufacturerId;
+    public Manufacturers getManufacturer() {
+        return manufacturer;
     }
 
-    public void setManufacturerId(Manufacturers manufacturerId) {
-        this.manufacturerId = manufacturerId;
+    public void setManufacturer(Manufacturers manufacturer) {
+        this.manufacturer = manufacturer;
     }
 
     @XmlTransient
@@ -216,12 +217,12 @@ public class Hardware implements Serializable {
         this.hardwareCollection = hardwareCollection;
     }
 
-    public Hardware getHardwareId() {
-        return hardwareId;
+    public Hardware getHardware() {
+        return hardware;
     }
 
-    public void setHardwareId(Hardware hardwareId) {
-        this.hardwareId = hardwareId;
+    public void setHardware(Hardware hardware) {
+        this.hardware = hardware;
     }
 
     @Override

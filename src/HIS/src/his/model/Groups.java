@@ -21,6 +21,7 @@ package his.model;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -66,11 +67,11 @@ public class Groups implements Serializable {
     public Groups() {
     }
 
-    public Groups(Short id) {
+    protected Groups(Short id) {
         this.id = id;
     }
 
-    public Groups(Short id, String name) {
+    protected Groups(Short id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -79,7 +80,7 @@ public class Groups implements Serializable {
         return id;
     }
 
-    public void setId(Short id) {
+    protected void setId(Short id) {
         this.id = id;
     }
 
@@ -87,7 +88,7 @@ public class Groups implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 

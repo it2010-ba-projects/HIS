@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Places.findAll", query = "SELECT p FROM Places p"),
     @NamedQuery(name = "Places.findById", query = "SELECT p FROM Places p WHERE p.id = :id"),
-    @NamedQuery(name = "Places.findByName", query = "SELECT p FROM Places p WHERE p.name = :name")})
+    @NamedQuery(name = "Places.findByName", query = "SELECT p FROM Places p WHERE p.name LIKE :name")})
 public class Places implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -58,7 +58,7 @@ public class Places implements Serializable {
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 255)
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "placeId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "place", fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
 
     public Places() {

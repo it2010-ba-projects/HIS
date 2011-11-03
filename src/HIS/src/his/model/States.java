@@ -19,7 +19,6 @@
 package his.model;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +29,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -58,8 +57,8 @@ public class States implements Serializable {
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stateId", fetch = FetchType.LAZY)
-    private Collection<Hardware> hardwareCollection;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "state", fetch = FetchType.LAZY)
+    private Hardware hardware;
 
     public States() {
     }
@@ -90,12 +89,12 @@ public class States implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Hardware> getHardwareCollection() {
-        return hardwareCollection;
+    public Hardware getHardware() {
+        return hardware;
     }
 
-    public void setHardwareCollection(Collection<Hardware> hardwareCollection) {
-        this.hardwareCollection = hardwareCollection;
+    public void setHardware(Hardware hardware) {
+        this.hardware = hardware;
     }
 
     @Override

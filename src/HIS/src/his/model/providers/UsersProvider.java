@@ -18,7 +18,11 @@
  */
 package his.model.providers;
 
+import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.Users;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -26,4 +30,47 @@ import his.model.Users;
  */
 public class UsersProvider extends BaseProvider<Users> {
     
+    public Collection<Users> findAllActive() {
+        return findCollectionByQueryName("findAllActive");
+    }
+    
+    public Collection<Users> findAllInActive() {
+        return findCollectionByQueryName("findAllInActive");
+    }
+    
+    public Collection<Users> findByFirstName(String firstName) {
+        Map<String, Object> parameters = new HashMap<>();
+        firstName = getCleanParameter(firstName);        
+        parameters.put("firstName", "%" + firstName + "%");
+        
+        return findCollectionByQueryName("findByFirstName", parameters);
+    }
+    
+    public Collection<Users> findByLastName(String lastName) {
+        Map<String, Object> parameters = new HashMap<>();
+        lastName = getCleanParameter(lastName);
+        parameters.put("lastName", "%" + lastName + "%");
+        
+        return findCollectionByQueryName("findByLastName", parameters);
+    }
+    
+    public Collection<Users> findByCreatedFrom(String createdFrom) {
+        Map<String, Object> parameters = new HashMap<>();
+        createdFrom = getCleanParameter(createdFrom);
+        parameters.put("createdFrom", "%" + createdFrom + "%");
+        
+        return findCollectionByQueryName("findByCreatedFrom", parameters);
+    }
+    
+    public Users findByLogin(String login) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("login", login);
+        try {
+            return findSingleResultByQueryName("findByLogin", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        
+    }
 }

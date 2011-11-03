@@ -18,6 +18,7 @@
  */
 package his.model;
 
+import his.jbcrypt.BCrypt;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -46,6 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
     @NamedQuery(name = "Users.findAllActive", query = "SELECT u FROM Users u WHERE u.deleted = false"),
+    @NamedQuery(name = "Users.findAllInActive", query = "SELECT u FROM Users u WHERE u.deleted = true"),
     @NamedQuery(name = "Users.findById", query = "SELECT u FROM Users u WHERE u.id = :id"),
     @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName LIKE :firstName"),
     @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName LIKE :lastName"),
@@ -135,8 +137,12 @@ public class Users implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String password) {        
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+    
+    public boolean isValid(String password) {
+        return BCrypt.checkpw(password, this.password);
     }
 
     public String getCreatedFrom() {

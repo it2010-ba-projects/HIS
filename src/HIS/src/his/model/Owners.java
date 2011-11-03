@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Owners.findAll", query = "SELECT o FROM Owners o"),
     @NamedQuery(name = "Owners.findById", query = "SELECT o FROM Owners o WHERE o.id = :id"),
-    @NamedQuery(name = "Owners.findByName", query = "SELECT o FROM Owners o WHERE o.name = :name")})
+    @NamedQuery(name = "Owners.findByName", query = "SELECT o FROM Owners o WHERE o.name LIKE :name")})
 public class Owners implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,7 +55,7 @@ public class Owners implements Serializable {
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
-    @OneToMany(mappedBy = "ownerId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
 
     public Owners() {

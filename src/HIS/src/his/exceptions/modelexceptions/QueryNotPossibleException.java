@@ -16,24 +16,25 @@
     You should have received a copy of the GNU General Public License
     along with HIS.  If not, see <http://www.gnu.org/licenses/>.
  */
-package his.model.providers;
-
-import his.model.Manufacturers;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+package his.exceptions.modelexceptions;
 
 /**
  *
  * @author silvio
  */
-public class ManufacturersProvider extends BaseProvider<Manufacturers> {
-    
-    public Collection<Manufacturers> findByName(String name) {
-        Map<String, Object> parameters = new HashMap<>();
-        name = getCleanParameter(name);
-        parameters.put("name", "%" + name + "%");
-        
-        return findCollectionByQueryName("findByName", parameters);
+public class QueryNotPossibleException extends Exception {
+
+    /**
+     * Creates a new instance of <code>QueryNotPossibleException</code> without detail message.
+     */
+    public QueryNotPossibleException() {
+    }
+
+    /**
+     * Constructs an instance of <code>QueryNotPossibleException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public QueryNotPossibleException(String msg) {
+        super(msg);
     }
 }

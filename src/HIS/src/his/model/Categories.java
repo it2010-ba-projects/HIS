@@ -51,7 +51,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Categories.findAll", query = "SELECT c FROM Categories c"),
     @NamedQuery(name = "Categories.findById", query = "SELECT c FROM Categories c WHERE c.id = :id"),
-    @NamedQuery(name = "Categories.findByName", query = "SELECT c FROM Categories c WHERE c.name = :name")})
+    @NamedQuery(name = "Categories.findByName", query = "SELECT c FROM Categories c WHERE c.name LIKE :name")})
 public class Categories implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -67,11 +67,11 @@ public class Categories implements Serializable {
         @JoinColumn(name = "hardware_id", referencedColumnName = "id", nullable = false)})
     @ManyToMany(fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "categoryId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", fetch = FetchType.LAZY)
     private Collection<Categories> categoriesCollection;
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Categories categoryId;
+    private Categories category;
 
     public Categories() {
     }
@@ -119,12 +119,12 @@ public class Categories implements Serializable {
         this.categoriesCollection = categoriesCollection;
     }
 
-    public Categories getCategoryId() {
-        return categoryId;
+    public Categories getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Categories categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Categories category) {
+        this.category = category;
     }
 
     @Override

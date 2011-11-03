@@ -19,11 +19,22 @@
 package his.model.providers;
 
 import his.model.Owners;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author silvio
  */
 public class OwnersProvider extends BaseProvider<Owners> {
+    
+    public Collection<Owners> findByName(String name) {
+        Map<String, Object> parameters = new HashMap<>();
+        name = getCleanParameter(name);
+        parameters.put("name", "%" + name + "%");
+        
+        return findCollectionByQueryName("findByName", parameters);
+    }
     
 }

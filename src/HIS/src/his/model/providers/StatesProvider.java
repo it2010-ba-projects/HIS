@@ -18,7 +18,10 @@
  */
 package his.model.providers;
 
+import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.States;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -41,4 +44,15 @@ public class StatesProvider extends BaseProvider<States> {
         // Status können nicht angelegt werden
     }
     
+    public States findByName(String name) {
+        
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", name);
+        try {
+            return findSingleResultByQueryName("findByName", parameters);
+        } catch (QueryNotPossibleException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

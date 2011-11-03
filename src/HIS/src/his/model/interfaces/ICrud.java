@@ -26,7 +26,7 @@ import java.util.Collection;
  * @author silvio
  */
 public interface ICrud<T> {
-    abstract T findByID(Serializable id);
+    abstract T findById(Serializable id);
     abstract Collection<? extends T> findAll();
     abstract void update(T t);
     abstract void delete(T t);
