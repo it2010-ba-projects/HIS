@@ -31,6 +31,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -50,7 +51,9 @@ public class HardwareHistoryLog implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SEQ_HARDWARE_HISTORY_LOG")    
+    @TableGenerator(name="SEQ_HARDWARE_HISTORY_LOG", table="sequence", pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT", pkColumnValue="SEQ_HARDWARE_HISTORY_LOG", allocationSize=1)
     private Short id;
     @Basic(optional = false)
     @Column(name = "entry", nullable = false, length = 2147483647)

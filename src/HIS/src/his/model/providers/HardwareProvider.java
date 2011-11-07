@@ -39,7 +39,7 @@ public class HardwareProvider extends BaseProvider<Hardware> {
         try {
             return findSingleResultByQueryName("findByInventoryNumber", parameters);
         } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }        
     }
@@ -52,50 +52,31 @@ public class HardwareProvider extends BaseProvider<Hardware> {
         return findCollectionByQueryName("findByName", parameters);
     }
     
-    public Hardware findByPurchaseDate(Date purchaseDate) {
+    public Collection<Hardware> findByPurchaseDate(Date purchaseDate) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("purchaseDate", purchaseDate);
-        try {
-            return findSingleResultByQueryName("findByPurchaseDate", parameters);
-        } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
-            return null;
-        }        
+        return findCollectionByQueryName("findByPurchaseDate", parameters);
     }
     
-    public Hardware findByWarrantyEnd(Date warrantyEnd) {
+    public Collection<Hardware> findByWarrantyEnd(Date warrantyEnd) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("warrantyEnd", warrantyEnd);
-        try {
-            return findSingleResultByQueryName("findByWarrantyEnd", parameters);
-        } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
-            return null;
-        }        
+        return findCollectionByQueryName("findByWarrantyEnd", parameters);
     }
     
-    public Hardware findByState(String stateName) {
+    public Collection<Hardware> findByState(String stateName) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("stateName", stateName);
-        try {
-            return findSingleResultByQueryName("findByState", parameters);
-        } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
-            return null;
-        }        
+        return findCollectionByQueryName("findByState", parameters);
     }
     
-    public Hardware findByState(States state) {
-        Hardware hardware = null;
+    public Collection<Hardware> findByState(States state) {
+        Collection<Hardware> hardware = null;
         
         if (state != null) {            
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("stateName", state.getName());
-            try {
-                hardware = findSingleResultByQueryName("findByState", parameters);
-            } catch (QueryNotPossibleException ex) {
-                ex.printStackTrace();
-            }      
+            hardware = findCollectionByQueryName("findByState", parameters);
         }  
         
         return hardware;

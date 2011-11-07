@@ -18,6 +18,7 @@
  */
 package his.model.providers;
 
+import his.HIS;
 import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.interfaces.ICrud;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import org.apache.log4j.Logger;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
@@ -42,10 +44,11 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 public class BaseProvider<T> implements ICrud<T> {
         
     @PersistenceContext protected EntityManager entityManager;
-        
+    protected Logger logger;
+    
     protected BaseProvider() {
         Map properties = setDatabaseProperties();
-        
+        logger = HIS.getLogger();
         
         this.entityManager = Persistence.createEntityManagerFactory("HISPU", properties)
             .createEntityManager();
@@ -59,7 +62,7 @@ public class BaseProvider<T> implements ICrud<T> {
             return findSingleResultByQueryName("findById", parameters);
         } catch (QueryNotPossibleException ex) {
             // Diese Exception sollte nie auftreten!
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }
     }

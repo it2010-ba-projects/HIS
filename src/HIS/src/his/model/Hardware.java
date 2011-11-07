@@ -37,6 +37,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
@@ -64,7 +65,9 @@ public class Hardware implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SEQ_HARDWARE")
+    @TableGenerator(name="SEQ_HARDWARE", table="sequence", pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT", pkColumnValue="SEQ_HARDWARE", allocationSize=1)
     private Short id;
     @Basic(optional = false)
     @Column(name = "inventory_number", nullable = false, length = 50)

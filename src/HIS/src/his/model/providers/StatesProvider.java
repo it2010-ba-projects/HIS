@@ -51,7 +51,7 @@ public class StatesProvider extends BaseProvider<States> {
         try {
             return findSingleResultByQueryName("findByName", parameters);
         } catch (QueryNotPossibleException ex) {
-            ex.printStackTrace();
+            logger.error(ex);
             return null;
         }
     }

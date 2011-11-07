@@ -32,6 +32,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -59,7 +60,9 @@ public class Users implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @TableGenerator(name="SEQ_USERS", table="sequence", pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT", pkColumnValue="SEQ_USERS", allocationSize=1)
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SEQ_USERS")
     private Short id;
     @Basic(optional = false)
     @Column(name = "first_name", nullable = false, length = 50)
