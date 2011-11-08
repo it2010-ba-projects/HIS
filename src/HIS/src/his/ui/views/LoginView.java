@@ -122,10 +122,13 @@ public class LoginView extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // TODO Benutzeranmeldedaten überprüfen:
-        
+        // TODO Benutzeranmeldedaten überprüfen: 
+        MainForm mainForm = new MainForm();
+        //mainForm.setState(mainForm.NORMAL);
+              
         this.setVisible(false);
-        
+        mainForm.setExtendedState(mainForm.getExtendedState());
+        mainForm.setVisible(true);
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**

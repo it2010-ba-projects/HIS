@@ -20,6 +20,7 @@
 package his;
 
 import his.model.Users;
+import his.ui.views.LoginView;
 import his.ui.views.MainForm;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -80,8 +81,10 @@ public class HIS {
         }
         //</editor-fold>
         logger.debug("Starte MainForm");
-        MainForm main = new MainForm();        
-        main.setVisible(true);
+        
+        MainForm main = new MainForm(); 
+        LoginView login = new LoginView(main, true);
+        login.setVisible(true);
         
     }
 }
