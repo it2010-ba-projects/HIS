@@ -72,7 +72,7 @@ public class Categories implements Serializable {
     private Collection<Hardware> hardwareCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", fetch = FetchType.LAZY)
     private Collection<Categories> categoriesCollection;
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Categories category;
 
