@@ -20,6 +20,9 @@ package his.model.providers;
 
 import his.exceptions.modelexceptions.QueryNotPossibleException;
 import his.model.Hardware;
+import his.model.Manufacturers;
+import his.model.Owners;
+import his.model.Places;
 import his.model.States;
 import java.io.Serializable;
 import java.util.Collection;
@@ -82,4 +85,69 @@ public class HardwareProvider extends BaseProvider<Hardware> {
         return hardware;
     }
     
+    public Collection<Hardware> findByManufacturer(String manufacturerName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("manufacturerName", manufacturerName);
+        return findCollectionByQueryName("findByManufacturer", parameters);
+    }
+    
+    public Collection<Hardware> findByManufacturer(Manufacturers manufacturer) {
+        Collection<Hardware> hardware = null;
+        
+        if (manufacturer != null) {            
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("manufacturerName", manufacturer.getName());
+            hardware = findCollectionByQueryName("findByManufacturer", parameters);
+        }  
+        
+        return hardware;
+    }
+    
+    public Collection<Hardware> findByOwner(String ownerName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ownerName", ownerName);
+        return findCollectionByQueryName("findByOwner", parameters);
+    }
+    
+    public Collection<Hardware> findByOwner(Owners owner) {
+        Collection<Hardware> hardware = null;
+        
+        if (owner != null) {            
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("manufacturerName", owner.getName());
+            hardware = findCollectionByQueryName("findByManufacturer", parameters);
+        }  
+        
+        return hardware;
+    }
+    
+    public Collection<Hardware> findByParent(Hardware parent) {
+        Collection<Hardware> hardware = null;
+        
+        if (parent != null) {            
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("hardwareId", parent.getId());
+            hardware = findCollectionByQueryName("findByParent", parameters);
+        }  
+        
+        return hardware;
+    }
+    
+    public Collection<Hardware> findByPlace(String placeName) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("placeName", placeName);
+        return findCollectionByQueryName("findByPlace", parameters);
+    }
+    
+    public Collection<Hardware> findByPlace(Places place) {
+        Collection<Hardware> hardware = null;
+        
+        if (place != null) {            
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("placeName", place.getName());
+            hardware = findCollectionByQueryName("findByPlace", parameters);
+        }  
+        
+        return hardware;
+    }
 }
