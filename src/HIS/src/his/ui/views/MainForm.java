@@ -19,6 +19,7 @@
  */
 package his.ui.views;
 
+import his.HIS;
 import his.ui.controls.CategoryData;
 import his.ui.controls.CategoryResult;
 import his.ui.controls.CategorySearch;
@@ -330,7 +331,9 @@ public class MainForm extends javax.swing.JFrame {
         else if (categorySearch.isShowing()){
              NewCategory newC = new NewCategory(this,true);
              newC.setVisible(true);
-        }else{}        
+        }else{
+             HIS.getLogger().debug("Fehler beim Öffnen des 'Neu-Fensters'");
+        }        
     }//GEN-LAST:event_btnNewActionPerformed
 
     private void menuItemHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHardwareActionPerformed
