@@ -18,19 +18,19 @@
  
  */
 
-
 package his.business;
 
-import his.model.Groups;
+import his.HIS;
 import his.model.Users;
-import java.util.Collection;
+import his.model.providers.UsersProvider;
 
 /**
  * Stellt die Informationen fuer alle {@link Users}-Daten bereit
  * @author Thomas Schulze
  */
 public class UserDataBusiness {
-    private Users user;    
+    private Users user;  
+    UsersProvider provider;
 
     /**
      * Gibt den geuchten {@link Users} zurueck bzw null, wenn keiner gefunden
@@ -41,19 +41,40 @@ public class UserDataBusiness {
     }
     
     /**
-     * Initialisiert das Objekt mit einem {@link Users}
+     * Initialisiert das Objekt mit einem {@link Users}, wenn die Id gefunden wird
      * @param id zu suchende ID
      */
     public UserDataBusiness(int id) {
+        provider = new UsersProvider();
         search(id);
     }
-    
+        
     /**
      * Initialisiert das Objekt mit einem leeren {@link Users}
      */
     public UserDataBusiness()
     {
-        this.user = new Users();
+        this(-1);
+    }
+    
+    /**
+     * Initialisiert das Objekt mit einem {@link Users}, wenn der User gefunden wird
+     * @param user zu suchender User
+     */
+    public UserDataBusiness(Users user) 
+    {
+        this(user.getId());
+    }
+    
+    /**
+     * Sucht einen neuen {@link Users} und verwirft alle Aenderungen am letzten {@link Users}.
+     * Wenn kein User gefunden wird, wird null zurueck gegeben
+     * @param user zu suchender {@link Users}
+     * @return den gefundenen {@link Users} bzw null
+     */
+    public Users newSearch(Users user)
+    {        
+        return newSearch(user.getId());
     }
     
     /**
@@ -63,34 +84,32 @@ public class UserDataBusiness {
      */
     public Users newSearch(int id)
     {
-        search(id);
-        return getUser();
+        return search(id);
     }
     
     /**
      * Speichert alle Aenderungen am {@link Users}
-     * @return true, wenn erfolgreich
      */
-    public boolean saveUserData()
-    {
-        //TODO:implementieren
-        return true;
-    }
+    public void saveUserData()
+    {        
+        provider.update(user);        
+    }    
+    
     
     /**
      * Fuehrt die letzte Suche erneut aus
-     * @throws Exception wenn kein {@link Users} bisher vorhanden
      */
-    public void refresh()
-            throws Exception
+    public Users refresh()
     {
         if(user!=null)
         {
-            search(this.getUser().getId());
+            return search(this.getUser().getId());
         }
         else
         {
-            throw new Exception("Keine Daten vorhanden");
+            HIS.getLogger().info("Kein Nutzer vorhanden");
+            HIS.getLogger().debug("Es wurde bisher kein Nutzer gesucht.");
+            return null;
         }
     }
     
@@ -98,8 +117,17 @@ public class UserDataBusiness {
      * Die eigentliche Suche
      * @param id zu suchende ID
      */
-    private void search(int id)
-    {
-        this.user = new Users();
+    private Users search(int id)
+    {         
+        if(id>-1)
+        {
+            this.user = provider.findById(id);
+        }
+        else
+        {
+            this.user = new Users();
+        }
+        
+        return this.user;
     }
 }
