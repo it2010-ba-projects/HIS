@@ -90,7 +90,7 @@ public class BaseProvider<T> implements ICrud<T> {
 
     @Override
     public Collection<T> findAll() {
-        return findCollectionByQueryName("findById");
+        return findCollectionByQueryName("findAll");
     }
     
     protected Collection<T> findCollectionByQueryName(String queryName) {
