@@ -29,6 +29,12 @@ import his.ui.controls.HardwareSearch;
 import his.ui.controls.UserData;
 import his.ui.controls.UserResult;
 import his.ui.controls.UserSearch;
+import his.ui.events.CategoriesSearchEvent;
+import his.ui.events.CategoriesSearchListener;
+import his.ui.events.CategoriesResultShowEvent;
+import his.ui.events.CategoriesResultShowListener;
+import his.ui.events.CreateCategoriesEvent;
+import his.ui.events.CreateCategoriesListener;
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
 
@@ -51,6 +57,19 @@ public class MainForm extends javax.swing.JFrame {
     
     public MainForm() {
         initComponents();
+        categorySearch.addCategoriesSearchListener(new CategoriesSearchListener() {
+            @Override
+            public void categoriesSearchPerfomed(CategoriesSearchEvent evt) {
+                categoryResult.setCatResultBusiness(categorySearch.getCatResultBusiness());
+            }
+        });
+        
+        categoryResult.addCategoriesResultShowListener(new CategoriesResultShowListener() {
+            @Override
+            public void categoriesResultShowPerfomed(CategoriesResultShowEvent evt) {
+                categoryData.setSelectedCategory(categoryResult.getSelectedCategory());
+            }
+        });
     }
 
     /** This method is called from within the constructor to
@@ -83,11 +102,6 @@ public class MainForm extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
-            }
-        });
 
         javax.swing.GroupLayout panelStatusLayout = new javax.swing.GroupLayout(panelStatus);
         panelStatus.setLayout(panelStatusLayout);
@@ -309,14 +323,7 @@ public class MainForm extends javax.swing.JFrame {
         addComponentToPanel(panelSearch, childs[0]);
         addComponentToPanel(panelData, childs[1]);
         addComponentToPanel(panelResults, childs[2]);
-    }
-    
-    
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-       
-        
-                
-    }//GEN-LAST:event_formWindowOpened
+    }     
     
     /*Je nach Verwaltungsbereich wird das entsprechende Fenster zur Eingabe eines neuen 
       Datensatzes geöffnet*/
@@ -327,10 +334,19 @@ public class MainForm extends javax.swing.JFrame {
              newH.setVisible(true);}
         else if (userSearch.isShowing()){
              NewUser newU = new NewUser(this,true);
-             newU.setVisible(true);}
+             newU.setVisible(true);
+        }
         else if (categorySearch.isShowing()){
-             NewCategory newC = new NewCategory(this,true);
-             newC.setVisible(true);
+             NewCategory newC = new NewCategory(this,true, categoryData.getExpandedRows());             
+             newC.addCategoriesSearchListener(new CreateCategoriesListener() {
+                @Override
+                public void createCategoriesPerfomed(CreateCategoriesEvent evt) {
+                    categoryData.refreshTree();
+                    categoryData.setExpandedRows(evt.getExpandedRowsList());
+                }
+            });
+            newC.setVisible(true);
+             
         }else{
              HIS.getLogger().debug("Fehler beim Öffnen des 'Neu-Fensters'");
         }        
@@ -348,6 +364,7 @@ public class MainForm extends javax.swing.JFrame {
 
     private void menuItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCategoriesActionPerformed
         // KategoriePanel anzeigen:
+        categoryData.setEditDeleteVisible(true);
         loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
     }//GEN-LAST:event_menuItemCategoriesActionPerformed
 
@@ -414,4 +431,5 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JSeparator seperaterStatus;
     private javax.swing.JTextField txtSearchAttribute;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -19,83 +19,187 @@
  */
 package his.business;
 
+import his.HIS;
 import his.model.Categories;
+import his.model.providers.CategoriesProvider;
+import java.util.Collection;
+import java.util.Enumeration;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 /**
  * Die Klasse stellt Business-Objekte fuer {@link Categories} bereit.
  * @author Thomas Schulze
  */
 public class CategoryDataBusiness {
-    private Categories category;
+    public static final String CATEGORY_ROOT_TEXT = "Kategorien";
+    private Collection<Categories> categories;
+    private TreeModel model;
+    private DefaultMutableTreeNode root;
+    private Categories searchedCategory;
+    private CategoriesProvider provider;
 
     /**
-     * {@link Categories} 
+     * {@link Categories} als {@link Collection}
      * @return die gesuchte {@link Categories}
      */
-    public Categories getCategory() {
-        return category;
+    public Collection<Categories> getCategories() {       
+        return categories;
     }
     
     /**
-     * Initialisiert das Objekt mit einer gesuchten {@link Categories}
-     * @param id zu suchende id
+     * @return the searchedCategory
      */
-    public CategoryDataBusiness(int id)
-    {
-        search(id);        
+    public Categories getSearchedCategory() {
+        return searchedCategory;
     }
     
     /**
-     * Initalisiert das Objekt mit einer leeren {@link Categories}
+     * Erstellt eine TreeNode mit allen Kategorien
      */
     public CategoryDataBusiness()
     {
-        this.category = new Categories();
+        createCategoriesTree();
     }
     
     /**
-     * Sucht {@link Categories} mit der angegebenen id.
-     * @param id zu suchende id
-     * @return gefundene {@link Categories} bzw null, wenn nicht gefunden
+     * Erstellt einen TreeNode mit allen Kategorien und 
+     * hinterlegt die zu selektierende Node
+     * @param cat zu selektierende Node
      */
-    public Categories newSearch(int id)
+    public CategoryDataBusiness(Categories cat) 
     {
-        search(id);
-        return getCategory();
+        this();
+        searchedCategory = cat;
     }
-    
-    public boolean saveCategoryData()
-    {
-        //TODO: implementieren
-        return true;
-    }
-    
+        
     /**
-     * Fuehrt die letzte Suche erneut aus.
-     * @throws Exception Wenn bisher keine Suche auf diesem Objekt ausgefuehrt wurde
+     * Erneuert das BusinessObjekt (ohne Speicherung)
+     * @param node MUSS die Root-Node sein
      */
-    public void refresh()
-            throws Exception
+    public void refreshDataObjectTree(DefaultMutableTreeNode node)
     {
-        if(category!=null)
+        DefaultMutableTreeNode dummy;
+        if(node.getUserObject().equals(CATEGORY_ROOT_TEXT))
         {
-           search(this.getCategory().getId());
+            //delete every parent Categorie_parent from rootNode-Childs
+            for(Enumeration e = node.children(); e.hasMoreElements();)
+            {
+                dummy = (DefaultMutableTreeNode)e.nextElement();
+                ((Categories)dummy.getUserObject()).setCategory(null);
+                //update every child
+                for(Enumeration en = dummy.children();en.hasMoreElements();)
+                {
+                    refreshNode((DefaultMutableTreeNode)en.nextElement());
+                }
+            }
+            root = node;
         }
         else
         {
-            throw new Exception("Kein Element vorhanden");
+            HIS.getLogger().info("Aenderungen konnten nicht gespeichert werden, da nicht root-Node uebergeben wurde");
+        }
+    }
+
+    private void refreshNode(DefaultMutableTreeNode node) 
+    {
+        //add node to parent
+        ((Categories)node.getUserObject())
+                    .setCategory(
+                    ((Categories)
+                        ((DefaultMutableTreeNode)node.getParent())
+                        .getUserObject()
+                    )                    
+                );
+        //update every child
+        for(Enumeration e = node.children();e.hasMoreElements();)
+        {
+            refreshNode((DefaultMutableTreeNode)e.nextElement());
+        }        
+    }
+    
+    /**
+     * speichert alle Aenderungen des Trees in die Datenbank
+     * liefert nur andere Ergebnisse, wenn vorher {@link CategoryDataBusiness#refreshDataObjectTree(javax.swing.tree.DefaultMutableTreeNode) }
+     * ausgefuehrt wurde
+     */
+    public void saveChangesFromTree()
+    {        
+        for(Categories cat: categories)
+        {
+             provider.update(cat);  
         }
     }
     
     /**
-     * Die eigentliche Suche.
-     * Setzt gefundene {@link Categories} auf this.category
-     * @param id zu suchende ID
+     * Gibt den erstellten TreeNode zurueck
+     * @return TreeNode mit allen TreeNodes
      */
-    private void search(int id)
+    public TreeModel getCategoriesTree()
     {
-        //TODO: suche
+        if(model!=null)
+        {
+            return model;
+        }
+        else
+        {
+            HIS.getLogger().info("Tree abgefragt, obwohl keiner erstellt");
+            return null;
+        }        
+    }
+    
+    /**
+     * Erstellt einen TreeNode mit allen vorhandenen {@link Categories}
+     * @return Den erstellten Tree mit allen Kategorien
+     */
+    public final TreeModel createCategoriesTree()
+    {   
+        provider = new CategoriesProvider();
+        categories = provider.findAll();
+        root = new DefaultMutableTreeNode(CATEGORY_ROOT_TEXT);       
+        model = new DefaultTreeModel(root);        
+        //fuer alle Kategorien in der Collection
+        for(Categories cat: categories)
+        {            
+            //wenn der parent == null
+            if(cat.getCategory() == null)
+            {
+                //neue TreeNode erstellen und Kategorie als Inhalt hinzufuegen
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(cat);
+                //zu root hinzufuegen                
+                root.add(node);                
+                
+                //fuer alle Child-Kategorien childNodes hinzufuegen
+                for(Categories childCat : categories)
+                {         
+                    if(childCat.getCategory() != null && childCat.getCategory().equals(cat))                        
+                        createNodes(node,childCat);
+                }                
+            }
+        }  
+        return model;
+    }    
+    
+    private void createNodes(DefaultMutableTreeNode parent,Categories category)
+    {
+        //alle Child-Kategorien zu parent hinzufuegen
+        DefaultMutableTreeNode child = new DefaultMutableTreeNode(category); 
+        parent.add(child);
         
-        this.category = new Categories();
+        //fuer alle childs
+        for(Categories cat: categories)
+        {
+            if(cat.getCategory()!=null &&cat.getCategory().equals(category))
+            {
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(cat);    
+                child.add(node);
+                for(Categories catChild : categories)
+                {
+                    if(catChild.getCategory() != null && catChild.getCategory().equals(cat))
+                        createNodes(node,catChild);
+                }
+            }
+        }
     }
 }

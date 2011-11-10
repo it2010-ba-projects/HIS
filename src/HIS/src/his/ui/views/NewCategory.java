@@ -1,25 +1,77 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+    Copyright 2011 Silvio Wehner, Franziska Staake, Thomas Schulze
+  
+    This file is part of HIS.
 
-/*
- * NewCatagory.java
- *
- * Created on 25.10.2011, 19:15:19
+    HIS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    HIS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with HIS.  If not, see <http://www.gnu.org/licenses/>.
+ 
  */
 package his.ui.views;
 
+import his.model.Categories;
+import his.model.providers.CategoriesProvider;
+import his.ui.events.CreateCategoriesEvent;
+import his.ui.events.CreateCategoriesListener;
+import java.util.Collection;
+import javax.swing.JOptionPane;
+
 /**
  *
- * @author Satzu
+ * @author Satzu, Thomas Schulze
  */
 public class NewCategory extends javax.swing.JDialog {
-
+ private Boolean doRefresh;
+    
     /** Creates new form NewCatagory */
     public NewCategory(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        catData.setEditable(false);
+        catData.setEditDeleteVisible(false);
+    }
+    
+    public NewCategory(java.awt.Frame parent, boolean modal, Collection<Integer> expandedList)
+    {
+        this(parent, modal);
+        catData.setExpandedRows(expandedList);
+    }
+
+    public Collection<Integer> getExpandedRows()
+    {
+        return catData.getExpandedRows();
+    }
+    
+    protected javax.swing.event.EventListenerList createCategoriesListenerList =
+        new javax.swing.event.EventListenerList();
+
+    public void addCategoriesSearchListener(CreateCategoriesListener listener) {
+        createCategoriesListenerList.add(CreateCategoriesListener.class, listener);
+    }
+
+    public void removeCategoriesSearchListener(CreateCategoriesListener listener) {
+        createCategoriesListenerList.remove(CreateCategoriesListener.class, listener);
+    }
+
+    void fireCategoriesSearch(CreateCategoriesEvent evt) {
+        Object[] listeners = createCategoriesListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==CreateCategoriesListener.class) {
+                ((CreateCategoriesListener)listeners[i+1]).createCategoriesPerfomed(evt);
+            }
+        }
     }
 
     /** This method is called from within the constructor to
@@ -34,11 +86,10 @@ public class NewCategory extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         txtCategoryName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        treeCatagoryPosition = new javax.swing.JTree();
         btnCreate = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
+        catData = new his.ui.controls.CategoryData();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setAlwaysOnTop(true);
@@ -50,9 +101,12 @@ public class NewCategory extends javax.swing.JDialog {
 
         jLabel2.setText("Position im Kategoriebaum");
 
-        jScrollPane1.setViewportView(treeCatagoryPosition);
-
         btnCreate.setText("Erstellen");
+        btnCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateActionPerformed(evt);
+            }
+        });
 
         btnCancel.setText("Abbrechen");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -66,35 +120,39 @@ public class NewCategory extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                    .addComponent(txtCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap())
-            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(226, Short.MAX_VALUE)
-                .addComponent(btnCreate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCancel)
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnCreate)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCancel))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(catData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
+                .addGap(1, 1, 1)
+                .addComponent(catData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancel)
                     .addComponent(btnCreate))
@@ -106,9 +164,53 @@ public class NewCategory extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // Fenster schließen
-        this.setVisible(false);
+       fireCategoriesSearch(new CreateCategoriesEvent(this, getExpandedRows()));
+        this.setVisible(false);  
     }//GEN-LAST:event_btnCancelActionPerformed
 
+    private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        if(txtCategoryName.getText().equals(""))
+        {
+            JOptionPane.showMessageDialog(this, "Es muss ein Name eingegeben werden");
+            return;
+        }
+        Collection<Integer> expanding;
+        Categories cat = new Categories();
+        Categories parent = catData.getSelectedCategory();
+        CategoriesProvider cProv = new CategoriesProvider();        
+        
+        cat.setName(txtCategoryName.getText());   
+        
+        if(parent != null)
+        {
+            cat.setCategory(parent);
+        }
+        
+        cProv.create(cat);
+        expanding = catData.getExpandedRows();
+        catData.setEditable(true);
+        catData.refreshTree();
+        catData.setEditable(false);
+        
+        catData.setExpandedRows(expanding);
+        
+        doRefresh = true;
+    }//GEN-LAST:event_btnCreateActionPerformed
+
+    public Boolean getDoRefresh()
+    {
+        if(doRefresh == null)
+        {
+            return false;
+        }
+        return doRefresh.booleanValue();
+    }
+    
+    public void resetDoRefresh()
+    {
+        doRefresh = null;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -148,6 +250,7 @@ public class NewCategory extends javax.swing.JDialog {
                         System.exit(0);
                     }
                 });
+                
                 dialog.setVisible(true);
             }
         });
@@ -155,11 +258,10 @@ public class NewCategory extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnCreate;
+    private his.ui.controls.CategoryData catData;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTree treeCatagoryPosition;
     private javax.swing.JTextField txtCategoryName;
     // End of variables declaration//GEN-END:variables
 }
