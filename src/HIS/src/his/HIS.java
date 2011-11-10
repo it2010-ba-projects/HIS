@@ -80,11 +80,20 @@ public class HIS {
             java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        logger.debug("Starte MainForm");
+        logger.debug("login");
         
-        MainForm main = new MainForm(); 
-        LoginView login = new LoginView(main, true);
-        login.setVisible(true);
+        //
+        for(int i = 1; i<=10; i++){            
+            LoginView login = new LoginView(null, true);     
+            login.setVisible(true);       
+        
+            if(login.isSucceeded()){
+                HIS.currentUser = login.getUser();
+                MainForm main = new MainForm();
+                main.setVisible(true);
+                break;
+            }
+        }
         
     }
 }

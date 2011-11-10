@@ -19,16 +19,27 @@
  */
 package his.ui.views;
 
+import his.HIS;
+import his.model.Users;
+import his.model.providers.UsersProvider;
+
 /**
  *
  * @author Franziska Staake
  */
 public class LoginView extends javax.swing.JDialog {
 
+    private Users user;
+    private boolean succeeded;
     /** Creates new form LoginView */
     public LoginView(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+    }
+    
+     public LoginView(java.awt.Frame parent, boolean modal, Users user) {
+        this(parent, modal);
+        this.user = user;
     }
 
     /** This method is called from within the constructor to
@@ -116,19 +127,25 @@ public class LoginView extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        
         this.setVisible(false);        
         System.exit(0);
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // TODO Benutzeranmeldedaten überprüfen: 
-        MainForm mainForm = new MainForm();
-        //mainForm.setState(mainForm.NORMAL);
+        //Systemanmeldung        
+        UsersProvider uProvider = new UsersProvider();
+        
+        if((user = uProvider.findByLogin(txtUserName.getText())) != null 
+                && user.isValid(txtUserPassword.getText())){            
+            succeeded = true;
+        }else{
+             txtUserName.setText("");
+             txtUserPassword.setText("");
+            succeeded = false;
+            HIS.getLogger().debug("Falsches PW oder Username");
+        }
               
-        this.setVisible(false);
-        mainForm.setExtendedState(mainForm.getExtendedState());
-        mainForm.setVisible(true);
+        this.setVisible(false);        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     /**
@@ -183,4 +200,18 @@ public class LoginView extends javax.swing.JDialog {
     private javax.swing.JTextField txtUserName;
     private javax.swing.JTextField txtUserPassword;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the user
+     */
+    public Users getUser() {
+        return user;
+    }
+
+    /**
+     * @return the succeeded
+     */
+    public boolean isSucceeded() {
+        return succeeded;
+    }
 }

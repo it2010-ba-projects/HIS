@@ -21,7 +21,10 @@ package his.business;
 
 import his.model.Groups;
 import his.model.Users;
+import his.model.providers.UsersProvider;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Stellt die Business-Klasse fuer UserResult dar.
@@ -35,6 +38,7 @@ public class UserResultBusiness {
     private String lastSearchLastName;
     private String lastSearchLogin;
     private Collection<Groups> lastSearchGroups;
+    private UsersProvider provider;
     
     /**
      * Gibt gesuchten {@link Users} zurueck
@@ -53,6 +57,9 @@ public class UserResultBusiness {
         return new UserDataBusiness(id);
     }
     
+    public UserDataBusiness getUserDataBusiness(Users user){        
+        return new UserDataBusiness(user);
+    }
     /**
      * Gibt ein {@link UserDataBusiness}-Objekt mit leeren {@link Users} zurueck
      * @return {@link UserDataBusiness}-Objekt mit leeren {@link Users} 
@@ -76,37 +83,85 @@ public class UserResultBusiness {
             String lastName,
             String login,
             Collection<Groups> groups)
-    {
-        lastSearchFirstName = firstName;
-        lastSearchLastName = lastName;
-        lastSearchGroups = groups;
-        //TODO: implementieren
+    {        
+        boolean dummyFound = false;
+        provider = new UsersProvider();        
+        lastSearchFirstName = firstName==null?"":firstName;
+        lastSearchLastName = lastName==null?"":lastName;
+        lastSearchLogin = login==null?"":login;
+        lastSearchGroups = groups==null?new ArrayList<Groups>():groups;
+        users = new ArrayList<>();
         
-        
-        if(!firstName.equals(""))
+        //Vorname
+        if(!lastSearchFirstName.equals(""))
         {
-            ;
+            users = provider.findByFirstName(lastSearchFirstName);
         }
         
-        if(!lastName.equals(""))
+        //Nachname
+        if(!lastSearchLastName.equals(""))
         {
-            ;
+            //wenn schon user gesucht wurden
+            if(users.size()>0)
+            {
+                Iterator it = users.iterator();
+                while(it.hasNext())
+                {
+                    Users u = (Users)it.next();
+                    if(!u.getLastName().contains(lastSearchLastName))
+                        it.remove();
+                }
+            }
+            else
+            {
+                users = provider.findByLastName(lastSearchLastName);
+            }
         }
         
-        if(!login.equals(""))
+        //Login
+        if(!lastSearchLogin.equals(""))
         {
-            ;
+           //wenn schon user gesucht wurden
+            if(users.size()>0)
+            {
+                Iterator it = users.iterator();
+                while(it.hasNext())
+                {
+                    Users u = (Users)it.next();
+                    if(!u.getLastName().contains(lastSearchLogin))
+                        it.remove();
+                }
+            }
+            else
+            {   
+                users.add(provider.findByLogin(lastSearchLogin));                
+            }
         }
         
-        if(groups.size() >0)
+        //Gruppen
+        if(lastSearchGroups.size() >0)
         {
-            ;
-        }
+            //wenn schon user gesucht wurden
+            if(users.size()>0)
+            {
+                Iterator it = users.iterator();
+                while(it.hasNext())
+                {
+                    Users u = (Users)it.next();
+                    for(Groups group: lastSearchGroups)
+                    {
+                    if(!u.getGroupsCollection().contains((group)))
+                            dummyFound = true;
+                    }
+                    if(!dummyFound)
+                        it.remove();
+                    
+                    dummyFound = false;
+                }
+            }
+        }        
         
-        //TODO: suche
-        //TODO: in users einfuegen        
-        
-        return getUsers();
+        return users;
     }
     
     /**
@@ -118,11 +173,6 @@ public class UserResultBusiness {
     public Collection<Users> refreshSearch()
             throws Exception
     {
-        if(lastSearchFirstName == null)
-        { 
-            throw new Exception("Es wurde bisher keine Suche ausgeführt"); 
-        }
-        
         return searchUsers(lastSearchFirstName,lastSearchLastName,lastSearchLogin,lastSearchGroups);
     }
 }
