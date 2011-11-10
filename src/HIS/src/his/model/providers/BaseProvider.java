@@ -167,8 +167,7 @@ public class BaseProvider<T> implements ICrud<T> {
         }
         catch(IOException e)
         {
-            //TODO: Log Exception
-            System.out.println(e.getStackTrace());
+            logger.error(e);
         }
         // Datenbankverbindung
         properties.put(PersistenceUnitProperties.JDBC_URL, url);
