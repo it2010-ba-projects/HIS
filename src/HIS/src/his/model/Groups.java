@@ -125,7 +125,7 @@ public class Groups implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Groups[ id=" + id + " ]";
+        return name;
     }
     
 }

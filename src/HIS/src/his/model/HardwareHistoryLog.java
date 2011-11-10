@@ -120,7 +120,7 @@ public class HardwareHistoryLog implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.HardwareHistoryLog[ id=" + id + " ]";
+        return entry;
     }
     
 }

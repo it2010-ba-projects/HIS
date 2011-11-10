@@ -254,7 +254,7 @@ public class Hardware implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Hardware[ id=" + id + " ]";
+        return name;
     }
     
 }

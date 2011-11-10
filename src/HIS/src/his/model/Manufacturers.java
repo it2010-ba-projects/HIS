@@ -123,7 +123,7 @@ public class Manufacturers implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Manufacturers[ id=" + id + " ]";
+        return name;
     }
     
 }

@@ -120,7 +120,7 @@ public class UserHistory implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.UserHistory[ id=" + id + " ]";
+        return entry;
     }
     
 }

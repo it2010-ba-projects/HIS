@@ -152,7 +152,7 @@ public class Categories implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Categories[ id=" + id + " ]";
+        return name;
     }
     
 }

@@ -204,7 +204,7 @@ public class Users implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Users[ id=" + id + " ]";
+        return lastName + ", " + firstName;
     }
     
 }

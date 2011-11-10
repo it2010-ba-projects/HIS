@@ -120,7 +120,7 @@ public class Owners implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Owners[ id=" + id + " ]";
+        return name;
     }
     
 }

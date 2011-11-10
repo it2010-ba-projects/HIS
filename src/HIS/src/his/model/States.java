@@ -122,7 +122,7 @@ public class States implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.States[ id=" + id + " ]";
+        return name;
     }
     
 }

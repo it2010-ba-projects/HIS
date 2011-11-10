@@ -123,7 +123,7 @@ public class Places implements Serializable {
 
     @Override
     public String toString() {
-        return "his.model.Places[ id=" + id + " ]";
+        return name;
     }
     
 }
