@@ -20,7 +20,12 @@
 package his.business;
 
 import his.model.Hardware;
+import his.model.providers.HardwareProvider;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Stellt die Business-Klasse fuer HardwareResult dar.
@@ -30,14 +35,14 @@ import java.util.Collection;
  */
 public class HardwareResultBusiness {
     private Collection<Hardware> hardwares;
-    private String lastSearchinventarNumber;
-    private String lastSearchmanufacturer;
-    private String lastSearchowner;
-    private String lastSearchstate;
-    private String lastSearchbuildIn;
-    private String lastSearchplace;
-    private String lastSearchtimeSpan;
-
+    private String lastSearchInventoryNumber;
+    private String lastSearchManufacturer;
+    private String lastSearchOwner;
+    private String lastSearchState;
+    private String lastSearchBuildIn;
+    private String lastSearchPlace;
+    private Date lastSearchWarrenty;
+    private HardwareProvider provider;
     /**
      * Gibt eine {@link Collection} der gefundenen {@link Hardware} zurueck
      * @return the {@link Hardware}
@@ -57,6 +62,11 @@ public class HardwareResultBusiness {
         return new HardwareDataBusiness(id);
     }
     
+    public HardwareDataBusiness getHardwareDataBusiness(Hardware hardware)
+    {
+        return new HardwareDataBusiness(hardware);
+    }
+    
     /**
      * Gibt ein {@link HardwareDataBusiness}-Objekt mit leerer {@link Hardware} zurueck
      * @return {@link HardwareDataBusiness}-Objekt mit leerer {@link Hardware}
@@ -70,96 +80,176 @@ public class HardwareResultBusiness {
      * Sucht anhand der Parameter {@link Hardware}
      * Sollten einzelne Parameter nicht benoetigt werden,
      * muessen diese als leerer {@link String}/{@link Collection} uebergeben werden
-     * @param inventarNumber Inventarnummer
+     * @param inventoryNumber Inventarnummer
      * @param manufacturer Hersteller
      * @param owner Besitzer
      * @param state Status
      * @param buildIn Gehoert zu
      * @param place Ort
-     * @param timeSpan Garantieraum
+     * @param warrenty Garantieraum
      * @return Suchergebnis in Form einer {@link Collection} mit {@link Hardware}
      */
     public Collection<Hardware> searchHardware(
-            String inventarNumber,
+            String inventoryNumber,
             String manufacturer,
             String owner,
             String state,
             String buildIn,
             String place,
-            String timeSpan)
+            Date warrenty)
     {
+        provider = new HardwareProvider();
+        hardwares = new ArrayList<>();
+        lastSearchInventoryNumber = inventoryNumber==null?"":inventoryNumber;
+        lastSearchManufacturer = manufacturer==null?"":manufacturer;
+        lastSearchOwner = owner==null?"":owner;
+        lastSearchState = state==null?"":state;
+        lastSearchBuildIn = buildIn==null?"":buildIn;
+        lastSearchPlace = place==null?"":place;
+        lastSearchWarrenty = warrenty==null?new Date():warrenty;     
         
-        lastSearchinventarNumber = inventarNumber;
-        lastSearchmanufacturer = manufacturer;
-        lastSearchowner = owner;
-        lastSearchstate = state;
-        lastSearchbuildIn = buildIn;
-        lastSearchplace = place;
-        lastSearchtimeSpan = timeSpan;
-        
-        if(!inventarNumber.equals(""))
+        if(!lastSearchInventoryNumber.equals(""))
         {
-            ;
+            hardwares.add(provider.findById(inventoryNumber));
         }
         
-        if(!manufacturer.equals(""))
+        if(!lastSearchManufacturer.equals(""))
         {
-            ;
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getManufacturer().getName().contains(lastSearchManufacturer))
+                        it.remove();
+                }
+            }
+            else
+            {
+                hardwares = provider.findByManufacturer(lastSearchManufacturer);
+            }
         }
         
-        if(!owner.equals(""))
+        if(!lastSearchOwner.equals(""))
         {
-            ;
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getOwner().getName().contains(lastSearchOwner))
+                        it.remove();
+                }
+            }
+            else
+            {
+                 hardwares = provider.findByOwner(lastSearchOwner);
+            }
         }
         
-        if(!state.equals(""))
+        if(!lastSearchState.equals(""))
         {
-            ;
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getState().getName().contains(lastSearchState))
+                        it.remove();
+                }
+            }
+            else
+            {
+                hardwares = provider.findByState(lastSearchState);
+            }
         }
         
-        if(!buildIn.equals(""))
+        if(!lastSearchBuildIn.equals(""))
         {
-            ;
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getHardware().getName().contains(lastSearchBuildIn))
+                        it.remove();
+                }                
+            }
+            else
+            {
+                 hardwares = new ArrayList<>();
+                 for(Hardware h: provider.findByName(lastSearchBuildIn))
+                 {
+                     if(h.getHardwareCollection().contains(h))
+                         hardwares.add(h);
+                 }
+            }
         }
         
-        if(!place.equals(""))
+        if(!lastSearchPlace.equals(""))
         {
-            ;
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getHardware().getPlace().getName().contains(lastSearchPlace))
+                        it.remove();
+                } 
+            }
+            else
+            {
+                hardwares = provider.findByPlace(lastSearchPlace);
+            }
         }
         
-        if(!timeSpan.equals(""))
-        {
-            ;
-        }
-        
-        //TODO: suchen
-        //TODO: Ergebnis in hardwares eintragen
-        
-        return getHardwares();
+        if(!lastSearchWarrenty.before(Calendar.getInstance().getTime()))
+        {            
+            if(hardwares.size()>0)
+            {
+                Iterator it = hardwares.iterator();
+                
+                while(it.hasNext())
+                {
+                    Hardware h = (Hardware)it.next();
+                    if(!h.getHardware().getWarrantyEnd().equals(lastSearchWarrenty))
+                        it.remove();
+                } 
+            }
+            else
+            {
+                hardwares = provider.findByWarrantyEnd(lastSearchWarrenty);
+            }
+        }        
+        return hardwares;
     }
     
     /**
      * Fuehrt die letzte Suche nochmal aus.
-     * Wirft einen Fehler, wenn vorher keine Suche ausgefuehrt wurde.
+     * Gibt null zurueck, wenn vorher keine Suche ausgefuehrt wurde.
      * @return {@link Collection} mit gefundener {@link Hardware}
      * @throws Exception keine Suche vorher ausgefuehrt 
      */
     public Collection<Hardware> refreshSearch()
-            throws Exception
-    {
-        if(lastSearchinventarNumber == null)
-        { 
-            throw new Exception("Es wurde bisher keine Suche ausgeführt"); 
-        }
-        
+    {        
         return searchHardware(
-             lastSearchinventarNumber,
-             lastSearchmanufacturer,
-             lastSearchowner,
-             lastSearchstate,
-             lastSearchbuildIn,
-             lastSearchplace,
-             lastSearchtimeSpan);
+             lastSearchInventoryNumber,
+             lastSearchManufacturer,
+             lastSearchOwner,
+             lastSearchState,
+             lastSearchBuildIn,
+             lastSearchPlace,
+             lastSearchWarrenty);
     }
     
 }

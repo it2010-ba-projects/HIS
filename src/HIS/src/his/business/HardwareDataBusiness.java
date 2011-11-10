@@ -19,7 +19,9 @@
  */
 package his.business;
 
+import his.HIS;
 import his.model.Hardware;
+import his.model.providers.HardwareProvider;
 
 /**
  * Stellt die Informationen fuer alle {@link Hardware}-Daten bereit
@@ -27,6 +29,7 @@ import his.model.Hardware;
  */
 public class HardwareDataBusiness {
     private Hardware hardware;
+    private HardwareProvider provider;
 
     /**
      * Gibt die gesuchte {@link Hardware} zurueck bzw null, wenn keine gefunden
@@ -41,7 +44,17 @@ public class HardwareDataBusiness {
      * @param id zu suchende ID
      */
     public HardwareDataBusiness(int id) {
+        provider = new HardwareProvider();
         search(id);
+    }
+    
+    /**
+     * Initialisiert das Objekt mit einer {@link Hardware}
+     * @param hardware zu suchende hardware
+     */
+    public HardwareDataBusiness(Hardware hardware)
+    {
+        this(hardware.getId());
     }
    
     /**
@@ -49,7 +62,7 @@ public class HardwareDataBusiness {
      */
     public HardwareDataBusiness()
     {
-        this.hardware = new Hardware();
+        this(-1);
     }
     
     /**
@@ -65,28 +78,26 @@ public class HardwareDataBusiness {
     
     /**
      * Speichert alle geaenderten Daten der {@link Hardware}
-     * @return true, wenn Speichern erfolgreich, sonst false
      */
-    public boolean saveHardwareData()
+    public void saveHardwareData()
     {
-        //TODO: implementieren
-        return true;
+        provider.update(hardware);
     }
     
     /**
      * Fuehrt die letzte Suche erneut aus
-     * @throws Exception Wenn noch keine Daten vorhanden
      */
-    public void refresh()
-            throws Exception
+    public Hardware refresh()
     {
         if(getHardware() != null)
         {
-            search(this.getHardware().getId());        
+            return search(this.getHardware().getId());        
         }
         else
         {
-            throw new Exception("Keine Daten vorhanden");
+            HIS.getLogger().info("Keine Hardware vorhanden");
+            HIS.getLogger().debug("Es wurde bisher keine Hardware gesucht.");
+            return null;
         }
     }
     
@@ -94,8 +105,17 @@ public class HardwareDataBusiness {
      * Die eigentliche Suche
      * @param id zu suchende ID
      */
-    private void search(int id)
+    private Hardware search(int id)
     {
-        this.hardware = new Hardware();
+        if(id>-1)
+        {
+            this.hardware = provider.findById(id);
+        }
+        else
+        {
+            this.hardware = new Hardware();
+        }
+        
+        return hardware;
     }
 }
