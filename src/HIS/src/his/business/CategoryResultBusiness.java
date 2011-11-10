@@ -19,7 +19,9 @@
  */
 package his.business;
 
+import his.HIS;
 import his.model.Categories;
+import his.model.providers.CategoriesProvider;
 import java.util.Collection;
 
 /**
@@ -31,7 +33,7 @@ import java.util.Collection;
 public class CategoryResultBusiness {
     private Collection<Categories> categories;
     private String lastSearchName;
-
+    private CategoriesProvider provider;
     /**
      * Gibt eine {@link Collection} der gefundenen {@link Categories} zurueck
      * @return {@link Collection} mit {@link Categories}
@@ -40,15 +42,20 @@ public class CategoryResultBusiness {
         return categories;
     }
     
+    public CategoryResultBusiness()
+    {
+        lastSearchName = "";
+    }
+    
     /**
      * Sucht anhand der ID eine {@link Categories} und gibt das dazugehoerige
      * {@link CategoryDataBusiness}-Objekt zurueck
-     * @param id zu suchende ID
+     * @param cat zu suchende {@link Categories}
      * @return {@link CategoryDataBusiness}-Objekt mit dazugehoeriger {@link Categories}
      */
-    public CategoryDataBusiness getCategoryDataBusiness(int id)
+    public CategoryDataBusiness getCategoryDataBusiness(Categories cat)
     {
-        return new CategoryDataBusiness(id);
+        return new CategoryDataBusiness(cat);
     }
     
     /**
@@ -69,17 +76,12 @@ public class CategoryResultBusiness {
      */
     public Collection<Categories> searchCategories(String name)
     {
+        provider = new CategoriesProvider();
         lastSearchName = name;
         
-        if(name.equals(""))
-        {
-            ;
-        }
+        categories = provider.findByName(name.equals("")?"":name);
         
-        //TODO: suche
-        //TODO: in categories einfuegen
-        
-        return getCategories();        
+        return categories;        
     }
     
     /**
@@ -93,7 +95,7 @@ public class CategoryResultBusiness {
     {
         if(lastSearchName == null)
         { 
-            throw new Exception("Es wurde bisher keine Suche ausgeführt"); 
+            HIS.getLogger().info("Unerwartet lastSearch ''");
         }
         
         return searchCategories(lastSearchName);

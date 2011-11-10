@@ -19,17 +19,45 @@
  */
 package his.ui.controls;
 
+import his.business.CategoryResultBusiness;
+import his.model.Categories;
+import his.ui.events.CategoriesResultShowEvent;
+import his.ui.events.CategoriesResultShowListener;
+import javax.swing.DefaultListModel;
+
 /**
  *
- * @author Franziska Staake
+ * @author Franziska Staake, Thomas Schulze
  */
 public class CategoryResult extends javax.swing.JPanel {
-
+    private CategoryResultBusiness catResultBusiness;
+    private Categories selectedCategories;
     /** Creates new form UserResult */
     public CategoryResult() {
         initComponents();
+    }  
+    
+    protected javax.swing.event.EventListenerList resultShowListenerList =
+        new javax.swing.event.EventListenerList();
+
+    public void addCategoriesResultShowListener(CategoriesResultShowListener listener) {
+        resultShowListenerList.add(CategoriesResultShowListener.class, listener);
     }
 
+    public void removeCategoriesResultShowListener(CategoriesResultShowListener listener) {
+        resultShowListenerList.remove(CategoriesResultShowListener.class, listener);
+    }
+
+    void fireCategoriesResultShow(CategoriesResultShowEvent evt) {
+        Object[] listeners = resultShowListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==CategoriesResultShowListener.class) {
+                ((CategoriesResultShowListener)listeners[i+1]).categoriesResultShowPerfomed(evt);
+            }
+        }
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -40,35 +68,14 @@ public class CategoryResult extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tableCategoryResult = new javax.swing.JTable();
+        lstResult = new javax.swing.JList();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+        lstResult.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lstResultMousePressed(evt);
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
-
-        tableCategoryResult.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {},
-                {},
-                {},
-                {}
-            },
-            new String [] {
-
-            }
-        ));
-        jScrollPane2.setViewportView(tableCategoryResult);
+        });
+        jScrollPane1.setViewportView(lstResult);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -76,21 +83,56 @@ public class CategoryResult extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(237, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void lstResultMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstResultMousePressed
+       selectedCategories = (Categories)lstResult.getSelectedValue();
+        fireCategoriesResultShow(new CategoriesResultShowEvent(this));
+    }//GEN-LAST:event_lstResultMousePressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable tableCategoryResult;
+    private javax.swing.JList lstResult;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the catResultBusiness
+     */
+    public CategoryResultBusiness getCatResultBusiness() {
+        return catResultBusiness;
+    }
+
+    /**
+     * @param catResultBusiness the catResultBusiness to set
+     */
+    public void setCatResultBusiness(CategoryResultBusiness catResultBusiness) {
+        this.catResultBusiness = catResultBusiness;
+        showResults();
+    }
+
+    private void showResults() {
+        DefaultListModel model = new DefaultListModel();
+        
+        for(Categories cat: catResultBusiness.getCategories())
+            model.addElement(cat);
+        
+        lstResult.setModel(model);
+    }
+
+    /**
+     * @return the selectedCategories
+     */
+    public Categories getSelectedCategory() {
+        return selectedCategories;
+    }
 }

@@ -19,15 +19,50 @@
  */
 package his.ui.controls;
 
+import his.business.CategoryResultBusiness;
+import his.model.providers.CategoriesProvider;
+import his.ui.events.CategoriesSearchEvent;
+import his.ui.events.CategoriesSearchListener;
+
 /**
  *
  * @author Franziska Staake
  */
 public class CategorySearch extends javax.swing.JPanel {
-
+    private CategoryResultBusiness catResultBusiness;
+    
     /** Creates new form CategorySearch */
     public CategorySearch() {
         initComponents();
+    }
+
+    protected javax.swing.event.EventListenerList searchListenerList =
+        new javax.swing.event.EventListenerList();
+
+    public void addCategoriesSearchListener(CategoriesSearchListener listener) {
+        searchListenerList.add(CategoriesSearchListener.class, listener);
+    }
+
+    public void removeCategoriesSearchListener(CategoriesSearchListener listener) {
+        searchListenerList.remove(CategoriesSearchListener.class, listener);
+    }
+
+    void fireCategoriesSearch(CategoriesSearchEvent evt) {
+        Object[] listeners = searchListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==CategoriesSearchListener.class) {
+                ((CategoriesSearchListener)listeners[i+1]).categoriesSearchPerfomed(evt);
+            }
+        }
+    }
+   
+    /**
+     * @return the catResultBusiness
+     */
+    public CategoryResultBusiness getCatResultBusiness() {
+        return catResultBusiness;
     }
 
     /** This method is called from within the constructor to
@@ -48,6 +83,11 @@ public class CategorySearch extends javax.swing.JPanel {
         jLabel7.setText("Name");
 
         btnSearch.setText("Suchen");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -56,7 +96,7 @@ public class CategorySearch extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCategoryName, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(txtCategoryName, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
                     .addComponent(jLabel7)
                     .addComponent(btnSearch))
                 .addContainerGap())
@@ -70,12 +110,21 @@ public class CategorySearch extends javax.swing.JPanel {
                 .addComponent(txtCategoryName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSearch)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        CategoriesProvider provider = new CategoriesProvider();
+        catResultBusiness = new CategoryResultBusiness();
+        getCatResultBusiness().searchCategories(txtCategoryName.getText());
+        fireCategoriesSearch(new CategoriesSearchEvent(this));
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JTextField txtCategoryName;
     // End of variables declaration//GEN-END:variables
+
 }
