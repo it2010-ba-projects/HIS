@@ -25,6 +25,10 @@ import java.util.EventListener;
  *
  * @author Thomas Schulze
  */
-public interface CategoriesResultShowListener extends EventListener {
-    public void categoriesResultShowPerfomed(CategoriesResultShowEvent evt);     
+
+
+// Declare the listener class. It must extend EventListener.
+// A class must implement this interface to get MyEvents.
+public interface SearchListener extends EventListener {
+    public void categoriesSearchPerfomed(SearchEvent evt);
 }

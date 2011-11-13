@@ -19,15 +19,12 @@
  */
 package his.ui.events;
 
-import java.util.EventObject;
+import java.util.EventListener;
 
 /**
  *
  * @author Thomas Schulze
  */
-
-  public class CategoriesSearchEvent extends EventObject {
-    public CategoriesSearchEvent(Object source) {
-        super(source);
-    }
+public interface ResultShowListener extends EventListener {
+    public void categoriesResultShowPerfomed(ResultShowEvent evt);     
 }

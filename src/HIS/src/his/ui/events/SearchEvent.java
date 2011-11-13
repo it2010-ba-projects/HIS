@@ -25,8 +25,9 @@ import java.util.EventObject;
  *
  * @author Thomas Schulze
  */
-public class CategoriesResultShowEvent extends EventObject  {
-    public CategoriesResultShowEvent(Object source) {
+
+  public class SearchEvent extends EventObject {
+    public SearchEvent(Object source) {
         super(source);
-    }    
+    }
 }

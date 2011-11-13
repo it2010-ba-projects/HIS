@@ -20,15 +20,14 @@
 package his.business.security;
 
 import his.HIS;
-import his.model.Groups;
 import his.model.Users;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Beinhaltet statische Funktionen zur Rechtepruefung fuer 
  * einzelne Benutzer
- * @author Thomas
- * 
+ * @author Thomas Schulze
  */
 public class RightsManager {
     /**
@@ -37,9 +36,10 @@ public class RightsManager {
      * @param group zu pruefende Gruppe
      * @return true, falls Gruppe fuer Nutzer vorhanden
      */    
-    public static boolean isInGroup(Users user, Groups group)
+    public static boolean hasRight(Users user, Rights right)
     {
-        if(user.getGroupsCollection().contains(group))        
+        if(user.getGroupsCollection().contains(right.getGroup())
+                || user.getGroupsCollection().contains(Rights.ADMINISTRATOR.getGroup()))        
             return true;        
         
         return false;
@@ -50,27 +50,35 @@ public class RightsManager {
      * @param group zu Pruefende Gruppe
      * @return true, falls Gruppe vorhanden
      */
-    public static boolean isInGroup(Groups group)
+    public static boolean hasRight(Rights right)
     {
-        return isInGroup(HIS.getCurrentUser(), group);
+        return hasRight(HIS.getCurrentUser(), right);
     }
     
     /**
-     * Gibt alle Rechte fuer den aktuellen Nutzer zurueck
+     * Gibt alle Rechte fuer den Nutzer zurueck
      * @param user Nutzer
      * @return Collection mit NutzerGruppen
      */
-    public static Collection<Groups> getGroups(Users user)
+    public static Collection<Rights> getRights(Users user)
     {
-        return user.getGroupsCollection();
+        Collection<Rights> col = new ArrayList<>();
+        
+        for(Rights r: Rights.values())
+        {
+            if(user.getGroupsCollection().contains(r.getGroup()))
+                col.add(r);
+        }
+        
+        return col;
     }
     
     /**
      * Gibt alle Rechte fuer den aktuellen Nuter zurueck
      * @return Array mit NutzerRechten
      */
-    public static Collection<Groups> getGroups()
+    public static Collection<Rights> getRights()
     {
-        return getGroups(HIS.getCurrentUser());
+        return getRights(HIS.getCurrentUser());
     }
 }

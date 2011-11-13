@@ -19,16 +19,14 @@
  */
 package his.ui.events;
 
-import java.util.EventListener;
+import java.util.EventObject;
 
 /**
  *
  * @author Thomas Schulze
  */
-
-
-// Declare the listener class. It must extend EventListener.
-// A class must implement this interface to get MyEvents.
-public interface CategoriesSearchListener extends EventListener {
-    public void categoriesSearchPerfomed(CategoriesSearchEvent evt);
+public class ResultShowEvent extends EventObject  {
+    public ResultShowEvent(Object source) {
+        super(source);
+    }    
 }
