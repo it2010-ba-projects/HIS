@@ -70,7 +70,7 @@ public class BaseProvider<T> implements ICrud<T> {
     @Override
     public void update(T t) {
         entityManager.getTransaction().begin();
-        entityManager.merge(t);
+        t = entityManager.merge(t);
         entityManager.flush();
         entityManager.getTransaction().commit();
     }
@@ -78,7 +78,7 @@ public class BaseProvider<T> implements ICrud<T> {
     @Override
     public void delete(T t) {
         entityManager.getTransaction().begin();
-        entityManager.merge(t);
+        t = entityManager.merge(t);
         entityManager.remove(t);
         entityManager.getTransaction().commit();
     }

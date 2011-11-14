@@ -27,7 +27,7 @@ import his.model.providers.GroupsProvider;
  * @author Thomas Schulze
  */
 public enum Rights {
-    ADMINISTRATOR("Administrator"),
+    ADMINISTRATOR("Administratoren"),
     PURCHASE("Einkauf"),
     SERVICE("Service"),
     SALES("Verkauf");
