@@ -19,15 +19,21 @@
  */
 package his.ui.controls;
 
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Franziska Staake
  */
 public class UserResult extends javax.swing.JPanel {
 
+    public TableModel model;
     /** Creates new form UserResult */
     public UserResult() {
         initComponents();
+        DefaultTableModel defaultModel = new DefaultTableModel();
+        this.model = defaultModel;       
     }
 
     /** This method is called from within the constructor to

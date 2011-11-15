@@ -19,11 +19,22 @@
  */
 package his.ui.controls;
 
+import his.business.UserDataBusiness;
+import his.model.Groups;
+import his.model.Users;
+import his.model.providers.UsersProvider;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Franziska Staake
  */
 public class UserData extends javax.swing.JPanel {
+    
+    private UserDataBusiness userDataB = new UserDataBusiness();
+    private Users user = userDataB.getUser();
 
     /** Creates new form UserData */
     public UserData() {
@@ -45,27 +56,37 @@ public class UserData extends javax.swing.JPanel {
         txtName = new javax.swing.JTextField();
         btnPasswordReset = new javax.swing.JButton();
         btnChange = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listGroups = new javax.swing.JList();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtCreationDate = new javax.swing.JTextField();
-        jSeparator1 = new javax.swing.JSeparator();
         jLabel5 = new javax.swing.JLabel();
         txtDeletionDate = new javax.swing.JTextField();
         txtAdminName = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         btnDelete = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        listGroups = new javax.swing.JTable();
+        txtUserName = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
 
         jLabel1.setText("Vorname");
 
         jLabel2.setText("Nachname");
 
         btnPasswordReset.setText("Passwort zurücksetzen");
+        btnPasswordReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPasswordResetActionPerformed(evt);
+            }
+        });
 
         btnChange.setText("Ändern");
-
-        jScrollPane1.setViewportView(listGroups);
+        btnChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Gruppen");
 
@@ -82,6 +103,26 @@ public class UserData extends javax.swing.JPanel {
         jLabel6.setText("Bearbeiter");
 
         btnDelete.setText("Löschen");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        listGroups.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(listGroups);
+
+        jLabel7.setText("Benutzername");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -90,20 +131,20 @@ public class UserData extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 649, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(btnPasswordReset, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtFirstName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
-                            .addComponent(jLabel1))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel7)
+                            .addComponent(txtUserName)
+                            .addComponent(txtName)
+                            .addComponent(txtFirstName, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                            .addComponent(btnPasswordReset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(9, 9, 9))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
@@ -120,7 +161,7 @@ public class UserData extends javax.swing.JPanel {
                         .addComponent(btnChange)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,12 +178,16 @@ public class UserData extends javax.swing.JPanel {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                         .addComponent(btnPasswordReset))
-                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+                .addGap(46, 46, 46)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -163,6 +208,51 @@ public class UserData extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        //UserDataBusiness userDataB = new UserDataBusiness();
+        
+        //UsersProvider uProvider = new UsersProvider();
+        user.setDeleted(true);
+        
+        userDataB.saveUserData();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
+        // TODO add your handling code here:
+        int selectedItemsNumber = listGroups.getSelectedRowCount();
+        Collection<Groups> groups = new ArrayList<>();
+        TableModel model = listGroups.getModel();
+        
+        if(!txtFirstName.getText().equals("")
+                && !txtName.getText().equals("")
+                && !txtUserName.getText().equals("")
+                && selectedItemsNumber != 0){
+            
+            user.setFirstName(txtFirstName.getText());
+            user.setLastName(txtName.getText());
+            user.setLogin(txtUserName.getText());
+            
+            int[] selectedItems = listGroups.getSelectedRows();
+            for(int selection : selectedItems){
+                Groups group = (Groups)model.getValueAt(selection, 0);
+                groups.add(group);                    
+            }
+                        
+            user.setGroupsCollection(groups);
+            userDataB.saveUserData();
+         }
+        
+        
+    }//GEN-LAST:event_btnChangeActionPerformed
+
+    private void btnPasswordResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasswordResetActionPerformed
+        // TODO add your handling code here:
+        user.setPassword("p@ssw0rd");
+        userDataB.saveUserData();
+    }//GEN-LAST:event_btnPasswordResetActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChange;
     private javax.swing.JButton btnDelete;
@@ -173,13 +263,15 @@ public class UserData extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JList listGroups;
+    private javax.swing.JTable listGroups;
     private javax.swing.JTextField txtAdminName;
     private javax.swing.JTextField txtCreationDate;
     private javax.swing.JTextField txtDeletionDate;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 }

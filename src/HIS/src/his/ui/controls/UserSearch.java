@@ -19,6 +19,17 @@
  */
 package his.ui.controls;
 
+import his.business.UserResultBusiness;
+import his.model.Groups;
+import his.model.Users;
+import his.model.providers.GroupsProvider;
+import his.model.providers.UsersProvider;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.regex.Pattern;
+import javax.swing.JTable;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author Franziska Staake
@@ -44,16 +55,25 @@ public class UserSearch extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtGroups = new javax.swing.JTextField();
+        txtUserName = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txtGroups = new javax.swing.JTextField();
 
         jLabel1.setText("Vorname");
 
         jLabel2.setText("Nachname");
 
-        jLabel3.setText("Gruppen");
+        jLabel3.setText("Benutzername");
 
         btnSearch.setText("Suchen");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Gruppen");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -67,6 +87,8 @@ public class UserSearch extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(txtFirstName, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
                     .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                    .addComponent(txtUserName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                    .addComponent(jLabel4)
                     .addComponent(txtGroups, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
                     .addComponent(btnSearch))
                 .addContainerGap())
@@ -85,19 +107,84 @@ public class UserSearch extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtGroups, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSearch)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(67, 67, 67))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        
+        //TableModel resultTableModel = userResult.model;
+        Collection<Groups> groupsCol = new ArrayList();
+        
+       
+        
+
+        String[] sArray = txtGroups.getText().split(",| |;|\\.");
+        Groups group;
+        GroupsProvider gProvider = new GroupsProvider();
+        UserResultBusiness urBusiness = new UserResultBusiness();
+ 
+        for(String name : sArray){
+            if(!name.equals("")){              
+                group = gProvider.findByName(name);
+                if(group != null){
+                    groupsCol.add(group);
+                }
+            }
+        }
+        
+        urBusiness.searchUsers(txtFirstName.getText(), txtName.getText(), txtUserName.getText(), groupsCol);            
+        
+        /*
+        if(!txtFirstName.getText().equals("")){
+            for(Users user : (new UsersProvider()).findAll()){
+                if(user.getFirstName().contains(txtFirstName.getText())){
+                    model.addColumn("Gruppen");
+       
+                    for(Groups group : (new GroupsProvider()).findAll()){
+                        model.addRow(new Groups[] {group});                       
+                    }
+        
+                    listGroups.setModel(model);
+                }                       
+            }
+        }else if(!txtGroups.getText().equals("")){            
+            for(Users user : (new UsersProvider()).findAll()){
+                Collection<Groups> groupsCol = user.getGroupsCollection();
+                for(Groups group : groupsCol){
+                    if(group.getName().contains(txtGroups.getText())){
+                        
+                    }
+                }                       
+            }
+        }else if(!txtName.getText().equals("")){
+            for(Users user : (new UsersProvider()).findAll()){
+                if(user.getLastName().contains(txtName.getText())){
+                
+                }                       
+            }
+        }*/
+        
+        
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtGroups;
     private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 }
