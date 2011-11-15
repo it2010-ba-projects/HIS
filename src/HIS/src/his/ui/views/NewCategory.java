@@ -19,6 +19,8 @@
  */
 package his.ui.views;
 
+import his.business.security.Rights;
+import his.business.security.RightsManager;
 import his.model.Categories;
 import his.model.providers.CategoriesProvider;
 import his.ui.events.ComponentChangedEvent;
@@ -39,8 +41,6 @@ public class NewCategory extends javax.swing.JDialog {
     public NewCategory(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();        
-        catData.setEditable(false);
-        catData.setEditDeleteVisible(false);
         txtCategoryName.setText("");
         catData.addComponentChangedListener(new ComponentChangedListener() {
 
@@ -179,62 +179,49 @@ public class NewCategory extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-        Collection<Integer> expanding;
-        Categories cat;
-        Categories parent;
-        CategoriesProvider cProv = new CategoriesProvider(); 
-        
-        if(txtCategoryName.getText().equals(""))
+        if(RightsManager.hasRight(Rights.PURCHASE))
         {
-            JOptionPane.showMessageDialog(this, "Es muss ein Name eingegeben werden!");
-            return;
-        }
-        
-        for(Categories cats: cProv.findByName(txtCategoryName.getText()))
-        {
-            if(cats.getName().equals(txtCategoryName.getText()))
+            Collection<Integer> expanding;
+            Categories cat;
+            Categories parent;
+            CategoriesProvider cProv = new CategoriesProvider(); 
+
+            if(txtCategoryName.getText().equals(""))
             {
-                JOptionPane.showMessageDialog(this, "Die Kategorie ist schon vorhanden!");
-                txtCategoryName.setText("");
+                JOptionPane.showMessageDialog(this, "Es muss ein Name eingegeben werden!");
                 return;
             }
-        }
-        
-        parent = catData.getSelectedCategory();
-        cat = new Categories();
-        cat.setName(txtCategoryName.getText());   
-        
-        if(parent != null)
-        {
-            cat.setCategory(parent);
-        }
-        
-        cProv.create(cat);
-        expanding = catData.getExpandedRows();
-        catData.setEditable(true);
-        catData.refreshTree();
-        catData.setEditable(false);
-        
-        catData.setExpandedRows(expanding);
-        
-        //doRefresh = true;
-        
-        txtCategoryName.setText("");
-    }//GEN-LAST:event_btnCreateActionPerformed
 
-//    public Boolean getDoRefresh()
-//    {
-//        if(doRefresh == null)
-//        {
-//            return false;
-//        }
-//        return doRefresh.booleanValue();
-//    }
-//    
-//    public void resetDoRefresh()
-//    {
-//        doRefresh = null;
-//    }
+            for(Categories cats: cProv.findByName(txtCategoryName.getText()))
+            {
+                if(cats.getName().equals(txtCategoryName.getText()))
+                {
+                    JOptionPane.showMessageDialog(this, "Die Kategorie ist schon vorhanden!");
+                    txtCategoryName.setText("");
+                    return;
+                }
+            }
+
+            parent = catData.getSelectedCategory();
+            cat = new Categories();
+            cat.setName(txtCategoryName.getText());   
+
+            if(parent != null)
+            {
+                cat.setCategory(parent);
+            }
+
+            cProv.create(cat);
+            expanding = catData.getExpandedRows();
+            catData.setEditable(true);
+            catData.refreshTree();
+            catData.setEditable(false);
+
+            catData.setExpandedRows(expanding);
+
+            txtCategoryName.setText("");
+        }
+    }//GEN-LAST:event_btnCreateActionPerformed
     
     /**
      * @param args the command line arguments
@@ -276,7 +263,10 @@ public class NewCategory extends javax.swing.JDialog {
                     }
                 });
                 
-                dialog.setVisible(true);
+                if(RightsManager.hasRight(Rights.PURCHASE))
+                {
+                    dialog.setVisible(true);
+                }
             }
         });
     }

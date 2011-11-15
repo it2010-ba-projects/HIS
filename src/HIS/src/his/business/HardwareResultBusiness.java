@@ -117,12 +117,12 @@ public class HardwareResultBusiness {
         {
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getManufacturer().getName().contains(lastSearchManufacturer))
+                    Hardware h = it.next();
+                    if(!h.getManufacturer().getName().toLowerCase().contains(lastSearchManufacturer.toLowerCase()))
                         it.remove();
                 }
             }
@@ -136,12 +136,12 @@ public class HardwareResultBusiness {
         {
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getOwner().getName().contains(lastSearchOwner))
+                    Hardware h = it.next();
+                    if(!h.getOwner().getName().toLowerCase().contains(lastSearchOwner.toLowerCase()))
                         it.remove();
                 }
             }
@@ -155,12 +155,12 @@ public class HardwareResultBusiness {
         {
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getState().getName().contains(lastSearchState))
+                    Hardware h = it.next();
+                    if(!h.getState().getName().toLowerCase().contains(lastSearchState.toLowerCase()))
                         it.remove();
                 }
             }
@@ -174,12 +174,13 @@ public class HardwareResultBusiness {
         {
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getHardware().getName().contains(lastSearchBuildIn))
+                    Hardware h = it.next();
+                    if(h.getHardware() != null 
+                            && !h.getHardware().getName().toLowerCase().contains(lastSearchBuildIn.toLowerCase()))
                         it.remove();
                 }                
             }
@@ -198,12 +199,12 @@ public class HardwareResultBusiness {
         {
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getHardware().getPlace().getName().contains(lastSearchPlace))
+                    Hardware h = it.next();
+                    if(!h.getHardware().getPlace().getName().toLowerCase().contains(lastSearchPlace.toLowerCase()))
                         it.remove();
                 } 
             }
@@ -217,12 +218,13 @@ public class HardwareResultBusiness {
         {            
             if(hardwares.size()>0)
             {
-                Iterator it = hardwares.iterator();
+                Iterator<Hardware> it = hardwares.iterator();
                 
                 while(it.hasNext())
                 {
-                    Hardware h = (Hardware)it.next();
-                    if(!h.getHardware().getWarrantyEnd().equals(lastSearchWarrenty))
+                    Hardware h = it.next();
+                    if(h.getWarrantyEnd() != null 
+                            && !h.getWarrantyEnd().equals(lastSearchWarrenty))
                         it.remove();
                 } 
             }

@@ -57,6 +57,7 @@ public final class CategoryData extends javax.swing.JPanel {
         {
             catDataBusiness = new CategoryDataBusiness(); 
             treeCategories.setModel(catDataBusiness.getCategoriesTree());
+            setEditDeleteVisible(false);
             checkRights();
         }
         catch(Exception ex)
@@ -186,6 +187,11 @@ public final class CategoryData extends javax.swing.JPanel {
         {
             txtDelete.setEnabled(true);
         }
+        if(RightsManager.hasRight(Rights.PURCHASE))
+        {
+            txtChange.setEnabled(true);
+        }
+        setEditable(false);
     }
     
     public void setExpandedRows(Collection<Integer> list)
@@ -214,6 +220,18 @@ public final class CategoryData extends javax.swing.JPanel {
      * @param edit false: Baum wird gesperrt fuer Aenderungen
      */
     public void setEditable(boolean edit)
+    {
+        if(edit && RightsManager.hasRight(Rights.PURCHASE))
+        {
+            setEditableLocal(true);
+        }        
+        else
+        {
+            setEditableLocal(false);
+        }
+    }
+    
+    private void setEditableLocal(boolean edit)
     {
         treeCategories.setEditable(edit);
         treeCategories.setDragEnabled(edit);
@@ -359,6 +377,7 @@ public final class CategoryData extends javax.swing.JPanel {
         });
 
         txtChange.setText("Ändern");
+        txtChange.setEnabled(false);
         txtChange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtChangeActionPerformed(evt);
@@ -405,7 +424,7 @@ public final class CategoryData extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtChangeActionPerformed
-        if(treeCategories.getSelectionCount()>0)
+        if(treeCategories.getSelectionCount()>0 && RightsManager.hasRight(Rights.PURCHASE))
         {
             Categories cat = (Categories)
                             ((DefaultMutableTreeNode)treeCategories.getSelectionPath()
@@ -429,6 +448,7 @@ public final class CategoryData extends javax.swing.JPanel {
             }
             catch(Exception ex)
             {
+                //TODO: so is Kacke!!!
                 //Fehler erwartet, nichts machen
             }
             
@@ -445,7 +465,7 @@ public final class CategoryData extends javax.swing.JPanel {
         Categories cat = getSelectedCategory();
         CategoriesProvider provider = new CategoriesProvider();
         
-        if(cat!= null)
+        if(cat!= null && RightsManager.hasRight(Rights.ADMINISTRATOR))
         {        
             if(!cat.getCategoriesCollection().isEmpty())
             {

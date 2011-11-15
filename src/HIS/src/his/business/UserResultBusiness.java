@@ -104,11 +104,11 @@ public class UserResultBusiness {
             //wenn schon user gesucht wurden
             if(users.size()>0)
             {
-                Iterator it = users.iterator();
+                Iterator<Users> it = users.iterator();
                 while(it.hasNext())
                 {
-                    Users u = (Users)it.next();
-                    if(!u.getLastName().contains(lastSearchLastName))
+                    Users u = it.next();
+                    if(!u.getLastName().toLowerCase().contains(lastSearchLastName.toLowerCase()))
                         it.remove();
                 }
             }
@@ -124,11 +124,11 @@ public class UserResultBusiness {
            //wenn schon user gesucht wurden
             if(users.size()>0)
             {
-                Iterator it = users.iterator();
+                Iterator<Users> it = users.iterator();
                 while(it.hasNext())
                 {
-                    Users u = (Users)it.next();
-                    if(!u.getLastName().contains(lastSearchLogin))
+                    Users u = it.next();
+                    if(!u.getLogin().toLowerCase().contains(lastSearchLogin.toLowerCase()))
                         it.remove();
                 }
             }
@@ -144,15 +144,16 @@ public class UserResultBusiness {
             //wenn schon user gesucht wurden
             if(users.size()>0)
             {
-                Iterator it = users.iterator();
+                Iterator<Users> it = users.iterator();
                 while(it.hasNext())
                 {
-                    Users u = (Users)it.next();
+                    Users u = it.next();
                     for(Groups group: lastSearchGroups)
                     {
-                    if(!u.getGroupsCollection().contains((group)))
-                            dummyFound = true;
+                        if(!u.getGroupsCollection().contains((group)))
+                                dummyFound = true;
                     }
+                    
                     if(!dummyFound)
                         it.remove();
                     
