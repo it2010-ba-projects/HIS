@@ -19,9 +19,14 @@
  */
 package his.ui.controls;
 
+import his.HIS;
 import his.business.CategoryDataBusiness;
+import his.business.security.Rights;
+import his.business.security.RightsManager;
 import his.model.Categories;
 import his.model.providers.CategoriesProvider;
+import his.ui.events.ComponentChangedEvent;
+import his.ui.events.ComponentChangedListener;
 import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
@@ -30,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import javax.swing.DropMode;
+import javax.swing.InputVerifier;
+import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -45,9 +52,17 @@ public final class CategoryData extends javax.swing.JPanel {
     /** Creates new form CategoryData */
     public CategoryData() {
         initComponents();  
-        catDataBusiness = new CategoryDataBusiness(); 
-        treeCategories.setModel(catDataBusiness.getCategoriesTree());
         
+        try
+        {
+            catDataBusiness = new CategoryDataBusiness(); 
+            treeCategories.setModel(catDataBusiness.getCategoriesTree());
+            checkRights();
+        }
+        catch(Exception ex)
+        {
+            HIS.getLogger().error(ex);
+        }
         treeCategories.getSelectionModel().setSelectionMode(
                 TreeSelectionModel.SINGLE_TREE_SELECTION);
         treeCategories.setDropMode(DropMode.USE_SELECTION);
@@ -78,8 +93,7 @@ public final class CategoryData extends javax.swing.JPanel {
  
                             dtde.dropComplete(true);
                             treeCategories.updateUI();
-                            catDataBusiness.refreshDataObjectTree((DefaultMutableTreeNode)treeCategories.getModel().getRoot());
-                            catDataBusiness.saveChangesFromTree();
+                            //saveTreeToDataBase();
                         } else {
                             System.out.println("drop: reject");
                             dtde.rejectDrop();
@@ -114,7 +128,41 @@ public final class CategoryData extends javax.swing.JPanel {
                             return false;
                         }
                     } 
-                }));        
+                }));  
+    }
+    
+    protected javax.swing.event.EventListenerList componentChangedListenerList =
+        new javax.swing.event.EventListenerList();
+
+    public void addComponentChangedListener(ComponentChangedListener listener) {
+        componentChangedListenerList.add(ComponentChangedListener.class, listener);
+    }
+
+    public void removeComponentChangedListener(ComponentChangedListener listener) {
+        componentChangedListenerList.remove(ComponentChangedListener.class, listener);
+    }
+
+    void fireComponentChanged(ComponentChangedEvent evt) {
+        Object[] listeners = componentChangedListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==ComponentChangedListener.class) {
+                ((ComponentChangedListener)listeners[i+1]).componentChangedListenerPerfomed(evt);
+            }
+        }
+    }
+    
+    @Override
+    public InputVerifier getInputVerifier()
+    {
+        return treeCategories.getInputVerifier();
+    }
+    
+    @Override
+    public void setInputVerifier(InputVerifier iv)
+    {
+        treeCategories.setInputVerifier(iv);
     }
     
     public Collection<Integer> getExpandedRows()
@@ -132,6 +180,14 @@ public final class CategoryData extends javax.swing.JPanel {
         return list;
     }
     
+    private void checkRights()
+    {
+        if(RightsManager.hasRight(Rights.ADMINISTRATOR))
+        {
+            txtDelete.setEnabled(true);
+        }
+    }
+    
     public void setExpandedRows(Collection<Integer> list)
     {
         for(Integer i: list)
@@ -140,15 +196,17 @@ public final class CategoryData extends javax.swing.JPanel {
         }
         
     }
+    
     /**
      * Ersellt den Tree neu (es wird die Datenbank-Tabelle erneut ausgelesen und
-     * Aenderungen werden verworfen.
+     * Aenderungen werden verworfen).
      */
     public void refreshTree()
     {   
         if(catDataBusiness.getCategoriesTree() != null)
             catDataBusiness.createCategoriesTree();
-        treeCategories.setModel(catDataBusiness.getCategoriesTree());       
+        treeCategories.setModel(catDataBusiness.getCategoriesTree()); 
+        fireComponentChanged(new ComponentChangedEvent(this));
     }
     
     /**
@@ -265,6 +323,12 @@ public final class CategoryData extends javax.swing.JPanel {
             setSelectedCategory(cat);
     }
     
+    private void saveTreeToDataBase()
+    {
+       catDataBusiness.refreshDataObjectTree((DefaultMutableTreeNode)treeCategories.getModel().getRoot());
+                            catDataBusiness.saveChangesFromTree(); 
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -278,6 +342,7 @@ public final class CategoryData extends javax.swing.JPanel {
         treeCategories = new javax.swing.JTree();
         txtDelete = new javax.swing.JButton();
         txtChange = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(397, 377));
 
@@ -286,8 +351,27 @@ public final class CategoryData extends javax.swing.JPanel {
         jScrollPane1.setViewportView(treeCategories);
 
         txtDelete.setText("Löschen");
+        txtDelete.setEnabled(false);
+        txtDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDeleteActionPerformed(evt);
+            }
+        });
 
         txtChange.setText("Ändern");
+        txtChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtChangeActionPerformed(evt);
+            }
+        });
+
+        btnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/his/ui/refresh_48.png"))); // NOI18N
+        btnRefresh.setPreferredSize(new java.awt.Dimension(67, 57));
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -298,9 +382,11 @@ public final class CategoryData extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtDelete)
-                    .addComponent(txtChange))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtChange, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -308,14 +394,77 @@ public final class CategoryData extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
                         .addComponent(txtChange)
                         .addGap(18, 18, 18)
                         .addComponent(txtDelete))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtChangeActionPerformed
+        if(treeCategories.getSelectionCount()>0)
+        {
+            Categories cat = (Categories)
+                            ((DefaultMutableTreeNode)treeCategories.getSelectionPath()
+                                .getLastPathComponent())
+                                .getUserObject();
+            try
+            {
+                String result = (String) JOptionPane.showInputDialog(this,
+                        "Namen von Kategorie " + cat.getName() +" editieren",
+                        "Name von Kategorie ändern",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        null,
+                        cat.getName());
+                if(!result.equals(cat.getName()))
+                {
+                    cat.setName(result);            
+                    saveTreeToDataBase();
+                    refreshTree();
+                }
+            }
+            catch(Exception ex)
+            {
+                //Fehler erwartet, nichts machen
+            }
+            
+            
+        }
+    }//GEN-LAST:event_txtChangeActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        refreshTree();
+        fireComponentChanged(new ComponentChangedEvent(this));
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void txtDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeleteActionPerformed
+        Categories cat = getSelectedCategory();
+        CategoriesProvider provider = new CategoriesProvider();
+        
+        if(cat!= null)
+        {        
+            if(!cat.getCategoriesCollection().isEmpty())
+            {
+               JOptionPane.showMessageDialog(this, "Die Kategorie hat Unterkategorien und kann nicht gelöscht werden!");
+            }
+            else if(!cat.getHardwareCollection().isEmpty())
+            {
+                JOptionPane.showMessageDialog(this, "Die Kategorie kann nicht gelöscht werden, da ihr Hardware zugeordnet ist!");
+            }
+            else
+            {
+               provider.delete(cat); 
+               this.refreshTree(); 
+            }
+        }
+    }//GEN-LAST:event_txtDeleteActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTree treeCategories;
     private javax.swing.JButton txtChange;

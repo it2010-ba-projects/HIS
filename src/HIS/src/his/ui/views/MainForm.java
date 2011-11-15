@@ -29,10 +29,10 @@ import his.ui.controls.HardwareSearch;
 import his.ui.controls.UserData;
 import his.ui.controls.UserResult;
 import his.ui.controls.UserSearch;
-import his.ui.events.CategoriesSearchEvent;
-import his.ui.events.CategoriesSearchListener;
-import his.ui.events.CategoriesResultShowEvent;
-import his.ui.events.CategoriesResultShowListener;
+import his.ui.events.SearchEvent;
+import his.ui.events.SearchListener;
+import his.ui.events.ResultShowEvent;
+import his.ui.events.ResultShowListener;
 import his.ui.events.CreateCategoriesEvent;
 import his.ui.events.CreateCategoriesListener;
 import javax.swing.GroupLayout;
@@ -57,16 +57,16 @@ public class MainForm extends javax.swing.JFrame {
     
     public MainForm() {
         initComponents();
-        categorySearch.addCategoriesSearchListener(new CategoriesSearchListener() {
+        categorySearch.addCategoriesSearchListener(new SearchListener() {
             @Override
-            public void categoriesSearchPerfomed(CategoriesSearchEvent evt) {
+            public void categoriesSearchPerfomed(SearchEvent evt) {
                 categoryResult.setCatResultBusiness(categorySearch.getCatResultBusiness());
             }
         });
         
-        categoryResult.addCategoriesResultShowListener(new CategoriesResultShowListener() {
+        categoryResult.addCategoriesResultShowListener(new ResultShowListener() {
             @Override
-            public void categoriesResultShowPerfomed(CategoriesResultShowEvent evt) {
+            public void categoriesResultShowPerfomed(ResultShowEvent evt) {
                 categoryData.setSelectedCategory(categoryResult.getSelectedCategory());
             }
         });

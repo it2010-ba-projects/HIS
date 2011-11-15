@@ -21,8 +21,8 @@ package his.ui.controls;
 
 import his.business.CategoryResultBusiness;
 import his.model.Categories;
-import his.ui.events.CategoriesResultShowEvent;
-import his.ui.events.CategoriesResultShowListener;
+import his.ui.events.ResultShowEvent;
+import his.ui.events.ResultShowListener;
 import javax.swing.DefaultListModel;
 
 /**
@@ -40,21 +40,21 @@ public class CategoryResult extends javax.swing.JPanel {
     protected javax.swing.event.EventListenerList resultShowListenerList =
         new javax.swing.event.EventListenerList();
 
-    public void addCategoriesResultShowListener(CategoriesResultShowListener listener) {
-        resultShowListenerList.add(CategoriesResultShowListener.class, listener);
+    public void addCategoriesResultShowListener(ResultShowListener listener) {
+        resultShowListenerList.add(ResultShowListener.class, listener);
     }
 
-    public void removeCategoriesResultShowListener(CategoriesResultShowListener listener) {
-        resultShowListenerList.remove(CategoriesResultShowListener.class, listener);
+    public void removeCategoriesResultShowListener(ResultShowListener listener) {
+        resultShowListenerList.remove(ResultShowListener.class, listener);
     }
 
-    void fireCategoriesResultShow(CategoriesResultShowEvent evt) {
+    void fireCategoriesResultShow(ResultShowEvent evt) {
         Object[] listeners = resultShowListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
         for (int i=0; i<listeners.length; i+=2) {
-            if (listeners[i]==CategoriesResultShowListener.class) {
-                ((CategoriesResultShowListener)listeners[i+1]).categoriesResultShowPerfomed(evt);
+            if (listeners[i]==ResultShowListener.class) {
+                ((ResultShowListener)listeners[i+1]).categoriesResultShowPerfomed(evt);
             }
         }
     }
@@ -97,7 +97,7 @@ public class CategoryResult extends javax.swing.JPanel {
 
     private void lstResultMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstResultMousePressed
        selectedCategories = (Categories)lstResult.getSelectedValue();
-        fireCategoriesResultShow(new CategoriesResultShowEvent(this));
+        fireCategoriesResultShow(new ResultShowEvent(this));
     }//GEN-LAST:event_lstResultMousePressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

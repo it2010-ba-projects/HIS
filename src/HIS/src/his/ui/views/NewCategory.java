@@ -21,6 +21,8 @@ package his.ui.views;
 
 import his.model.Categories;
 import his.model.providers.CategoriesProvider;
+import his.ui.events.ComponentChangedEvent;
+import his.ui.events.ComponentChangedListener;
 import his.ui.events.CreateCategoriesEvent;
 import his.ui.events.CreateCategoriesListener;
 import java.util.Collection;
@@ -28,7 +30,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Satzu, Thomas Schulze
+ * @author Franziska Staake, Thomas Schulze
  */
 public class NewCategory extends javax.swing.JDialog {
  private Boolean doRefresh;
@@ -36,9 +38,17 @@ public class NewCategory extends javax.swing.JDialog {
     /** Creates new form NewCatagory */
     public NewCategory(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
+        initComponents();        
         catData.setEditable(false);
         catData.setEditDeleteVisible(false);
+        txtCategoryName.setText("");
+        catData.addComponentChangedListener(new ComponentChangedListener() {
+
+            @Override
+            public void componentChangedListenerPerfomed(ComponentChangedEvent evt) {
+                fireCategoriesCreated(new CreateCategoriesEvent(this, getExpandedRows()));
+            }
+        });
     }
     
     public NewCategory(java.awt.Frame parent, boolean modal, Collection<Integer> expandedList)
@@ -63,7 +73,7 @@ public class NewCategory extends javax.swing.JDialog {
         createCategoriesListenerList.remove(CreateCategoriesListener.class, listener);
     }
 
-    void fireCategoriesSearch(CreateCategoriesEvent evt) {
+    void fireCategoriesCreated(CreateCategoriesEvent evt) {
         Object[] listeners = createCategoriesListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
@@ -164,21 +174,34 @@ public class NewCategory extends javax.swing.JDialog {
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // Fenster schließen
-       fireCategoriesSearch(new CreateCategoriesEvent(this, getExpandedRows()));
+        fireCategoriesCreated(new CreateCategoriesEvent(this, getExpandedRows()));
         this.setVisible(false);  
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        Collection<Integer> expanding;
+        Categories cat;
+        Categories parent;
+        CategoriesProvider cProv = new CategoriesProvider(); 
+        
         if(txtCategoryName.getText().equals(""))
         {
-            JOptionPane.showMessageDialog(this, "Es muss ein Name eingegeben werden");
+            JOptionPane.showMessageDialog(this, "Es muss ein Name eingegeben werden!");
             return;
         }
-        Collection<Integer> expanding;
-        Categories cat = new Categories();
-        Categories parent = catData.getSelectedCategory();
-        CategoriesProvider cProv = new CategoriesProvider();        
         
+        for(Categories cats: cProv.findByName(txtCategoryName.getText()))
+        {
+            if(cats.getName().equals(txtCategoryName.getText()))
+            {
+                JOptionPane.showMessageDialog(this, "Die Kategorie ist schon vorhanden!");
+                txtCategoryName.setText("");
+                return;
+            }
+        }
+        
+        parent = catData.getSelectedCategory();
+        cat = new Categories();
         cat.setName(txtCategoryName.getText());   
         
         if(parent != null)
@@ -194,22 +217,24 @@ public class NewCategory extends javax.swing.JDialog {
         
         catData.setExpandedRows(expanding);
         
-        doRefresh = true;
+        //doRefresh = true;
+        
+        txtCategoryName.setText("");
     }//GEN-LAST:event_btnCreateActionPerformed
 
-    public Boolean getDoRefresh()
-    {
-        if(doRefresh == null)
-        {
-            return false;
-        }
-        return doRefresh.booleanValue();
-    }
-    
-    public void resetDoRefresh()
-    {
-        doRefresh = null;
-    }
+//    public Boolean getDoRefresh()
+//    {
+//        if(doRefresh == null)
+//        {
+//            return false;
+//        }
+//        return doRefresh.booleanValue();
+//    }
+//    
+//    public void resetDoRefresh()
+//    {
+//        doRefresh = null;
+//    }
     
     /**
      * @param args the command line arguments

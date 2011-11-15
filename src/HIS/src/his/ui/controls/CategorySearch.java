@@ -21,8 +21,8 @@ package his.ui.controls;
 
 import his.business.CategoryResultBusiness;
 import his.model.providers.CategoriesProvider;
-import his.ui.events.CategoriesSearchEvent;
-import his.ui.events.CategoriesSearchListener;
+import his.ui.events.SearchEvent;
+import his.ui.events.SearchListener;
 
 /**
  *
@@ -39,21 +39,21 @@ public class CategorySearch extends javax.swing.JPanel {
     protected javax.swing.event.EventListenerList searchListenerList =
         new javax.swing.event.EventListenerList();
 
-    public void addCategoriesSearchListener(CategoriesSearchListener listener) {
-        searchListenerList.add(CategoriesSearchListener.class, listener);
+    public void addCategoriesSearchListener(SearchListener listener) {
+        searchListenerList.add(SearchListener.class, listener);
     }
 
-    public void removeCategoriesSearchListener(CategoriesSearchListener listener) {
-        searchListenerList.remove(CategoriesSearchListener.class, listener);
+    public void removeCategoriesSearchListener(SearchListener listener) {
+        searchListenerList.remove(SearchListener.class, listener);
     }
 
-    void fireCategoriesSearch(CategoriesSearchEvent evt) {
+    void fireCategoriesSearch(SearchEvent evt) {
         Object[] listeners = searchListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
         for (int i=0; i<listeners.length; i+=2) {
-            if (listeners[i]==CategoriesSearchListener.class) {
-                ((CategoriesSearchListener)listeners[i+1]).categoriesSearchPerfomed(evt);
+            if (listeners[i]==SearchListener.class) {
+                ((SearchListener)listeners[i+1]).categoriesSearchPerfomed(evt);
             }
         }
     }
@@ -118,7 +118,7 @@ public class CategorySearch extends javax.swing.JPanel {
         CategoriesProvider provider = new CategoriesProvider();
         catResultBusiness = new CategoryResultBusiness();
         getCatResultBusiness().searchCategories(txtCategoryName.getText());
-        fireCategoriesSearch(new CategoriesSearchEvent(this));
+        fireCategoriesSearch(new SearchEvent(this));
     }//GEN-LAST:event_btnSearchActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
