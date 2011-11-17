@@ -79,7 +79,7 @@ public class CategoryResultBusiness {
         provider = new CategoriesProvider();
         lastSearchName = name;
         
-        categories = provider.findByName(name.equals("")?"":name);
+        categories = provider.findByName(name);
         
         return categories;        
     }

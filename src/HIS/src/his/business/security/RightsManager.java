@@ -33,7 +33,7 @@ public class RightsManager {
     /**
      * Prueft, ob fuer den Benutzer das Recht vorhanden ist
      * @param user Nutzer
-     * @param group zu pruefende Gruppe
+     * @param right zu pruefendes Recht
      * @return true, falls Gruppe fuer Nutzer vorhanden
      */    
     public static boolean hasRight(Users user, Rights right)
@@ -47,7 +47,7 @@ public class RightsManager {
     
     /**
      * Prueft fuer den aktuellen Nutzer, ob er in der Gruppe ist
-     * @param group zu Pruefende Gruppe
+     * @param right zu pruefendes Recht
      * @return true, falls Gruppe vorhanden
      */
     public static boolean hasRight(Rights right)
