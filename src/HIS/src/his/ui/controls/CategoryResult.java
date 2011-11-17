@@ -83,11 +83,11 @@ public class CategoryResult extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableCategoriesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCategoriesMousePressed
-        selectCategoryAndShowIt();
+        selectCategoryAndShowIt(true);
     }//GEN-LAST:event_tableCategoriesMousePressed
 
     private void tableCategoriesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCategoriesKeyPressed
-        selectCategoryAndShowIt();
+        selectCategoryAndShowIt(false);
     }//GEN-LAST:event_tableCategoriesKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -117,11 +117,15 @@ public class CategoryResult extends javax.swing.JPanel {
         }
     }
     
-    private void selectCategoryAndShowIt()
+    private void selectCategoryAndShowIt(boolean mouseClick)
     {
-       selectedCategories = (Categories)tableCategories.getModel()
-                            .getValueAt(tableCategories.getSelectedRow(),0);
-//        selectedCategories = (Categories)lstResult.getSelectedValue();
+        int row = 0;
+        
+        if(!mouseClick)
+            row = -1;
+        
+        selectedCategories = (Categories)tableCategories.getModel()
+                                .getValueAt(tableCategories.getSelectedRow()-row,0);
         fireCategoriesResultShow(new ResultShowEvent(this));
     }
     /**

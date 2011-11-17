@@ -31,14 +31,24 @@ import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.InputVerifier;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.TransferHandler;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
+import javax.swing.plaf.basic.BasicTableUI.KeyHandler;
+import javax.swing.text.TextAction;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -56,80 +66,14 @@ public final class CategoryData extends javax.swing.JPanel {
         try
         {
             catDataBusiness = new CategoryDataBusiness(); 
-            treeCategories.setModel(catDataBusiness.getCategoriesTree());
+            initTree(); 
+            checkRights(); 
             setEditDeleteVisible(false);
-            checkRights();
         }
         catch(Exception ex)
         {
             HIS.getLogger().error(ex);
-        }
-        treeCategories.getSelectionModel().setSelectionMode(
-                TreeSelectionModel.SINGLE_TREE_SELECTION);
-        treeCategories.setDropMode(DropMode.USE_SELECTION);
-        treeCategories.setDropTarget(new DropTarget(treeCategories, TransferHandler.MOVE,
-                new DropTargetAdapter() {
-                    @Override
-                    public void drop(DropTargetDropEvent dtde) {
- 
-                        TreePath selectionPath = treeCategories.getSelectionPath();
-                        TreePath sourcePath = selectionPath.getParentPath();
- 
-                        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath
-                                .getLastPathComponent();
- 
-                        Point dropLocation = dtde.getLocation();
-                        TreePath targetPath = treeCategories.getClosestPathForLocation(
-                                dropLocation.x, dropLocation.y);
- 
-                        if (isDropAllowed(sourcePath, targetPath, selectedNode)) {
-                            System.out.println("drop accept");
-                            DefaultMutableTreeNode targetParentNode = (DefaultMutableTreeNode) targetPath
-                                    .getLastPathComponent();
-                            DefaultMutableTreeNode sourceParentNode = (DefaultMutableTreeNode) sourcePath
-                                    .getLastPathComponent();
- 
-                            sourceParentNode.remove(selectedNode);
-                            targetParentNode.add(selectedNode);
- 
-                            dtde.dropComplete(true);
-                            treeCategories.updateUI();
-                            //saveTreeToDataBase();
-                        } else {
-                            System.out.println("drop: reject");
-                            dtde.rejectDrop();
-                            dtde.dropComplete(false);
-                        }
-                    }
- 
-                    private boolean isDropAllowed(TreePath sourcePath,
-                                                TreePath targetPath,
-                                                DefaultMutableTreeNode selectedNode) 
-                    {
-                        if (!selectedNode.getUserObject().equals(CategoryDataBusiness.CATEGORY_ROOT_TEXT) 
-                                && (((DefaultMutableTreeNode) sourcePath
-                                        .getLastPathComponent()).isLeaf()
-                                        || !targetPath.equals(sourcePath)) 
-                                )
-                        {
-                            int count = targetPath.getPathCount();
-                            System.out.println("TargetPathCount: " + count);
-                            
-                            if(sourcePath.getPathCount() != 1){
-                                for(int x = count-1; x >= sourcePath.getPathCount()-1; x--){
-                                    if(selectedNode == targetPath.getPathComponent(x)){
-                                        return false;
-                                    }else{
-                                        continue;
-                                    }
-                                }
-                            }                            
-                            return true;
-                        } else{
-                            return false;
-                        }
-                    } 
-                }));  
+        }       
     }
     
     protected javax.swing.event.EventListenerList componentChangedListenerList =
@@ -235,6 +179,36 @@ public final class CategoryData extends javax.swing.JPanel {
     {
         treeCategories.setEditable(edit);
         treeCategories.setDragEnabled(edit);
+        JTextField jfield = new JTextField();
+        jfield.setEditable(edit);
+        TreeCellEditor textEditor = new DefaultCellEditor(jfield);
+
+        treeCategories.setCellEditor(textEditor);
+        
+        jfield.addActionListener(new TextAction(null) {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) 
+            {
+                if(treeCategories.getSelectionCount()>0 && RightsManager.hasRight(Rights.PURCHASE))
+                {
+                    Categories cat = (Categories)
+                                    ((DefaultMutableTreeNode)treeCategories.getSelectionPath()
+                                        .getLastPathComponent())
+                                        .getUserObject();
+
+                    if(!this.getFocusedComponent().getText().equals(cat.getName()) 
+                            && !this.getFocusedComponent().getText().equals(""))
+                    {
+                        cat.setName(this.getFocusedComponent().getText());            
+                        saveTreeToDataBase();
+                        refreshTree();
+                    }
+
+                }
+            }
+        });
+       
     }
     
     public void setEditDeleteVisible(boolean visible)
@@ -347,6 +321,33 @@ public final class CategoryData extends javax.swing.JPanel {
                             catDataBusiness.saveChangesFromTree(); 
     }
     
+    private void deleteNode()
+    {
+        if(treeCategories.isEditable())
+        {
+            Categories cat = getSelectedCategory();
+            CategoriesProvider provider = new CategoriesProvider();
+
+            if(cat!= null && RightsManager.hasRight(Rights.ADMINISTRATOR))
+            {        
+                if(!cat.getCategoriesCollection().isEmpty())
+                {
+                   JOptionPane.showMessageDialog(this, "Die Kategorie hat Unterkategorien und kann nicht gelöscht werden!");
+                }
+                else if(!cat.getHardwareCollection().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(this, "Die Kategorie kann nicht gelöscht werden, da ihr Hardware zugeordnet ist!");
+                }
+                else if(JOptionPane.showConfirmDialog(this, "Wollen Sie die Kategorie \""+cat.getName()+"\" wirklich löschen?") == JOptionPane.OK_OPTION)
+                {
+                   provider.delete(cat); 
+                   this.refreshTree(); 
+                }
+            }
+        }
+        
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -366,6 +367,11 @@ public final class CategoryData extends javax.swing.JPanel {
 
         treeCategories.setDragEnabled(true);
         treeCategories.setDropMode(javax.swing.DropMode.ON);
+        treeCategories.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                treeCategoriesKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(treeCategories);
 
         txtDelete.setText("Löschen");
@@ -439,7 +445,7 @@ public final class CategoryData extends javax.swing.JPanel {
                         null,
                         null,
                         cat.getName());
-                if(!result.equals(cat.getName()))
+                if(!result.equals(cat.getName()) && !result.equals(""))
                 {
                     cat.setName(result);            
                     saveTreeToDataBase();
@@ -451,8 +457,6 @@ public final class CategoryData extends javax.swing.JPanel {
                 //TODO: so is Kacke!!!
                 //Fehler erwartet, nichts machen
             }
-            
-            
         }
     }//GEN-LAST:event_txtChangeActionPerformed
 
@@ -462,26 +466,15 @@ public final class CategoryData extends javax.swing.JPanel {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void txtDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeleteActionPerformed
-        Categories cat = getSelectedCategory();
-        CategoriesProvider provider = new CategoriesProvider();
-        
-        if(cat!= null && RightsManager.hasRight(Rights.ADMINISTRATOR))
-        {        
-            if(!cat.getCategoriesCollection().isEmpty())
-            {
-               JOptionPane.showMessageDialog(this, "Die Kategorie hat Unterkategorien und kann nicht gelöscht werden!");
-            }
-            else if(!cat.getHardwareCollection().isEmpty())
-            {
-                JOptionPane.showMessageDialog(this, "Die Kategorie kann nicht gelöscht werden, da ihr Hardware zugeordnet ist!");
-            }
-            else
-            {
-               provider.delete(cat); 
-               this.refreshTree(); 
-            }
-        }
+        deleteNode();
     }//GEN-LAST:event_txtDeleteActionPerformed
+
+    private void treeCategoriesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_treeCategoriesKeyPressed
+         if(evt.getKeyCode() == KeyEvent.VK_DELETE)
+         {
+             deleteNode();
+         }
+    }//GEN-LAST:event_treeCategoriesKeyPressed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRefresh;
@@ -490,5 +483,76 @@ public final class CategoryData extends javax.swing.JPanel {
     private javax.swing.JButton txtChange;
     private javax.swing.JButton txtDelete;
     // End of variables declaration//GEN-END:variables
+
+    private void initTree() {
+        treeCategories.setModel(catDataBusiness.getCategoriesTree());        
+
+        treeCategories.getSelectionModel().setSelectionMode(
+            TreeSelectionModel.SINGLE_TREE_SELECTION);
+        treeCategories.setDropMode(DropMode.USE_SELECTION);
+        treeCategories.setDropTarget(new DropTarget(treeCategories, TransferHandler.MOVE,
+                new DropTargetAdapter() {
+                    @Override
+                    public void drop(DropTargetDropEvent dtde) {
+ 
+                        TreePath selectionPath = treeCategories.getSelectionPath();
+                        TreePath sourcePath = selectionPath.getParentPath();
+ 
+                        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectionPath
+                                .getLastPathComponent();
+ 
+                        Point dropLocation = dtde.getLocation();
+                        TreePath targetPath = treeCategories.getClosestPathForLocation(
+                                dropLocation.x, dropLocation.y);
+ 
+                        if (isDropAllowed(sourcePath, targetPath, selectedNode)) {
+                            System.out.println("drop accept");
+                            DefaultMutableTreeNode targetParentNode = (DefaultMutableTreeNode) targetPath
+                                    .getLastPathComponent();
+                            DefaultMutableTreeNode sourceParentNode = (DefaultMutableTreeNode) sourcePath
+                                    .getLastPathComponent();
+ 
+                            sourceParentNode.remove(selectedNode);
+                            targetParentNode.add(selectedNode);
+ 
+                            dtde.dropComplete(true);
+                            treeCategories.updateUI();
+                            //saveTreeToDataBase();
+                        } else {
+                            System.out.println("drop: reject");
+                            dtde.rejectDrop();
+                            dtde.dropComplete(false);
+                        }
+                    }
+ 
+                    private boolean isDropAllowed(TreePath sourcePath,
+                                                TreePath targetPath,
+                                                DefaultMutableTreeNode selectedNode) 
+                    {
+                        if (!selectedNode.getUserObject().equals(CategoryDataBusiness.CATEGORY_ROOT_TEXT) 
+                                && (((DefaultMutableTreeNode) sourcePath
+                                        .getLastPathComponent()).isLeaf()
+                                        || !targetPath.equals(sourcePath)) 
+                                )
+                        {
+                            int count = targetPath.getPathCount();
+                            System.out.println("TargetPathCount: " + count);
+                            
+                            if(sourcePath.getPathCount() != 1){
+                                for(int x = count-1; x >= sourcePath.getPathCount()-1; x--){
+                                    if(selectedNode == targetPath.getPathComponent(x)){
+                                        return false;
+                                    }else{
+                                        continue;
+                                    }
+                                }
+                            }                            
+                            return true;
+                        } else{
+                            return false;
+                        }
+                    } 
+                }));  
+    }
 
 }
