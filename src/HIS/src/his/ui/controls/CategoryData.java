@@ -19,6 +19,7 @@
  */
 package his.ui.controls;
 
+import com.sun.java.swing.plaf.windows.resources.windows;
 import his.HIS;
 import his.business.CategoryDataBusiness;
 import his.business.security.Rights;
@@ -33,19 +34,15 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import javax.swing.AbstractAction;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.InputVerifier;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
-import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
-import javax.swing.plaf.basic.BasicTableUI.KeyHandler;
 import javax.swing.text.TextAction;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
@@ -59,7 +56,7 @@ import javax.swing.tree.TreeSelectionModel;
 public final class CategoryData extends javax.swing.JPanel {
 
     private CategoryDataBusiness catDataBusiness;
-    /** Creates new form CategoryData */
+        
     public CategoryData() {
         initComponents();  
         
@@ -177,9 +174,9 @@ public final class CategoryData extends javax.swing.JPanel {
     
     private void setEditableLocal(boolean edit)
     {
+        JTextField jfield = new JTextField();
         treeCategories.setEditable(edit);
         treeCategories.setDragEnabled(edit);
-        JTextField jfield = new JTextField();
         jfield.setEditable(edit);
         TreeCellEditor textEditor = new DefaultCellEditor(jfield);
 
