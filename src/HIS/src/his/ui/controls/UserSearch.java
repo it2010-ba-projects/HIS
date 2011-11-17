@@ -22,19 +22,21 @@ package his.ui.controls;
 import his.business.UserResultBusiness;
 import his.model.Groups;
 import his.model.Users;
+import his.model.providers.CategoriesProvider;
 import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
+import his.ui.events.SearchEvent;
+import his.ui.events.SearchListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.regex.Pattern;
-import javax.swing.JTable;
-import javax.swing.table.TableModel;
 
 /**
  *
  * @author Franziska Staake
  */
 public class UserSearch extends javax.swing.JPanel {
+    
+    private UserResultBusiness uResultBus = new UserResultBusiness();
 
     /** Creates new form UserSearch */
     public UserSearch() {
@@ -72,6 +74,11 @@ public class UserSearch extends javax.swing.JPanel {
                 btnSearchActionPerformed(evt);
             }
         });
+        btnSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnSearchKeyPressed(evt);
+            }
+        });
 
         jLabel4.setText("Gruppen");
 
@@ -104,77 +111,81 @@ public class UserSearch extends javax.swing.JPanel {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtGroups, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSearch)
-                .addGap(67, 67, 67))
+                .addContainerGap(97, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-        
-        //TableModel resultTableModel = userResult.model;
-        Collection<Groups> groupsCol = new ArrayList();
-        
-       
-        
+    protected javax.swing.event.EventListenerList searchListenerList =
+        new javax.swing.event.EventListenerList();
 
+    public void addUserSearchListener(SearchListener listener) {
+        searchListenerList.add(SearchListener.class, listener);
+    }
+
+    public void removeUserSearchListener(SearchListener listener) {
+        searchListenerList.remove(SearchListener.class, listener);
+    }
+
+    void fireUserSearch(SearchEvent evt) {
+        Object[] listeners = searchListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==SearchListener.class) {
+                ((SearchListener)listeners[i+1]).searchPerformed(evt);
+            }
+        }
+    } 
+    
+    
+    
+    private void search(){
+        // Benutzersuche:      
+        
+        Collection<Groups> groupsCol = new ArrayList();
+      
+        //spliten der Eingabe in das Gruppensuchfeld in einzelne Gruppen
         String[] sArray = txtGroups.getText().split(",| |;|\\.");
         Groups group;
         GroupsProvider gProvider = new GroupsProvider();
-        UserResultBusiness urBusiness = new UserResultBusiness();
+        
  
+        //für alle eingegeben Gruppen (Werte im Array):
+        //überprüfe, ob mit einem Gruppenname in DB übereinstimmt
         for(String name : sArray){
             if(!name.equals("")){              
                 group = gProvider.findByName(name);
                 if(group != null){
+                    //wenn ja: füge zur Groups-Collection hinzu
                     groupsCol.add(group);
                 }
             }
         }
         
-        urBusiness.searchUsers(txtFirstName.getText(), txtName.getText(), txtUserName.getText(), groupsCol);            
+        //Nutzer suchen
+        uResultBus.searchUsers(txtFirstName.getText(), txtName.getText(), txtUserName.getText(), groupsCol);            
         
-        /*
-        if(!txtFirstName.getText().equals("")){
-            for(Users user : (new UsersProvider()).findAll()){
-                if(user.getFirstName().contains(txtFirstName.getText())){
-                    model.addColumn("Gruppen");
-       
-                    for(Groups group : (new GroupsProvider()).findAll()){
-                        model.addRow(new Groups[] {group});                       
-                    }
+        fireUserSearch(new SearchEvent(this));
         
-                    listGroups.setModel(model);
-                }                       
-            }
-        }else if(!txtGroups.getText().equals("")){            
-            for(Users user : (new UsersProvider()).findAll()){
-                Collection<Groups> groupsCol = user.getGroupsCollection();
-                for(Groups group : groupsCol){
-                    if(group.getName().contains(txtGroups.getText())){
-                        
-                    }
-                }                       
-            }
-        }else if(!txtName.getText().equals("")){
-            for(Users user : (new UsersProvider()).findAll()){
-                if(user.getLastName().contains(txtName.getText())){
-                
-                }                       
-            }
-        }*/
-        
-        
+    }
+    
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        search();
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSearchKeyPressed
+        search();
+    }//GEN-LAST:event_btnSearchKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
@@ -187,4 +198,11 @@ public class UserSearch extends javax.swing.JPanel {
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the uResultBus
+     */
+    public UserResultBusiness getUserResultBusiness() {
+        return uResultBus;
+    }
 }

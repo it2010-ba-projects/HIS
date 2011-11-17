@@ -26,5 +26,5 @@ import java.util.EventListener;
  * @author Thomas Schulze
  */
 public interface ResultShowListener extends EventListener {
-    public void categoriesResultShowPerfomed(ResultShowEvent evt);     
+    public void resultShowPerformed(ResultShowEvent evt);     
 }

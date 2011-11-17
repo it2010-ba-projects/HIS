@@ -54,7 +54,7 @@ public class CategoryResult extends javax.swing.JPanel {
         // and the second is the listener instance
         for (int i=0; i<listeners.length; i+=2) {
             if (listeners[i]==ResultShowListener.class) {
-                ((ResultShowListener)listeners[i+1]).categoriesResultShowPerfomed(evt);
+                ((ResultShowListener)listeners[i+1]).resultShowPerformed(evt);
             }
         }
     }

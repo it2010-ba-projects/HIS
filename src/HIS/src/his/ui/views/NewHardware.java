@@ -81,6 +81,11 @@ public class NewHardware extends javax.swing.JDialog {
                 btnCancelActionPerformed(evt);
             }
         });
+        btnCancel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnCancelKeyPressed(evt);
+            }
+        });
 
         jLabel6.setText("Kaufdatum");
 
@@ -94,11 +99,17 @@ public class NewHardware extends javax.swing.JDialog {
 
         jLabel1.setText("Gerätename");
 
+        txtProductNumber.setFocusTraversalPolicyProvider(true);
+
         jLabel4.setText("Ort");
 
         jLabel3.setText("Produktnummer");
 
         jLabel2.setText("Hersteller");
+
+        comboPlace.setFocusTraversalPolicyProvider(true);
+
+        comboManufakturer.setFocusTraversalPolicyProvider(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -120,28 +131,29 @@ public class NewHardware extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
-                            .addComponent(txtProductNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                            .addComponent(comboPlace, 0, 152, Short.MAX_VALUE)
+                            .addComponent(txtProductNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                            .addComponent(comboPlace, 0, 141, Short.MAX_VALUE)
                             .addComponent(btnSearch)
                             .addComponent(jLabel8)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(comboWarrantySpan, 0, 94, Short.MAX_VALUE)))
+                                .addComponent(comboWarrantySpan, 0, 83, Short.MAX_VALUE)))
                         .addGap(18, 18, 18))
                     .addComponent(jLabel5)
                     .addComponent(jLabel6)
                     .addComponent(jLabel7))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel9)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(212, 212, 212))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnCreate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnCancel)))
+                        .addComponent(btnCancel))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -197,10 +209,18 @@ public class NewHardware extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    private void cancel(){
         // Fenster schließen
         this.setVisible(false);
+    }
+    
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        cancel();
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnCancelKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnCancelKeyPressed
+        cancel();
+    }//GEN-LAST:event_btnCancelKeyPressed
 
     /**
      * @param args the command line arguments

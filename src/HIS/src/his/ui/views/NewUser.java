@@ -24,13 +24,10 @@ import his.model.Groups;
 import his.model.Users;
 import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
+import his.ui.NotEditableDefaultTableModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 /**
@@ -221,41 +218,42 @@ public class NewUser extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // TODO add your handling code here:
-        //listGroups.getSelectionModel().setSelectionMode(WIDTH);
-        DefaultTableModel model = new DefaultTableModel();
+        // Tabelle mit Gruppen füllen
+        NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
        
-        // Create a couple of columns
+        // Spalte erstellen
         model.addColumn("Gruppen");
        
+        //alle Gruppen aus DB eintragen
         for(Groups group : (new GroupsProvider()).findAll()){
             model.addRow(new Groups[] {group});                       
         }
         
-        listGroups.setModel(model);
-        
+        //Tabellen-Modell der Tabelle zuweisen
+        listGroups.setModel(model);        
     }//GEN-LAST:event_formWindowOpened
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-        // TODO add your handling code here:
+        // Benutzer erstellen
         Users user = new Users();
-        Collection<Groups> groups = new ArrayList<>();        
-        TableModel model = listGroups.getModel();
-        //String pw = new String();
-        
+        Collection<Groups> groupsCol = new ArrayList<>();        
+        TableModel model = listGroups.getModel();       
         UsersProvider uProvider = new UsersProvider();
         GroupsProvider gProvider = new GroupsProvider();      
-        
-        
+                
         int selectedItemsNumber = listGroups.getSelectedRowCount();
         
+        //Felder dürfen nicht leer sein
         if(!txtFirstName.getText().equals("")
            && !txtLastName.getText().equals("")
            && !txtPassword.getPassword().equals("")
            && !txtUserName.getText().equals("")
            && selectedItemsNumber != 0)
         {
-            if(Arrays.equals(txtPassword.getPassword(), txtConfirmPassword.getPassword())){
+            //Passwörter (Passwort, Passwort wiederholen) müssen übereinstimmen
+            if(Arrays.equals(txtPassword.getPassword(), 
+                    txtConfirmPassword.getPassword()))
+            {                
                 user.setCreatedFrom(HIS.getCurrentUser().getLogin());
                 user.setDeleted(false);
                 user.setFirstName(txtFirstName.getText());
@@ -264,35 +262,42 @@ public class NewUser extends javax.swing.JDialog {
 
                 labelStatus.setText("");
                 
+                //Passwort in String konvertieren
                 char[] zeichen = txtPassword.getPassword();
                 String pw = new String(zeichen);
-
                 user.setPassword(pw);
 
+                /*Benutzergruppen: selektierte Felder in Tabelle herauslesen
+                und Groups-Collection hinzufügen*/
                 int[] selectedItems = listGroups.getSelectedRows();
                 for(int selection : selectedItems){
                     Groups group = (Groups)model.getValueAt(selection, 0);
-                    groups.add(group);                    
+                    groupsCol.add(group);                    
                 }
                         
-                user.setGroupsCollection(groups);
-                
+                user.setGroupsCollection(groupsCol);
+                //neuen Benutzer erstellen
                 uProvider.create(user);
                 
-                for(Groups g : groups){
-                    Collection<Users> users = new ArrayList<>();                    
+                //DB-Tabelle der Gruppen neuen Benutzer in hinzufügen
+                for(Groups g : groupsCol){
+                    Collection<Users> usersCol = new ArrayList<>(); 
+                    /*wenn keine Benutzer der Gruppe zugeordnet: 
+                     *setze Dummy g neue Liste
+                     */
                     if (g.getUsersCollection() == null)
                     {
-                        users = new ArrayList<>();
-                        g.setUsersCollection(users);
-                    }
-                    
-                    users = g.getUsersCollection();
-                    users.add(user);
-                    g.setUsersCollection(users);
+                        g.setUsersCollection(usersCol);
+                    }                    
+                    usersCol = g.getUsersCollection();
+                    //Benutzer der Users-Collection hinzufügen
+                    usersCol.add(user);
+                    //Benutzerliste der Gruppe aktualisieren
+                    g.setUsersCollection(usersCol);
                     gProvider.update(g);              
                } 
                 
+                //Felder leeren                
                 txtFirstName.setText("");
                 txtConfirmPassword.setText("");
                 txtLastName.setText("");

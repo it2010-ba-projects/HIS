@@ -53,7 +53,7 @@ public class CategorySearch extends javax.swing.JPanel {
         // and the second is the listener instance
         for (int i=0; i<listeners.length; i+=2) {
             if (listeners[i]==SearchListener.class) {
-                ((SearchListener)listeners[i+1]).categoriesSearchPerfomed(evt);
+                ((SearchListener)listeners[i+1]).searchPerformed(evt);
             }
         }
     }

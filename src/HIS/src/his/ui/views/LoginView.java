@@ -71,11 +71,21 @@ public class LoginView extends javax.swing.JDialog {
                 btnLoginActionPerformed(evt);
             }
         });
+        btnLogin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnLoginKeyPressed(evt);
+            }
+        });
 
         btnCancel.setText("Abbrechen");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
+            }
+        });
+        btnCancel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnCancelKeyPressed(evt);
             }
         });
 
@@ -125,11 +135,10 @@ public class LoginView extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        this.setVisible(false);        
-        System.exit(0);
+        cancel();
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+    private void login(){
         //Systemanmeldung        
         UsersProvider uProvider = new UsersProvider();
         
@@ -143,8 +152,25 @@ public class LoginView extends javax.swing.JDialog {
             HIS.getLogger().debug("Falsches PW oder Username");
         }
               
+        this.setVisible(false);  
+    }
+    
+    private void cancel(){
         this.setVisible(false);        
+        System.exit(0);
+    }
+    
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        login();
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnLoginKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnLoginKeyPressed
+        login();        
+    }//GEN-LAST:event_btnLoginKeyPressed
+
+    private void btnCancelKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnCancelKeyPressed
+        cancel();
+    }//GEN-LAST:event_btnCancelKeyPressed
 
     /**
      * @param args the command line arguments
