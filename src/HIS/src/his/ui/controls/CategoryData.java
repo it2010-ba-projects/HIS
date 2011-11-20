@@ -485,13 +485,16 @@ public final class CategoryData extends javax.swing.JPanel {
 
     private void treeCategoriesTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeCategoriesTreeExpanded
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)evt.getPath().getLastPathComponent();
-        Categories cat = (Categories)node.getUserObject();
-        
-        //alte Childs loeschen
-        node.removeAllChildren();        
-        
-        node = catDataBusiness.getRefreshedNode(node,cat);
-        
+        if(node.getUserObject() != catDataBusiness.CATEGORY_ROOT_TEXT)
+        {
+            Categories cat = (Categories)node.getUserObject();        
+            node.removeAllChildren();        
+            node = catDataBusiness.getRefreshedNode(node,cat);
+        }
+        else
+        {
+            treeCategories.setModel(catDataBusiness.getCategoriesTree());        
+        }
         
     }//GEN-LAST:event_treeCategoriesTreeExpanded
     
