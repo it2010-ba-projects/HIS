@@ -97,6 +97,10 @@ public class UserResultBusiness {
         {
             users = provider.findByFirstName(lastSearchFirstName);
         }
+        else
+        {
+            users = provider.findAll();
+        }
         
         //Nachname
         if(!lastSearchLastName.equals(""))
