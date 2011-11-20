@@ -96,8 +96,8 @@ public class UserResult extends javax.swing.JPanel {
             }
         });
         tableUserResult.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                tableUserResultKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tableUserResultKeyReleased(evt);
             }
         });
         jScrollPane2.setViewportView(tableUserResult);
@@ -129,14 +129,14 @@ public class UserResult extends javax.swing.JPanel {
         }        
     }//GEN-LAST:event_tableUserResultMousePressed
 
-    private void tableUserResultKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableUserResultKeyPressed
+    private void tableUserResultKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableUserResultKeyReleased
         int[] row = tableUserResult.getSelectedRows();
         
         if(row.length < 2){
             selectedUser = (Users)tableUserResult.getValueAt(row[0],3);
             fireUserResultShow(new ResultShowEvent(this));
         } 
-    }//GEN-LAST:event_tableUserResultKeyPressed
+    }//GEN-LAST:event_tableUserResultKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane2;

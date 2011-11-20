@@ -141,16 +141,20 @@ public class LoginView extends javax.swing.JDialog {
     private void login(){
         //Systemanmeldung        
         UsersProvider uProvider = new UsersProvider();
+        user = uProvider.findByLogin(txtUserName.getText());
         
-        if((user = uProvider.findByLogin(txtUserName.getText())) != null 
-                && user.isValid(txtUserPassword.getText())){            
-            succeeded = true;
-        }else{
-             txtUserName.setText("");
-             txtUserPassword.setText("");
-            succeeded = false;
-            HIS.getLogger().debug("Falsches PW oder Username");
+        if(user != null ){
+            if( !user.getDeleted()  
+                    && user.isValid(txtUserPassword.getText())){            
+                succeeded = true;
+            }else{
+                 txtUserName.setText("");
+                 txtUserPassword.setText("");
+                succeeded = false;
+                HIS.getLogger().debug("Falsches PW oder Username");
+            }            
         }
+        
               
         this.setVisible(false);  
     }
