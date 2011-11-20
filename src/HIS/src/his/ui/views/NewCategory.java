@@ -27,6 +27,7 @@ import his.ui.events.ComponentChangedEvent;
 import his.ui.events.ComponentChangedListener;
 import his.ui.events.CreateCategoriesEvent;
 import his.ui.events.CreateCategoriesListener;
+import his.ui.validations.NotEmptyValidator;
 import java.util.Collection;
 import javax.swing.JOptionPane;
 
@@ -109,6 +110,13 @@ public class NewCategory extends javax.swing.JDialog {
 
         jLabel1.setText("Name");
 
+        txtCategoryName.setInputVerifier(new NotEmptyValidator(this, txtCategoryName, "Der Eintrag darf nicht leer sein"));
+        txtCategoryName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtCategoryNameKeyReleased(evt);
+            }
+        });
+
         jLabel2.setText("Position im Kategoriebaum");
 
         btnCreate.setText("Erstellen");
@@ -179,7 +187,7 @@ public class NewCategory extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
-        if(RightsManager.hasRight(Rights.PURCHASE))
+       if( isDataValid() && RightsManager.hasRight(Rights.PURCHASE))
         {
             Collection<Integer> expanding;
             Categories cat;
@@ -222,6 +230,10 @@ public class NewCategory extends javax.swing.JDialog {
             txtCategoryName.setText("");
         }
     }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void txtCategoryNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCategoryNameKeyReleased
+        isDataValid();
+    }//GEN-LAST:event_txtCategoryNameKeyReleased
     
     /**
      * @param args the command line arguments
@@ -266,7 +278,7 @@ public class NewCategory extends javax.swing.JDialog {
                 if(RightsManager.hasRight(Rights.PURCHASE))
                 {
                     dialog.setVisible(true);
-                }
+                }   
             }
         });
     }
@@ -279,4 +291,8 @@ public class NewCategory extends javax.swing.JDialog {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField txtCategoryName;
     // End of variables declaration//GEN-END:variables
+
+    private boolean isDataValid() {
+        return this.txtCategoryName.getInputVerifier().verify(txtCategoryName);
+    }
 }

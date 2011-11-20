@@ -87,6 +87,14 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtCategoryName">
+      <Properties>
+        <Property name="inputVerifier" type="javax.swing.InputVerifier" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="new NotEmptyValidator(this, txtCategoryName, &quot;Der Eintrag darf nicht leer sein&quot;)" type="code"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtCategoryNameKeyReleased"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
