@@ -44,6 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 import javax.swing.text.TextAction;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -366,6 +367,13 @@ public final class CategoryData extends javax.swing.JPanel {
 
         treeCategories.setDragEnabled(true);
         treeCategories.setDropMode(javax.swing.DropMode.ON);
+        treeCategories.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
+                treeCategoriesTreeExpanded(evt);
+            }
+            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
+            }
+        });
         treeCategories.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 treeCategoriesKeyPressed(evt);
@@ -474,6 +482,18 @@ public final class CategoryData extends javax.swing.JPanel {
              deleteNode();
          }
     }//GEN-LAST:event_treeCategoriesKeyPressed
+
+    private void treeCategoriesTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeCategoriesTreeExpanded
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode)evt.getPath().getLastPathComponent();
+        Categories cat = (Categories)node.getUserObject();
+        
+        //alte Childs loeschen
+        node.removeAllChildren();        
+        
+        node = catDataBusiness.getRefreshedNode(node,cat);
+        
+        
+    }//GEN-LAST:event_treeCategoriesTreeExpanded
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRefresh;

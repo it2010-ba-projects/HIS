@@ -73,7 +73,31 @@ public class CategoryDataBusiness {
         this();
         searchedCategory = cat;
     }
+    
+    public Categories getRefreshedCategory(Categories cat)
+    {
+        return provider.findById(cat.getId());        
+    }
+    
+    public Categories getRefreshedCategory(int id)
+    {
+       return provider.findById(id);
+    }
+      
+    public DefaultMutableTreeNode getRefreshedNode(DefaultMutableTreeNode node, Categories cat)
+    {
+        cat = getRefreshedCategory(cat);
         
+        node.setUserObject(cat);
+        
+        for(Categories c: cat.getCategoriesCollection())
+        {
+            createNodes(node, c);
+        }
+        
+        return node;
+    }
+    
     /**
      * Erneuert das BusinessObjekt (ohne Speicherung)
      * @param node MUSS die Root-Node sein

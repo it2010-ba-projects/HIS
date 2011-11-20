@@ -71,6 +71,7 @@
             </Property>
           </Properties>
           <Events>
+            <EventHandler event="treeExpanded" listener="javax.swing.event.TreeExpansionListener" parameters="javax.swing.event.TreeExpansionEvent" handler="treeCategoriesTreeExpanded"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="treeCategoriesKeyPressed"/>
           </Events>
         </Component>
