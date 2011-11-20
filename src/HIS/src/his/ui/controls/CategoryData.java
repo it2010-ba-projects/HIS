@@ -27,6 +27,7 @@ import his.model.Categories;
 import his.model.providers.CategoriesProvider;
 import his.ui.events.ComponentChangedEvent;
 import his.ui.events.ComponentChangedListener;
+import his.ui.validations.NotEmptyValidator;
 import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
@@ -44,7 +45,6 @@ import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 import javax.swing.text.TextAction;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -132,7 +132,7 @@ public final class CategoryData extends javax.swing.JPanel {
         {
             txtChange.setEnabled(true);
         }
-        setEditable(false);
+        setEditable(true);
     }
     
     public void setExpandedRows(Collection<Integer> list)
@@ -179,7 +179,7 @@ public final class CategoryData extends javax.swing.JPanel {
         treeCategories.setDragEnabled(edit);
         jfield.setEditable(edit);
         TreeCellEditor textEditor = new DefaultCellEditor(jfield);
-
+        
         treeCategories.setCellEditor(textEditor);
         
         jfield.addActionListener(new TextAction(null) {
@@ -187,22 +187,21 @@ public final class CategoryData extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent ae) 
             {
-                if(treeCategories.getSelectionCount()>0 && RightsManager.hasRight(Rights.PURCHASE))
-                {
-                    Categories cat = (Categories)
+                Categories cat = (Categories)
                                     ((DefaultMutableTreeNode)treeCategories.getSelectionPath()
                                         .getLastPathComponent())
                                         .getUserObject();
-
-                    if(!this.getFocusedComponent().getText().equals(cat.getName()) 
-                            && !this.getFocusedComponent().getText().equals(""))
-                    {
-                        cat.setName(this.getFocusedComponent().getText());            
-                        saveTreeToDataBase();
-                        refreshTree();
-                    }
-
+                
+                if(treeCategories.getSelectionCount()>0 
+                        && RightsManager.hasRight(Rights.PURCHASE)                
+                        && !this.getFocusedComponent().getText().equals(cat.getName())
+                        && !this.getFocusedComponent().getText().isEmpty())
+                {
+                    cat.setName(this.getFocusedComponent().getText());            
+                    saveTreeToDataBase();                    
                 }
+                
+                refreshTree();
             }
         });
        
@@ -485,7 +484,7 @@ public final class CategoryData extends javax.swing.JPanel {
 
     private void treeCategoriesTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeCategoriesTreeExpanded
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)evt.getPath().getLastPathComponent();
-        if(node.getUserObject() != catDataBusiness.CATEGORY_ROOT_TEXT)
+        if(node.getUserObject() != CategoryDataBusiness.CATEGORY_ROOT_TEXT)
         {
             Categories cat = (Categories)node.getUserObject();        
             node.removeAllChildren();        
