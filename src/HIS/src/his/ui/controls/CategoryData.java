@@ -538,7 +538,7 @@ public final class CategoryData extends javax.swing.JPanel {
  
                             dtde.dropComplete(true);
                             treeCategories.updateUI();
-                            //saveTreeToDataBase();
+                            saveTreeToDataBase();
                         } else {
                             System.out.println("drop: reject");
                             dtde.rejectDrop();

@@ -28,6 +28,7 @@ import his.model.providers.HardwareProvider;
  * @author Thomas Schulze
  */
 public class HardwareDataBusiness {
+    public static String HARDWARE_ROOT_TEXT = "Hardware";
     private Hardware hardware;
     private HardwareProvider provider;
 
