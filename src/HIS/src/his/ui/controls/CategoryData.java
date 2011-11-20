@@ -19,7 +19,6 @@
  */
 package his.ui.controls;
 
-import com.sun.java.swing.plaf.windows.resources.windows;
 import his.HIS;
 import his.business.CategoryDataBusiness;
 import his.business.security.Rights;
@@ -335,7 +334,10 @@ public final class CategoryData extends javax.swing.JPanel {
                 {
                     JOptionPane.showMessageDialog(this, "Die Kategorie kann nicht gelöscht werden, da ihr Hardware zugeordnet ist!");
                 }
-                else if(JOptionPane.showConfirmDialog(this, "Wollen Sie die Kategorie \""+cat.getName()+"\" wirklich löschen?") == JOptionPane.OK_OPTION)
+                else if(JOptionPane.showConfirmDialog(this,
+                        "Wollen Sie die Kategorie \""+cat.getName()+"\" wirklich löschen?",
+                        "Kategorie löschen",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)
                 {
                    provider.delete(cat); 
                    this.refreshTree(); 

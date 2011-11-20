@@ -21,7 +21,6 @@ package his.ui.controls;
 
 import his.business.CategoryResultBusiness;
 import his.model.Categories;
-import his.model.providers.CategoriesProvider;
 import his.ui.NotEditableDefaultTableModel;
 import his.ui.events.ResultShowEvent;
 import his.ui.events.ResultShowListener;
@@ -59,8 +58,8 @@ public class CategoryResult extends javax.swing.JPanel {
             }
         });
         tableCategories.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                tableCategoriesKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tableCategoriesKeyReleased(evt);
             }
         });
         jScrollPane2.setViewportView(tableCategories);
@@ -84,12 +83,12 @@ public class CategoryResult extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableCategoriesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableCategoriesMousePressed
-        selectCategoryAndShowIt(true);
+        selectCategoryAndShowIt();
     }//GEN-LAST:event_tableCategoriesMousePressed
 
-    private void tableCategoriesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCategoriesKeyPressed
-        selectCategoryAndShowIt(false);
-    }//GEN-LAST:event_tableCategoriesKeyPressed
+    private void tableCategoriesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableCategoriesKeyReleased
+        selectCategoryAndShowIt();
+    }//GEN-LAST:event_tableCategoriesKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane2;
@@ -113,20 +112,15 @@ public class CategoryResult extends javax.swing.JPanel {
         // and the second is the listener instance
         for (int i=0; i<listeners.length; i+=2) {
             if (listeners[i]==ResultShowListener.class) {
-                ((ResultShowListener)listeners[i+1]).categoriesResultShowPerfomed(evt);
+                ((ResultShowListener)listeners[i+1]).resultShowPerformed(evt);
             }
         }
     }
     
-    private void selectCategoryAndShowIt(boolean mouseClick)
+    private void selectCategoryAndShowIt()
     {
-        int row = 0;
-        
-        if(!mouseClick)
-            row = -1;
-        
         selectedCategories = (Categories)tableCategories.getModel()
-                                .getValueAt(tableCategories.getSelectedRow()-row,0);
+                                .getValueAt(tableCategories.getSelectedRow(),0);
         fireCategoriesResultShow(new ResultShowEvent(this));
     }
     /**
