@@ -100,6 +100,16 @@ public class UserResultBusiness {
         else
         {
             users = provider.findAll();
+        } 
+        
+        Iterator<Users> iter = users.iterator();
+        while(iter.hasNext())
+        {
+            Users u = iter.next();
+            if(u.getDeleted())
+            {
+                iter.remove();
+            }
         }
         
         //Nachname
@@ -164,7 +174,7 @@ public class UserResultBusiness {
                     dummyFound = false;
                 }
             }
-        }        
+        }  
         
         return users;
     }
