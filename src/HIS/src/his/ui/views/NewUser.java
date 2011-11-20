@@ -25,9 +25,11 @@ import his.model.Users;
 import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
 import his.ui.NotEditableDefaultTableModel;
+import his.ui.validations.NotEmptyValidator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
@@ -59,7 +61,6 @@ public class NewUser extends javax.swing.JDialog {
         btnCancel = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        labelStatus = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         txtFirstName = new javax.swing.JTextField();
         txtUserName = new javax.swing.JTextField();
@@ -115,6 +116,16 @@ public class NewUser extends javax.swing.JDialog {
 
         jLabel6.setText("Benutzername");
 
+        txtFirstName.setInputVerifier(new NotEmptyValidator(this, txtFirstName, "Bitte Vornamen eintragen"));
+
+        txtUserName.setInputVerifier(new NotEmptyValidator(this, txtUserName, "Bitte Benutzernamen eintragen"));
+
+        txtLastName.setInputVerifier(new NotEmptyValidator(this, txtLastName, "Bitte Nachnamen eintragen"));
+
+        txtPassword.setInputVerifier(new NotEmptyValidator(this, txtFirstName, "Bitte Passwort eintragen"));
+
+        txtConfirmPassword.setInputVerifier(new NotEmptyValidator(this, txtFirstName, "Bitte Passwort wiederholen"));
+
         listGroups.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -138,28 +149,26 @@ public class NewUser extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3)))
-                        .addComponent(jLabel6)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtPassword, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtUserName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
-                                .addComponent(jLabel2))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel5)
-                                .addComponent(txtConfirmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(labelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)))
+                    .addComponent(jLabel6)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtPassword, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtUserName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(txtConfirmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -201,23 +210,31 @@ public class NewUser extends javax.swing.JDialog {
                 .addGap(29, 29, 29)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnCreate)
-                        .addComponent(btnCancel))
-                    .addComponent(labelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCreate)
+                    .addComponent(btnCancel))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private boolean isDataValid() {
+        boolean isDataValid = true;
+        isDataValid = this.txtFirstName.getInputVerifier().verify(txtFirstName);
+        isDataValid = this.txtLastName.getInputVerifier().verify(txtLastName) && isDataValid;
+        isDataValid = this.txtUserName.getInputVerifier().verify(txtUserName) && isDataValid;
+        isDataValid = this.txtPassword.getInputVerifier().verify(txtPassword) && isDataValid;
+        isDataValid = this.txtConfirmPassword.getInputVerifier().verify(txtConfirmPassword) && isDataValid;
+        return isDataValid;
+    }    
+    
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // Fenster schließen
         this.setVisible(false);
     }//GEN-LAST:event_btnCancelActionPerformed
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+    private void tableModelLoad(){
         // Tabelle mit Gruppen füllen
         NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
        
@@ -230,7 +247,11 @@ public class NewUser extends javax.swing.JDialog {
         }
         
         //Tabellen-Modell der Tabelle zuweisen
-        listGroups.setModel(model);        
+        listGroups.setModel(model);
+    }
+    
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        tableModelLoad();      
     }//GEN-LAST:event_formWindowOpened
 
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
@@ -239,82 +260,91 @@ public class NewUser extends javax.swing.JDialog {
         Collection<Groups> groupsCol = new ArrayList<>();        
         TableModel model = listGroups.getModel();       
         UsersProvider uProvider = new UsersProvider();
-        GroupsProvider gProvider = new GroupsProvider();      
+        GroupsProvider gProvider = new GroupsProvider();         
                 
         int selectedItemsNumber = listGroups.getSelectedRowCount();
         
-        //Felder dürfen nicht leer sein
-        if(!txtFirstName.getText().equals("")
-           && !txtLastName.getText().equals("")
-           && !txtPassword.getPassword().equals("")
-           && !txtUserName.getText().equals("")
-           && selectedItemsNumber != 0)
+        
+        if(uProvider.findByLogin(txtUserName.getText()) != null)
         {
-            //Passwörter (Passwort, Passwort wiederholen) müssen übereinstimmen
-            if(Arrays.equals(txtPassword.getPassword(), 
-                    txtConfirmPassword.getPassword()))
-            {                
-                user.setCreatedFrom(HIS.getCurrentUser().getLogin());
-                user.setDeleted(false);
-                user.setFirstName(txtFirstName.getText());
-                user.setLastName(txtLastName.getText());
-                user.setLogin(txtUserName.getText());
-
-                labelStatus.setText("");
-                
-                //Passwort in String konvertieren
-                char[] zeichen = txtPassword.getPassword();
-                String pw = new String(zeichen);
-                user.setPassword(pw);
-
-                /*Benutzergruppen: selektierte Felder in Tabelle herauslesen
-                und Groups-Collection hinzufügen*/
-                int[] selectedItems = listGroups.getSelectedRows();
-                for(int selection : selectedItems){
-                    Groups group = (Groups)model.getValueAt(selection, 0);
-                    groupsCol.add(group);                    
-                }
-                        
-                user.setGroupsCollection(groupsCol);
-                //neuen Benutzer erstellen
-                uProvider.create(user);
-                
-                //DB-Tabelle der Gruppen neuen Benutzer in hinzufügen
-                for(Groups g : groupsCol){
-                    Collection<Users> usersCol = new ArrayList<>(); 
-                    /*wenn keine Benutzer der Gruppe zugeordnet: 
-                     *setze Dummy g neue Liste
-                     */
-                    if (g.getUsersCollection() == null)
-                    {
-                        g.setUsersCollection(usersCol);
-                    }                    
-                    usersCol = g.getUsersCollection();
-                    //Benutzer der Users-Collection hinzufügen
-                    usersCol.add(user);
-                    //Benutzerliste der Gruppe aktualisieren
-                    g.setUsersCollection(usersCol);
-                    gProvider.update(g);              
-               } 
-                
-                //Felder leeren                
-                txtFirstName.setText("");
-                txtConfirmPassword.setText("");
-                txtLastName.setText("");
-                txtPassword.setText("");
-                txtUserName.setText("");
-                listGroups.setModel(model);
-                
-                labelStatus.setText("Benutzer erfolgreich angelegt");                
-                
-            }else{
-                labelStatus.setText("Passwörter stimmen nicht überein");                
-            }            
-        }else{
-            labelStatus.setText("Alle Felder ausfüllen");
+            JOptionPane.showMessageDialog(this, "Dieser Benutzername wurde schon verwendet!");
+            txtUserName.setText("");
+            return;
         }
+            
         
+        //Felder dürfen nicht leer sein
+        if(!isDataValid())
+            return;
+            
+        if(selectedItemsNumber == 0){
+            JOptionPane.showMessageDialog(this, "Bitte Gruppen auswählen!");
+            return;
+        }
+            
         
+        //Passwörter (Passwort, Passwort wiederholen) müssen übereinstimmen
+        if(!Arrays.equals(txtPassword.getPassword(), 
+                txtConfirmPassword.getPassword())){
+            JOptionPane.showMessageDialog(this, "Passwörter stimmen nicht überein!");
+            return;               
+        } 
+            
+            
+        user.setCreatedFrom(HIS.getCurrentUser().getLogin());
+        user.setDeleted(false);
+        user.setFirstName(txtFirstName.getText());
+        user.setLastName(txtLastName.getText());
+        user.setLogin(txtUserName.getText());
+
+        
+        //Passwort in String konvertieren
+        char[] zeichen = txtPassword.getPassword();
+        String pw = new String(zeichen);
+        user.setPassword(pw);
+
+        /*Benutzergruppen: selektierte Felder in Tabelle herauslesen
+        und Groups-Collection hinzufügen*/
+        int[] selectedItems = listGroups.getSelectedRows();
+        for(int selection : selectedItems){
+            Groups group = (Groups)model.getValueAt(selection, 0);
+            groupsCol.add(group);                    
+        }
+
+        user.setGroupsCollection(groupsCol);
+        //neuen Benutzer erstellen
+        uProvider.create(user);
+
+        //DB-Tabelle der Gruppen neuen Benutzer in hinzufügen
+        for(Groups g : groupsCol){
+            Collection<Users> usersCol = new ArrayList<>(); 
+            /*wenn keine Benutzer der Gruppe zugeordnet: 
+             *setze Dummy g neue Liste
+             */
+            if (g.getUsersCollection() == null)
+            {
+                g.setUsersCollection(usersCol);
+            }                    
+            usersCol = g.getUsersCollection();
+            //Benutzer der Users-Collection hinzufügen
+            usersCol.add(user);
+            //Benutzerliste der Gruppe aktualisieren
+            g.setUsersCollection(usersCol);
+            gProvider.update(g);              
+       } 
+
+        //Felder leeren                
+        txtFirstName.setText("");
+        txtConfirmPassword.setText("");
+        txtLastName.setText("");
+        txtPassword.setText("");
+        txtUserName.setText("");
+        listGroups.removeRowSelectionInterval(0, 3);
+
+        //labelStatus.setText("Benutzer erfolgreich angelegt");                
+        JOptionPane.showMessageDialog(this, "Benutzer erfolgreich angelegt");
+                   
+               
     }//GEN-LAST:event_btnCreateActionPerformed
 
     /**
@@ -373,7 +403,6 @@ public class NewUser extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JLabel labelStatus;
     private javax.swing.JTable listGroups;
     private javax.swing.JPasswordField txtConfirmPassword;
     private javax.swing.JTextField txtFirstName;

@@ -25,8 +25,10 @@ import his.model.Users;
 import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
 import his.ui.NotEditableDefaultTableModel;
+import his.ui.validations.NotEmptyValidator;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
@@ -37,14 +39,15 @@ public class UserData extends javax.swing.JPanel {
     
     private UserDataBusiness userDataB = new UserDataBusiness();
     private UsersProvider uProvider = new UsersProvider();
-    private NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
+    private NotEditableDefaultTableModel defaultTableModel = new NotEditableDefaultTableModel();
     //user := aktuell sich in Bearbeitung befindlicher Benutzer
     private Users user = new Users();
+    private String UserName = new String();
 
     /** Creates new form UserData */
     public UserData() {
         initComponents();
-        listGroupLoad();
+        tableModelLoad();
     }
 
     /** This method is called from within the constructor to
@@ -71,7 +74,11 @@ public class UserData extends javax.swing.JPanel {
 
         jLabel1.setText("Vorname");
 
+        txtFirstName.setInputVerifier(new NotEmptyValidator(null, txtFirstName, "Bitte Vornamen eintragen"));
+
         jLabel2.setText("Nachname");
+
+        txtName.setInputVerifier(new NotEmptyValidator(null, txtName, "Bitte Nachnamen eintragen"));
 
         btnPasswordReset.setText("Passwort zurücksetzen");
         btnPasswordReset.addActionListener(new java.awt.event.ActionListener() {
@@ -108,6 +115,8 @@ public class UserData extends javax.swing.JPanel {
             }
         ));
         jScrollPane1.setViewportView(listGroups);
+
+        txtUserName.setInputVerifier(new NotEmptyValidator(null, txtUserName, "Bitte Benutzernamen eintragen"));
 
         jLabel7.setText("Benutzername");
 
@@ -166,25 +175,49 @@ public class UserData extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void listGroupLoad(){
-        // Tabelle mit Gruppen füllen       
-       
+    private boolean isDataValid() {
+        boolean isDataValid = true;
+        isDataValid = this.txtFirstName.getInputVerifier().verify(txtFirstName);
+        isDataValid = this.txtName.getInputVerifier().verify(txtName) && isDataValid;
+        isDataValid = this.txtUserName.getInputVerifier().verify(txtUserName) && isDataValid;
+       return isDataValid;
+    }  
+    
+    private void tableModelLoad(){
+        // Tabelle mit Gruppen füllen
+        //NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
         // Spalte erstellen
-        model.addColumn("Gruppen");
+        
+        defaultTableModel.addColumn("Gruppen");
        
         //alle Gruppen aus DB eintragen
         for(Groups group : (new GroupsProvider()).findAll()){
-            model.addRow(new Groups[] {group});                       
+            defaultTableModel.addRow(new Groups[] {group});                       
         }
         
         //Tabellen-Modell der Tabelle zuweisen
-        listGroups.setModel(model);  
+        listGroups.setModel(defaultTableModel);
     }
     
+       
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // Benutzer wird in der Datenbank als gelöscht markiert
+        if(JOptionPane.showConfirmDialog(this,
+                        "Wollen Sie den Benutzer \""+user.toString()+"\" wirklich löschen?",
+                        "Benutzer löschen",
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)
+                {
         user.setDeleted(true);
-        uProvider.update(user);
+        uProvider.update(user);}
+        
+        //Felder leeren                
+        txtFirstName.setText("");                
+        txtName.setText("");                
+        txtUserName.setText("");
+        listGroups.removeRowSelectionInterval(0, 3);
+
+        //labelStatus.setText("Benutzer erfolgreich angelegt");                
+        JOptionPane.showMessageDialog(this, "Benutzer erfolgreich gelöscht");
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
@@ -193,27 +226,39 @@ public class UserData extends javax.swing.JPanel {
         Collection<Groups> groupsCol = new ArrayList<>();
         TableModel tableModel = listGroups.getModel();
         
+        if(!txtUserName.getText().equals(UserName)
+                && uProvider.findByLogin(txtUserName.getText()) != null)
+        {
+            JOptionPane.showMessageDialog(this, "Dieser Benutzername wurde schon verwendet!");
+            txtUserName.setText(UserName);
+            return;
+        }            
+        
         //Felder dürfen nicht leer sein
-        if(!txtFirstName.getText().equals("")
-                && !txtName.getText().equals("")
-                && !txtUserName.getText().equals("")
-                && selectedItemsNumber != 0){
+        if(!isDataValid())
+            return;
             
-            user.setFirstName(txtFirstName.getText());
-            user.setLastName(txtName.getText());
-            user.setLogin(txtUserName.getText());
+        if(selectedItemsNumber == 0){
+            JOptionPane.showMessageDialog(this, "Bitte Gruppen auswählen!");
+            return;
+        }
             
-            /*Benutzergruppen: selektierte Felder in Tabelle herauslesen
-            und Groups-Collection hinzufügen*/
-            int[] selectedItems = listGroups.getSelectedRows();
-            for(int selection : selectedItems){
-                Groups group = (Groups)tableModel.getValueAt(selection, 0);
-                groupsCol.add(group);                    
-            }
-                        
-            user.setGroupsCollection(groupsCol);
-            uProvider.update(user);
-         }
+        user.setFirstName(txtFirstName.getText());
+        user.setLastName(txtName.getText());
+        user.setLogin(txtUserName.getText());
+
+        /*Benutzergruppen: selektierte Felder in Tabelle herauslesen
+        und Groups-Collection hinzufügen*/
+        int[] selectedItems = listGroups.getSelectedRows();
+        for(int selection : selectedItems){
+            Groups group = (Groups)tableModel.getValueAt(selection, 0);
+            groupsCol.add(group);                    
+        }
+
+        user.setGroupsCollection(groupsCol);
+        uProvider.update(user);
+
+        JOptionPane.showMessageDialog(this, "Benutzer erfolgreich geändert");         
         
         
     }//GEN-LAST:event_btnChangeActionPerformed
@@ -247,10 +292,12 @@ public class UserData extends javax.swing.JPanel {
         txtFirstName.setText(user.getFirstName());
         txtName.setText(user.getLastName());
         txtUserName.setText(user.getLogin());
-        
+        listGroups.removeRowSelectionInterval(0, 3);
+        UserName = txtUserName.getText();
+                
         for(Groups group : user.getGroupsCollection()){
             for(int i = 0; i < 4; i++){
-               if(group.equals(model.getValueAt(i, 0))){
+               if(group.equals(defaultTableModel.getValueAt(i, 0))){
                    listGroups.setRowSelectionInterval(i, i);
                }
             }
