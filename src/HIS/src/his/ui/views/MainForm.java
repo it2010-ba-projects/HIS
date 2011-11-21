@@ -20,6 +20,8 @@
 package his.ui.views;
 
 import his.HIS;
+import his.business.security.Rights;
+import his.business.security.RightsManager;
 import his.model.Users;
 import his.ui.controls.CategoryData;
 import his.ui.controls.CategoryResult;
@@ -58,6 +60,12 @@ public class MainForm extends javax.swing.JFrame {
     
     public MainForm() {
         initComponents();
+        
+        if(!RightsManager.hasRight(Rights.ADMINISTRATOR)){
+            menuItemUsers.setVisible(false);
+            menuItemMenuNewUser.setVisible(false);
+        }
+        
         categorySearch.addCategoriesSearchListener(new SearchListener() {
             @Override
             public void searchPerformed(SearchEvent evt) {
@@ -107,18 +115,18 @@ public class MainForm extends javax.swing.JFrame {
         btnQuickSearch = new javax.swing.JButton();
         txtSearchAttribute = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        menuMenu = new javax.swing.JMenu();
         menuItemHardware = new javax.swing.JMenuItem();
         menuItemUsers = new javax.swing.JMenuItem();
         menuItemCategories = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        menuItemNew = new javax.swing.JMenu();
+        menuItemMenuNewUser = new javax.swing.JMenuItem();
+        menuItemMenuNewHardware = new javax.swing.JMenuItem();
+        menuItemMenuNewCategory = new javax.swing.JMenuItem();
         menuItemClose = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        menuPreferences = new javax.swing.JMenu();
+        menuItemPasswordChange = new javax.swing.JMenuItem();
+        menuHelp = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -199,7 +207,7 @@ public class MainForm extends javax.swing.JFrame {
 
         txtSearchAttribute.setText("Schnellsuche");
 
-        jMenu1.setText("Menü");
+        menuMenu.setText("Menü");
 
         menuItemHardware.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
         menuItemHardware.setText("Hardwareverwaltung");
@@ -208,7 +216,7 @@ public class MainForm extends javax.swing.JFrame {
                 menuItemHardwareActionPerformed(evt);
             }
         });
-        jMenu1.add(menuItemHardware);
+        menuMenu.add(menuItemHardware);
 
         menuItemUsers.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
         menuItemUsers.setText("Benutzerverwaltung");
@@ -217,7 +225,7 @@ public class MainForm extends javax.swing.JFrame {
                 menuItemUsersActionPerformed(evt);
             }
         });
-        jMenu1.add(menuItemUsers);
+        menuMenu.add(menuItemUsers);
 
         menuItemCategories.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
         menuItemCategories.setText("Kategorieverwaltung");
@@ -226,38 +234,38 @@ public class MainForm extends javax.swing.JFrame {
                 menuItemCategoriesActionPerformed(evt);
             }
         });
-        jMenu1.add(menuItemCategories);
+        menuMenu.add(menuItemCategories);
 
-        jMenu6.setText("Neu");
+        menuItemNew.setText("Neu");
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Benutzer");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        menuItemMenuNewUser.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemMenuNewUser.setText("Benutzer");
+        menuItemMenuNewUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                menuItemMenuNewUserActionPerformed(evt);
             }
         });
-        jMenu6.add(jMenuItem3);
+        menuItemNew.add(menuItemMenuNewUser);
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem4.setText("Hardwarekomponente");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+        menuItemMenuNewHardware.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemMenuNewHardware.setText("Hardwarekomponente");
+        menuItemMenuNewHardware.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
+                menuItemMenuNewHardwareActionPerformed(evt);
             }
         });
-        jMenu6.add(jMenuItem4);
+        menuItemNew.add(menuItemMenuNewHardware);
 
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem5.setText("Kategorie");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+        menuItemMenuNewCategory.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemMenuNewCategory.setText("Kategorie");
+        menuItemMenuNewCategory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
+                menuItemMenuNewCategoryActionPerformed(evt);
             }
         });
-        jMenu6.add(jMenuItem5);
+        menuItemNew.add(menuItemMenuNewCategory);
 
-        jMenu1.add(jMenu6);
+        menuMenu.add(menuItemNew);
 
         menuItemClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
         menuItemClose.setText("Beenden");
@@ -266,25 +274,25 @@ public class MainForm extends javax.swing.JFrame {
                 menuItemCloseActionPerformed(evt);
             }
         });
-        jMenu1.add(menuItemClose);
+        menuMenu.add(menuItemClose);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(menuMenu);
 
-        jMenu3.setText("Einstellungen");
+        menuPreferences.setText("Einstellungen");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Passwort ändern");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        menuItemPasswordChange.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemPasswordChange.setText("Passwort ändern");
+        menuItemPasswordChange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                menuItemPasswordChangeActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem1);
+        menuPreferences.add(menuItemPasswordChange);
 
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(menuPreferences);
 
-        jMenu2.setText("Hilfe");
-        jMenuBar1.add(jMenu2);
+        menuHelp.setText("Hilfe");
+        jMenuBar1.add(menuHelp);
 
         setJMenuBar(jMenuBar1);
 
@@ -384,19 +392,19 @@ public class MainForm extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_menuItemCloseActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void menuItemMenuNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewUserActionPerformed
         //Fenster "neuen Benutzer anlegen" anzeigen
         NewUser newU = new NewUser(this,true);
         newU.setVisible(true);
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_menuItemMenuNewUserActionPerformed
 
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+    private void menuItemMenuNewHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewHardwareActionPerformed
         //Fenster "neue Hardwarekomponente anlegen" anzeigen
         NewHardware newH = new NewHardware(this,true);
         newH.setVisible(true);
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
+    }//GEN-LAST:event_menuItemMenuNewHardwareActionPerformed
 
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+    private void menuItemMenuNewCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewCategoryActionPerformed
         //Fenster "neue Kategorie anlegen" anzeigen
         NewCategory newC = new NewCategory(this,true, categoryData.getExpandedRows());             
              newC.addCategoriesSearchListener(new CreateCategoriesListener() {
@@ -407,12 +415,12 @@ public class MainForm extends javax.swing.JFrame {
                 }
             });
             newC.setVisible(true);
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
+    }//GEN-LAST:event_menuItemMenuNewCategoryActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void menuItemPasswordChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemPasswordChangeActionPerformed
         PasswordChange pwChange = new PasswordChange(this, true);
         pwChange.setVisible(true);        
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_menuItemPasswordChangeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -455,19 +463,19 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton btnQuickSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenu menuHelp;
     private javax.swing.JMenuItem menuItemCategories;
     private javax.swing.JMenuItem menuItemClose;
     private javax.swing.JMenuItem menuItemHardware;
+    private javax.swing.JMenuItem menuItemMenuNewCategory;
+    private javax.swing.JMenuItem menuItemMenuNewHardware;
+    private javax.swing.JMenuItem menuItemMenuNewUser;
+    private javax.swing.JMenu menuItemNew;
+    private javax.swing.JMenuItem menuItemPasswordChange;
     private javax.swing.JMenuItem menuItemUsers;
+    private javax.swing.JMenu menuMenu;
+    private javax.swing.JMenu menuPreferences;
     private javax.swing.JPanel panelData;
     private javax.swing.JPanel panelResults;
     private javax.swing.JPanel panelSearch;
