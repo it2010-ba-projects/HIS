@@ -27,6 +27,7 @@ import his.ui.validations.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -295,6 +296,10 @@ public class NewHardware extends javax.swing.JDialog {
         if(isDataValid() && createHardware()) {
             this.setVisible(false);
         }
+        else {
+            JOptionPane.showMessageDialog(this, "Das Formular enthält Fehler.\nHardware konnte nicht gespeichert werden.",
+                    "Speichern fehlgeschlagen", JOptionPane.ERROR_MESSAGE | JOptionPane.OK_OPTION );
+        }
     }//GEN-LAST:event_btnCreateActionPerformed
     
     private boolean createHardware() {
@@ -327,11 +332,20 @@ public class NewHardware extends javax.swing.JDialog {
                 Date warrantyEnd = formatter.parse(txtWarrantyEnd.getText().trim());
                 hardware.setWarrantyEnd(warrantyEnd);
             } catch (ParseException ex) {
-                HIS.getLogger().warn(ex);
+                HIS.getLogger().debug(ex);
             }
         }
         
         hardware.setHardware(parentHardware);
+        
+        try {
+            hardwareProvider.create(hardware);
+        }
+        catch (Exception e) {
+            HIS.getLogger().debug(e);
+            HIS.getLogger().warn("Speichern der Hardware fehlgeschlagen.");
+            return false;
+        }
         
         return true;
     }
