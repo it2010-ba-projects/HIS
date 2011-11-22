@@ -27,7 +27,6 @@ import his.model.Categories;
 import his.model.providers.CategoriesProvider;
 import his.ui.events.ComponentChangedEvent;
 import his.ui.events.ComponentChangedListener;
-import his.ui.validations.NotEmptyValidator;
 import java.awt.Point;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
@@ -56,7 +55,8 @@ import javax.swing.tree.TreeSelectionModel;
 public final class CategoryData extends javax.swing.JPanel {
 
     private CategoryDataBusiness catDataBusiness;
-        
+    private boolean refreshOnExpand = true;
+    
     public CategoryData() {
         initComponents();  
         
@@ -71,6 +71,20 @@ public final class CategoryData extends javax.swing.JPanel {
         {
             HIS.getLogger().error(ex);
         }       
+    }
+    
+    /**
+     * @return the refreshOnExpand
+     */
+    public boolean isRefreshOnExpand() {
+        return refreshOnExpand;
+    }
+
+    /**
+     * @param refreshOnExpand the refreshOnExpand to set
+     */
+    public void setRefreshOnExpand(boolean refreshOnExpand) {
+        this.refreshOnExpand = refreshOnExpand;
     }
     
     protected javax.swing.event.EventListenerList componentChangedListenerList =
@@ -240,7 +254,7 @@ public final class CategoryData extends javax.swing.JPanel {
      * @param cat zu selktierende {@link Categories}
      */
     public void setSelectedCategory(Categories cat)
-    {
+    {  
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeCategories.getModel().getRoot();
         for(Enumeration e = root.children(); e.hasMoreElements();)
         {
@@ -291,7 +305,8 @@ public final class CategoryData extends javax.swing.JPanel {
         }
     }    
     
-    private void expandAndSelectPath(DefaultMutableTreeNode child) {         
+    private void expandAndSelectPath(DefaultMutableTreeNode child) 
+    {            
         for(int i = treeCategories.getRowCount()-1; i>=0;i--)
         {
             treeCategories.collapseRow(i);
@@ -483,18 +498,20 @@ public final class CategoryData extends javax.swing.JPanel {
     }//GEN-LAST:event_treeCategoriesKeyPressed
 
     private void treeCategoriesTreeExpanded(javax.swing.event.TreeExpansionEvent evt) {//GEN-FIRST:event_treeCategoriesTreeExpanded
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)evt.getPath().getLastPathComponent();
-        if(node.getUserObject() != CategoryDataBusiness.CATEGORY_ROOT_TEXT)
+        if(refreshOnExpand)
         {
-            Categories cat = (Categories)node.getUserObject();        
-            node.removeAllChildren();        
-            node = catDataBusiness.getRefreshedNode(node,cat);
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)evt.getPath().getLastPathComponent();
+            if(node.getUserObject() != CategoryDataBusiness.CATEGORY_ROOT_TEXT)
+            {
+                Categories cat = (Categories)node.getUserObject();        
+                node.removeAllChildren();        
+                node = catDataBusiness.getRefreshedNode(node,cat);
+            }
+            else
+            {
+                treeCategories.setModel(catDataBusiness.getCategoriesTree());        
+            }
         }
-        else
-        {
-            treeCategories.setModel(catDataBusiness.getCategoriesTree());        
-        }
-        
     }//GEN-LAST:event_treeCategoriesTreeExpanded
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -575,5 +592,4 @@ public final class CategoryData extends javax.swing.JPanel {
                     } 
                 }));  
     }
-
 }

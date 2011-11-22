@@ -108,6 +108,18 @@ public class HardwareResultBusiness {
         lastSearchPlace = place==null?"":place;
         lastSearchWarrenty = warrenty==null?new Date():warrenty;     
         
+        //Leersuche seperat abfragen, da sonst zu grosse Datenmenge
+        if(lastSearchInventoryNumber.equals("")
+                && lastSearchManufacturer.equals("")
+                && lastSearchOwner.equals("")
+                && lastSearchState.equals("")
+                && lastSearchBuildIn.equals("")
+                && lastSearchPlace.equals("")
+                && lastSearchWarrenty.equals(new Date()))
+        {
+            hardwares = provider.findAll();
+        }
+        
         if(!lastSearchInventoryNumber.equals(""))
         {
             hardwares.add(provider.findById(inventoryNumber));

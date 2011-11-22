@@ -19,10 +19,8 @@
  */
 package his.ui.views;
 
-import his.HIS;
 import his.business.security.Rights;
 import his.business.security.RightsManager;
-import his.model.Users;
 import his.ui.controls.CategoryData;
 import his.ui.controls.CategoryResult;
 import his.ui.controls.CategorySearch;
@@ -60,6 +58,7 @@ public class MainForm extends javax.swing.JFrame {
     
     public MainForm() {
         initComponents();
+        categoryData.setRefreshOnExpand(false);
         
         if(!RightsManager.hasRight(Rights.ADMINISTRATOR)){
             menuItemUsers.setVisible(false);
