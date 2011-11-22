@@ -81,6 +81,7 @@ public final class CategoryData extends javax.swing.JPanel {
     }
 
     /**
+     * (De-)Aktiviert den Refresh von Childs beim expandieren der Knoten
      * @param refreshOnExpand the refreshOnExpand to set
      */
     public void setRefreshOnExpand(boolean refreshOnExpand) {
@@ -98,7 +99,7 @@ public final class CategoryData extends javax.swing.JPanel {
         componentChangedListenerList.remove(ComponentChangedListener.class, listener);
     }
 
-    void fireComponentChanged(ComponentChangedEvent evt) {
+    private void fireComponentChanged(ComponentChangedEvent evt) {
         Object[] listeners = componentChangedListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
@@ -121,6 +122,10 @@ public final class CategoryData extends javax.swing.JPanel {
         treeCategories.setInputVerifier(iv);
     }
     
+    /**
+     * gibt die Liste der aktuell erweiterten Rows zurueck
+     * @return Liste mit erweiterten Rows
+     */
     public Collection<Integer> getExpandedRows()
     {
         int count = treeCategories.getRowCount();
@@ -149,6 +154,10 @@ public final class CategoryData extends javax.swing.JPanel {
         setEditable(true);
     }
     
+    /**
+     * setzt die erweiterten Reihen
+     * @param list Liste mit erweiterten Reihen
+     */
     public void setExpandedRows(Collection<Integer> list)
     {
         for(Integer i: list)
@@ -221,6 +230,10 @@ public final class CategoryData extends javax.swing.JPanel {
        
     }
     
+    /**
+     * Setzt die Button aendern und loeschen (un-)sichtbar
+     * @param visible true, wenn Buttons sichtbar sein sollen
+     */
     public void setEditDeleteVisible(boolean visible)
     {
         txtChange.setVisible(visible);
@@ -251,10 +264,25 @@ public final class CategoryData extends javax.swing.JPanel {
 
     /**
      * setzt die {@link Categories} und erweitert bis dahin die Nodes
+     * @param id ID der zu selktierenden {@link Categories}
+     */
+    public void setSelectedCategory(int id, boolean refresh)
+    {
+        CategoriesProvider prov = new CategoriesProvider();
+        Categories cat = prov.findById(id);
+        if(cat!=null)
+            setSelectedCategory(cat, refresh);
+    }
+    
+    /**
+     * setzt die {@link Categories} und erweitert bis dahin die Nodes
      * @param cat zu selktierende {@link Categories}
      */
-    public void setSelectedCategory(Categories cat)
+    public void setSelectedCategory(Categories cat, boolean refresh)
     {  
+        boolean refreshDummy = this.refreshOnExpand;
+        this.refreshOnExpand = refresh;
+        
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeCategories.getModel().getRoot();
         for(Enumeration e = root.children(); e.hasMoreElements();)
         {
@@ -272,7 +300,8 @@ public final class CategoryData extends javax.swing.JPanel {
                     searchAndExpandSearchedCategory((DefaultMutableTreeNode)en.nextElement(), cat);
                 }
             }
-        }
+        }        
+        this.refreshOnExpand = refreshDummy;
     }
     
     private void searchAndExpandSearchedCategory(DefaultMutableTreeNode node, Categories cat)
@@ -312,19 +341,7 @@ public final class CategoryData extends javax.swing.JPanel {
             treeCategories.collapseRow(i);
         }
         treeCategories.setSelectionPath(new TreePath(child.getPath()));
-    }
-    
-    /**
-     * setzt die {@link Categories} und erweitert bis dahin die Nodes
-     * @param id ID der zu selktierenden {@link Categories}
-     */
-    public void setSelectedCategory(int id)
-    {
-        CategoriesProvider prov = new CategoriesProvider();
-        Categories cat = prov.findById(id);
-        if(cat!=null)
-            setSelectedCategory(cat);
-    }
+    }    
     
     private void saveTreeToDataBase()
     {

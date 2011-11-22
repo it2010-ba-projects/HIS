@@ -30,6 +30,8 @@ import his.ui.controls.HardwareSearch;
 import his.ui.controls.UserData;
 import his.ui.controls.UserResult;
 import his.ui.controls.UserSearch;
+import his.ui.events.CategoriesResultShowEvent;
+import his.ui.events.CategoriesResultShowListener;
 import his.ui.events.SearchEvent;
 import his.ui.events.SearchListener;
 import his.ui.events.ResultShowEvent;
@@ -58,7 +60,7 @@ public class MainForm extends javax.swing.JFrame {
     
     public MainForm() {
         initComponents();
-        categoryData.setRefreshOnExpand(false);
+        categoryData.setRefreshOnExpand(true);
         
         if(!RightsManager.hasRight(Rights.ADMINISTRATOR)){
             menuItemUsers.setVisible(false);
@@ -72,10 +74,10 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
         
-        categoryResult.addCategoriesResultShowListener(new ResultShowListener() {
+        categoryResult.addCategoriesResultShowListener(new CategoriesResultShowListener() {
             @Override
-            public void resultShowPerformed(ResultShowEvent evt) {
-                categoryData.setSelectedCategory(categoryResult.getSelectedCategory());
+            public void categoriesResultShowPerformed(CategoriesResultShowEvent evt) {
+                categoryData.setSelectedCategory(categoryResult.getSelectedCategory(), evt.refreshTree());
             }
         });
         

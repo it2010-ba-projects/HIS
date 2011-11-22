@@ -52,6 +52,13 @@ public class NewCategory extends javax.swing.JDialog {
         });
     }
     
+    /**
+     * Erstellt einen neuen JDialog und initalisiert den Tree mit einer Liste
+     * erweiterter Rows
+     * @param parent
+     * @param modal
+     * @param expandedList 
+     */
     public NewCategory(java.awt.Frame parent, boolean modal, Collection<Integer> expandedList)
     {
         this(parent, modal);
@@ -74,7 +81,7 @@ public class NewCategory extends javax.swing.JDialog {
         createCategoriesListenerList.remove(CreateCategoriesListener.class, listener);
     }
 
-    void fireCategoriesCreated(CreateCategoriesEvent evt) {
+    private void fireCategoriesCreated(CreateCategoriesEvent evt) {
         Object[] listeners = createCategoriesListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
         // and the second is the listener instance
