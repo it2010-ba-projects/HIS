@@ -33,12 +33,12 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
- *
+ * Diese Klasse dient zum Anlegen neuer {@link Users}
  * @author Franziska Staake
  */
 public class NewUser extends javax.swing.JDialog {
 
-    /** Creates new form NewUser */
+    /** Erstellt ein neues Fenster {@link NewUser} */
     public NewUser(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -220,6 +220,10 @@ public class NewUser extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Überprüft, ob die alle Textfelder ausgefüllt sind
+     * @return {@link boolean} -Wert, ob Textfelder ausgefüllt sind, oder nicht
+     */
     private boolean isDataValid() {
         boolean isDataValid = true;
         isDataValid = this.txtFirstName.getInputVerifier().verify(txtFirstName);
@@ -230,11 +234,19 @@ public class NewUser extends javax.swing.JDialog {
         return isDataValid;
     }    
     
+    /**
+     * Fenster wird beim Klicken des Abbrechen-Buttons geschlossen
+     * @param {@link ActionEvent} 
+     */
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // Fenster schließen
         this.setVisible(false);
     }//GEN-LAST:event_btnCancelActionPerformed
 
+    /**
+     * Tabelle der Form {@link UserData} wird mit den vorhandenen {@link Groups}
+     * gefüllt
+     */
     private void tableModelLoad(){
         // Tabelle mit Gruppen füllen
         NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
@@ -251,10 +263,25 @@ public class NewUser extends javax.swing.JDialog {
         listGroups.setModel(model);
     }
     
+    /**
+     * Beim Oeffnen des {@link NewUser} Fensters wird die Methode 
+     * {@link tableModelLoad} aufgerufen.
+     * @param {@link WindowEvent} 
+     */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         tableModelLoad();      
     }//GEN-LAST:event_formWindowOpened
 
+    /**
+     * Erstellen eines neuen {@link Users} beim Klicken des Erstellen-Buttons.
+     * Dabei muessen alle Felder ausgefuellt sein, der Benutzername darf nicht
+     * bereits in der Datenbank auftreten, die eingegebenen Passwoerter
+     * muessen uebereinstimmen und es muss mindestens eine Gruppe 
+     * ausgewaehlt worden sein.
+     * User wird in die Datenbank eingetragen, bei den entsprechenden Gruppen
+     * wird der Benutzer eingetragen.
+     * @param {@link ActionEvent} 
+     */
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
         // Benutzer erstellen
         Users user = new Users();
@@ -264,15 +291,13 @@ public class NewUser extends javax.swing.JDialog {
         GroupsProvider gProvider = new GroupsProvider();         
                 
         int selectedItemsNumber = listGroups.getSelectedRowCount();
-        
-        
+       
         if(uProvider.findByLogin(txtUserName.getText()) != null)
         {
             JOptionPane.showMessageDialog(this, "Dieser Benutzername wurde schon verwendet!");
             txtUserName.setText("");
             return;
         }
-            
         
         //Felder dürfen nicht leer sein
         if(!isDataValid())
@@ -283,7 +308,6 @@ public class NewUser extends javax.swing.JDialog {
             return;
         }
             
-        
         //Passwörter (Passwort, Passwort wiederholen) müssen übereinstimmen
         if(!Arrays.equals(txtPassword.getPassword(), 
                 txtConfirmPassword.getPassword())){
@@ -291,14 +315,12 @@ public class NewUser extends javax.swing.JDialog {
             return;               
         } 
             
-            
         user.setCreatedFrom(HIS.getCurrentUser().getLogin());
         user.setDeleted(false);
         user.setFirstName(txtFirstName.getText());
         user.setLastName(txtLastName.getText());
         user.setLogin(txtUserName.getText());
-
-        
+     
         //Passwort in String konvertieren
         char[] zeichen = txtPassword.getPassword();
         String pw = new String(zeichen);

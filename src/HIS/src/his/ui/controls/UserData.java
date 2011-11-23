@@ -26,26 +26,24 @@ import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
 import his.ui.NotEditableDefaultTableModel;
 import his.ui.validations.NotEmptyValidator;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
- *
+ * Die Klasse dient zum Anzeigen von Daten eines {@link Users}.
  * @author Franziska Staake
  */
 public class UserData extends javax.swing.JPanel {
     
-    private UserDataBusiness userDataB = new UserDataBusiness();
     private UsersProvider uProvider = new UsersProvider();
     private NotEditableDefaultTableModel defaultTableModel = new NotEditableDefaultTableModel();
     //user := aktuell sich in Bearbeitung befindlicher Benutzer
     private Users user = new Users();
     private String UserName = new String();
 
-    /** Creates new form UserData */
+    /** Erstellt einen neue Form {@link UserData} */
     public UserData() {
         initComponents();
         tableModelLoad();
@@ -176,7 +174,10 @@ public class UserData extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * Überprüft, ob die alle Textfelder ausgefüllt sind
+     * @return {@link boolean} -Wert, ob Textfelder ausgefüllt sind, oder nicht
+     */
     private boolean isDataValid() {
         boolean isDataValid = true;
         isDataValid = this.txtFirstName.getInputVerifier().verify(txtFirstName);
@@ -185,6 +186,10 @@ public class UserData extends javax.swing.JPanel {
        return isDataValid;
     }  
     
+    /**
+     * Tabelle der Form {@link UserData} wird mit den vorhandenen {@link Groups}
+     * gefüllt
+     */
     private void tableModelLoad(){
         // Tabelle mit Gruppen füllen
         //NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
@@ -201,7 +206,13 @@ public class UserData extends javax.swing.JPanel {
         listGroups.setModel(defaultTableModel);
     }
     
-       
+    /**
+     * "Löschen" des aktuell angezeigten {@link Users} beim Klicken des Löschen-
+     * Buttons, d.h. in der Datenbank als gelöscht angezeigt.
+     * Danach werden die Textfelder der {@link UserData} gelehrt und die
+     * Selektionen der Tabelle augehoben.
+     * @param {@link ActionEvent} 
+     */   
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // Benutzer wird in der Datenbank als gelöscht markiert
         if(JOptionPane.showConfirmDialog(this,
@@ -222,6 +233,14 @@ public class UserData extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this, "Benutzer erfolgreich gelöscht");
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    /**
+     * Aenderung des aktuell angezeigten {@link Users} beim Klicken des
+     * Aendern-Buttons.
+     * Dabei müssen alle Felder ausgefuellt sein, der Benutzername (wenn geaendert)
+     * darf nicht bereits in der Datenbank auftreten und es muss mindestens
+     * eine Gruppe ausgewahlt worden sein.
+     * @param {@link ActionEvent} 
+     */
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
         // Benutzerdaten werden geändert
         int selectedItemsNumber = listGroups.getSelectedRowCount();
@@ -265,6 +284,11 @@ public class UserData extends javax.swing.JPanel {
         
     }//GEN-LAST:event_btnChangeActionPerformed
 
+    /**
+     * Änderung des Passwortes des aktuell angezeigten {@link Users} in
+     * "p@ssw0rd"
+     * @param {@link ActionEvent}
+     */
     private void btnPasswordResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasswordResetActionPerformed
         //Passwort des zu bearbeitenden Benutzers in Standard-PW ändern
         user.setPassword("p@ssw0rd");        
@@ -287,6 +311,10 @@ public class UserData extends javax.swing.JPanel {
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Anzeige des in {@link UserResult} ausgewählten {@link Users}.
+     * @param selectedUser (in {@link UserResult} ausgewählter {@link Users})
+     */
     public void setSelectedUser(Users selectedUser) {
         //txtAdminName.setText(selectedUser.getCreatedFrom()); 
         //txtCreationDate.setText(selectedUser.get);
@@ -307,6 +335,10 @@ public class UserData extends javax.swing.JPanel {
         }   
     }
 
+    /**
+     * Setzen der Editierbarkeit der einzelnen Elemente von {@link UserData}
+     * @param b 
+     */
     public void setEditable(boolean b) {
         txtFirstName.setEnabled(b);
         txtName.setEnabled(b);

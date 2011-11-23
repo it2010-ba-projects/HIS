@@ -21,24 +21,23 @@ package his.ui.controls;
 
 import his.business.UserResultBusiness;
 import his.model.Groups;
-import his.model.Users;
-import his.model.providers.CategoriesProvider;
 import his.model.providers.GroupsProvider;
-import his.model.providers.UsersProvider;
 import his.ui.events.SearchEvent;
 import his.ui.events.SearchListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
+ * Diese Klasse dient zum Suchen von {@link Users} durch deren Namen, 
+ * Benutzernamen oder der Gruppenzugehörigkeit.
  * @author Franziska Staake
  */
 public class UserSearch extends javax.swing.JPanel {
     
     private UserResultBusiness uResultBus = new UserResultBusiness();
-
-    /** Creates new form UserSearch */
+    protected javax.swing.event.EventListenerList searchListenerList =
+        new javax.swing.event.EventListenerList();
+    /** Erstellt einen neue Form {@link UserSearch} */
     public UserSearch() {
         initComponents();
     }
@@ -72,11 +71,6 @@ public class UserSearch extends javax.swing.JPanel {
         btnSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSearchActionPerformed(evt);
-            }
-        });
-        btnSearch.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                btnSearchKeyPressed(evt);
             }
         });
 
@@ -125,17 +119,26 @@ public class UserSearch extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    protected javax.swing.event.EventListenerList searchListenerList =
-        new javax.swing.event.EventListenerList();
-
+    /**
+     * 
+     * @param {@link SearchListener} 
+     */
     public void addUserSearchListener(SearchListener listener) {
         searchListenerList.add(SearchListener.class, listener);
     }
-
+    
+    /**
+     * 
+     * @param {@link SearchListener}  
+     */
     public void removeUserSearchListener(SearchListener listener) {
         searchListenerList.remove(SearchListener.class, listener);
     }
 
+    /**
+     *
+     * @param {@link SearchEvent}  
+     */
     void fireUserSearch(SearchEvent evt) {
         Object[] listeners = searchListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
@@ -147,8 +150,9 @@ public class UserSearch extends javax.swing.JPanel {
         }
     } 
     
-    
-    
+    /**
+     * Suche nach eingegebenen Suchparametern von {@link Users} in der Datenbank
+     */
     private void search(){
         // Benutzersuche:      
         
@@ -179,13 +183,13 @@ public class UserSearch extends javax.swing.JPanel {
         
     }
     
+    /**
+     * Suche beim Anklicken des Such-Buttons
+     * @param {@link ActionEvent}
+     */
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         search();
     }//GEN-LAST:event_btnSearchActionPerformed
-
-    private void btnSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnSearchKeyPressed
-        search();
-    }//GEN-LAST:event_btnSearchKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;

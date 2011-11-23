@@ -27,33 +27,42 @@ import his.ui.events.ResultShowListener;
 
 
 /**
- *
+ * Diese Klasse dient zur Auflistung aus {@link UserSearch} übergebener 
+ * {@link Users}, Die Auflistung erfolgt in einer {@link JTable}
  * @author Franziska Staake
  */
 public class UserResult extends javax.swing.JPanel {
 
     private UserResultBusiness userResultBusiness;
     private Users selectedUser;
-    
-    //public TableModel model;
-    
-    /** Creates new form UserResult */
+    protected javax.swing.event.EventListenerList resultShowListenerList =
+        new javax.swing.event.EventListenerList();
+        
+    /** Erstellt einen neue Form {@link UserResult} */
     public UserResult() {
         initComponents();
     }
-    
-    
-    protected javax.swing.event.EventListenerList resultShowListenerList =
-        new javax.swing.event.EventListenerList();
 
+    /**
+     * 
+     * @param {@link ResultShowListener} 
+     */
     public void addUserResultShowListener(ResultShowListener listener) {
         resultShowListenerList.add(ResultShowListener.class, listener);
     }
 
+    /**
+     * 
+     * @param {@link ResultShowListener}  
+     */
     public void removeUserResultShowListener(ResultShowListener listener) {
         resultShowListenerList.remove(ResultShowListener.class, listener);
     }
 
+    /**
+     * 
+     * @param {@link ResultShowEvent}  
+     */
     void fireUserResultShow(ResultShowEvent evt) {
         Object[] listeners = resultShowListenerList.getListenerList();
         // Each listener occupies two elements - the first is the listener class
@@ -120,20 +129,30 @@ public class UserResult extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * ausgewaehlter {@link Users} wird an {@link fireUserResultShow}
+     * uebergeben, um dann in {@ UserData} angezeigt werden zu können
+     * @param {@link MouseEvent} 
+     */
     private void tableUserResultMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableUserResultMousePressed
         int[] row = tableUserResult.getSelectedRows();
         
         if(row.length < 2){
-            selectedUser = (Users)tableUserResult.getValueAt(row[0],3);
+            selectedUser = (Users)tableUserResult.getValueAt(row[0],0);
             fireUserResultShow(new ResultShowEvent(this));
         }        
     }//GEN-LAST:event_tableUserResultMousePressed
 
+    /**
+     * ausgewählter {@link Users} wird an {@link fireUserResultShow}
+     * uebergeben, um dann in {@ UserData} angezeigt werden zu können
+     * @param {@link MouseEvent} 
+     */
     private void tableUserResultKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableUserResultKeyReleased
         int[] row = tableUserResult.getSelectedRows();
         
         if(row.length < 2){
-            selectedUser = (Users)tableUserResult.getValueAt(row[0],3);
+            selectedUser = (Users)tableUserResult.getValueAt(row[0],0);
             fireUserResultShow(new ResultShowEvent(this));
         } 
     }//GEN-LAST:event_tableUserResultKeyReleased
@@ -165,21 +184,25 @@ public class UserResult extends javax.swing.JPanel {
         return selectedUser;
     }
 
+    /**
+     * Erstellt das {@link TableModel} für die Tabelle, welche die gesuchten
+     * {@link Users} enthalten soll
+     */
     private void showResult() {
         // Tabelle mit Gruppen füllen
         NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
                
         // Spalte erstellen
-        model.addColumn("Vorname");
-        model.addColumn("Nachname");
+        //model.addColumn("Vorname");
+        model.addColumn("Nachname, Vorname");
         model.addColumn("Benutzername");
-        model.addColumn("Objekt");
+        //model.addColumn("Objekt");
         
         //model.addColumn("Gruppen");
        
         //alle Gruppen aus DB eintragen
         for(Users user : userResultBusiness.getUsers()){
-            model.addRow(new Object[] {user.getFirstName(), user.getLastName(), user.getLogin(), user});                       
+            model.addRow(new Object[] {user, user.getLogin()});                       
         }
         
         //Tabellen-Modell der Tabelle zuweisen
