@@ -222,7 +222,7 @@ public class NewUser extends javax.swing.JDialog {
 
     /**
      * Überprüft, ob die alle Textfelder ausgefüllt sind
-     * @return {@link boolean} -Wert, ob Textfelder ausgefüllt sind, oder nicht
+     * @return isDataValid 
      */
     private boolean isDataValid() {
         boolean isDataValid = true;
@@ -236,7 +236,7 @@ public class NewUser extends javax.swing.JDialog {
     
     /**
      * Fenster wird beim Klicken des Abbrechen-Buttons geschlossen
-     * @param {@link ActionEvent} 
+     * @param evt 
      */
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // Fenster schließen
@@ -266,7 +266,7 @@ public class NewUser extends javax.swing.JDialog {
     /**
      * Beim Oeffnen des {@link NewUser} Fensters wird die Methode 
      * {@link tableModelLoad} aufgerufen.
-     * @param {@link WindowEvent} 
+     * @param evt
      */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         tableModelLoad();      
@@ -280,7 +280,7 @@ public class NewUser extends javax.swing.JDialog {
      * ausgewaehlt worden sein.
      * User wird in die Datenbank eingetragen, bei den entsprechenden Gruppen
      * wird der Benutzer eingetragen.
-     * @param {@link ActionEvent} 
+     * @param evt 
      */
     private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
         // Benutzer erstellen

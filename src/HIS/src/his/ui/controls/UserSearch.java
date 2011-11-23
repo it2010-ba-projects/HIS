@@ -121,7 +121,7 @@ public class UserSearch extends javax.swing.JPanel {
 
     /**
      * 
-     * @param {@link SearchListener} 
+     * @param listener 
      */
     public void addUserSearchListener(SearchListener listener) {
         searchListenerList.add(SearchListener.class, listener);
@@ -129,7 +129,7 @@ public class UserSearch extends javax.swing.JPanel {
     
     /**
      * 
-     * @param {@link SearchListener}  
+     * @param listener
      */
     public void removeUserSearchListener(SearchListener listener) {
         searchListenerList.remove(SearchListener.class, listener);
@@ -137,7 +137,7 @@ public class UserSearch extends javax.swing.JPanel {
 
     /**
      *
-     * @param {@link SearchEvent}  
+     * @param evt 
      */
     void fireUserSearch(SearchEvent evt) {
         Object[] listeners = searchListenerList.getListenerList();
@@ -185,7 +185,7 @@ public class UserSearch extends javax.swing.JPanel {
     
     /**
      * Suche beim Anklicken des Such-Buttons
-     * @param {@link ActionEvent}
+     * @param evt
      */
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         search();

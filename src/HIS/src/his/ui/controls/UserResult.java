@@ -45,7 +45,7 @@ public class UserResult extends javax.swing.JPanel {
 
     /**
      * 
-     * @param {@link ResultShowListener} 
+     * @param listener  
      */
     public void addUserResultShowListener(ResultShowListener listener) {
         resultShowListenerList.add(ResultShowListener.class, listener);
@@ -53,7 +53,7 @@ public class UserResult extends javax.swing.JPanel {
 
     /**
      * 
-     * @param {@link ResultShowListener}  
+     * @param listener  
      */
     public void removeUserResultShowListener(ResultShowListener listener) {
         resultShowListenerList.remove(ResultShowListener.class, listener);
@@ -61,7 +61,7 @@ public class UserResult extends javax.swing.JPanel {
 
     /**
      * 
-     * @param {@link ResultShowEvent}  
+     * @param evt  
      */
     void fireUserResultShow(ResultShowEvent evt) {
         Object[] listeners = resultShowListenerList.getListenerList();
@@ -132,7 +132,7 @@ public class UserResult extends javax.swing.JPanel {
     /**
      * ausgewaehlter {@link Users} wird an {@link fireUserResultShow}
      * uebergeben, um dann in {@ UserData} angezeigt werden zu können
-     * @param {@link MouseEvent} 
+     * @param evt 
      */
     private void tableUserResultMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableUserResultMousePressed
         int[] row = tableUserResult.getSelectedRows();
@@ -146,7 +146,7 @@ public class UserResult extends javax.swing.JPanel {
     /**
      * ausgewählter {@link Users} wird an {@link fireUserResultShow}
      * uebergeben, um dann in {@ UserData} angezeigt werden zu können
-     * @param {@link MouseEvent} 
+     * @param evt
      */
     private void tableUserResultKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableUserResultKeyReleased
         int[] row = tableUserResult.getSelectedRows();

@@ -19,7 +19,6 @@
  */
 package his.ui.controls;
 
-import his.business.UserDataBusiness;
 import his.model.Groups;
 import his.model.Users;
 import his.model.providers.GroupsProvider;
@@ -176,7 +175,7 @@ public class UserData extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     /**
      * Überprüft, ob die alle Textfelder ausgefüllt sind
-     * @return {@link boolean} -Wert, ob Textfelder ausgefüllt sind, oder nicht
+     * @return isDataValid
      */
     private boolean isDataValid() {
         boolean isDataValid = true;
@@ -211,7 +210,7 @@ public class UserData extends javax.swing.JPanel {
      * Buttons, d.h. in der Datenbank als gelöscht angezeigt.
      * Danach werden die Textfelder der {@link UserData} gelehrt und die
      * Selektionen der Tabelle augehoben.
-     * @param {@link ActionEvent} 
+     * @param evt 
      */   
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // Benutzer wird in der Datenbank als gelöscht markiert
@@ -239,7 +238,7 @@ public class UserData extends javax.swing.JPanel {
      * Dabei müssen alle Felder ausgefuellt sein, der Benutzername (wenn geaendert)
      * darf nicht bereits in der Datenbank auftreten und es muss mindestens
      * eine Gruppe ausgewahlt worden sein.
-     * @param {@link ActionEvent} 
+     * @param evt 
      */
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
         // Benutzerdaten werden geändert
@@ -287,7 +286,7 @@ public class UserData extends javax.swing.JPanel {
     /**
      * Änderung des Passwortes des aktuell angezeigten {@link Users} in
      * "p@ssw0rd"
-     * @param {@link ActionEvent}
+     * @param evt
      */
     private void btnPasswordResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPasswordResetActionPerformed
         //Passwort des zu bearbeitenden Benutzers in Standard-PW ändern
@@ -313,7 +312,7 @@ public class UserData extends javax.swing.JPanel {
 
     /**
      * Anzeige des in {@link UserResult} ausgewählten {@link Users}.
-     * @param selectedUser (in {@link UserResult} ausgewählter {@link Users})
+     * @param selectedUser
      */
     public void setSelectedUser(Users selectedUser) {
         //txtAdminName.setText(selectedUser.getCreatedFrom()); 
