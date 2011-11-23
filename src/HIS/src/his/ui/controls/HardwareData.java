@@ -364,7 +364,7 @@ public class HardwareData extends javax.swing.JPanel {
     private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
         // Validation und Hardware erstellen
         if(isDataValid() && updateHardware()) {
-            this.setVisible(false);
+            JOptionPane.showMessageDialog(rootPane, "Hardware geändert.", "Hardware geändert", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
             JOptionPane.showMessageDialog(rootPane, "Das Formular enthält Fehler.\nHardware konnte nicht gespeichert werden.",
@@ -432,7 +432,7 @@ public class HardwareData extends javax.swing.JPanel {
         txtPurchaseDate.setText(formatter.format(hardware.getPurchaseDate()));
         comboManufacturer.setSelectedItem(hardware.getManufacturer().getName());
         comboState.setSelectedItem(hardware.getState().getName());
-        categoryDataTree.setSelectedCategory(hardware.getCategoriesCollection().iterator().next(), true);
+        categoryDataTree.setSelectedCategory(hardware.getCategoriesCollection().iterator().next(), false);
         
         if(hardware.getPlace() != null) {
             comboPlace.setSelectedItem(hardware.getPlace().getName());
@@ -440,7 +440,11 @@ public class HardwareData extends javax.swing.JPanel {
         
         if(hardware.getHardware() != null) {
             txtRegardsTo.setText(hardware.getHardware().getName());
-        }        
+        }
+        
+        if(hardware.getOwner() != null) {
+            comboOwner.setSelectedItem(hardware.getOwner().getName());
+        }
         
         if(hardware.getWarrantyEnd() != null) {
             txtWarrantyEnd.setText(formatter.format(hardware.getWarrantyEnd()));
@@ -570,7 +574,9 @@ public class HardwareData extends javax.swing.JPanel {
             }
             
             Collection<Hardware> hardwareCollection = category.getHardwareCollection();
-            hardwareCollection.add(hardware);
+            if(!hardwareCollection.contains(hardware)) {
+                hardwareCollection.add(hardware);
+            }
         }
         else {
             HIS.getLogger().error("Keine Kategorie ausgewählt!");
@@ -611,10 +617,8 @@ public class HardwareData extends javax.swing.JPanel {
     private boolean isDataValid() {
         boolean isDataValid = true;
         isDataValid = this.txtName.getInputVerifier().verify(txtName);
-        isDataValid = this.txtInventoryNumber.getInputVerifier().verify(txtInventoryNumber) && isDataValid;
         isDataValid = this.txtPurchaseDate.getInputVerifier().verify(txtPurchaseDate) && isDataValid;
         isDataValid = this.comboManufacturer.getInputVerifier().verify(comboManufacturer) && isDataValid;
-        isDataValid = this.txtWarrantyEnd.getInputVerifier().verify(txtWarrantyEnd) && isDataValid;
         isDataValid = this.txtWarrantySpan.getInputVerifier().verify(txtWarrantySpan) && isDataValid;
         return isDataValid;
     }
