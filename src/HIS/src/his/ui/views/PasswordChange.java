@@ -49,6 +49,7 @@ public class PasswordChange extends javax.swing.JDialog {
         btnChange = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Passwort ändern");
         setAlwaysOnTop(true);
         setModal(true);
         setResizable(false);

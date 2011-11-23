@@ -212,6 +212,7 @@ public class QuickSearch extends javax.swing.JDialog {
         tblResult = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Schnellsuche | Ergebnisse");
 
         tblResult.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

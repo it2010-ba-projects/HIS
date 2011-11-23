@@ -44,61 +44,33 @@ import his.ui.events.CreateCategoriesListener;
 import his.ui.events.QuickSearchEvent;
 import his.ui.events.QuickSearchListener;
 import javax.swing.GroupLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
  *
- * @author Franziska Staake
+ * @author Franziska Staake, Thomas Schulze
  */
 public class MainForm extends javax.swing.JFrame {
 
-    /** Creates new form MainForm */
-   private UserSearch userSearch = new UserSearch();
-   private UserData userData = new UserData();
-   private UserResult userResult = new UserResult();
-   private HardwareSearch hardwareSearch = new HardwareSearch();
-   private HardwareData hardwareData = new HardwareData();
-   private HardwareResult hardwareResult = new HardwareResult();
-   private CategorySearch categorySearch = new CategorySearch();
-   private CategoryData categoryData = new CategoryData();
-   private CategoryResult categoryResult = new CategoryResult();
+   private UserSearch userSearch;
+   private UserData userData;
+   private UserResult userResult;
+   private HardwareSearch hardwareSearch;
+   private HardwareData hardwareData;
+   private HardwareResult hardwareResult;
+   private CategorySearch categorySearch;
+   private CategoryData categoryData;
+   private CategoryResult categoryResult;
     
     public MainForm() {
         initComponents();
-        categoryData.setRefreshOnExpand(true);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);       
         
         if(!RightsManager.hasRight(Rights.ADMINISTRATOR)){
             menuItemUsers.setVisible(false);
             menuItemMenuNewUser.setVisible(false);
         }
-        
-        categorySearch.addCategoriesSearchListener(new SearchListener() {
-            @Override
-            public void searchPerformed(SearchEvent evt) {
-                categoryResult.setCatResultBusiness(categorySearch.getCatResultBusiness());
-            }
-        });
-        
-        categoryResult.addCategoriesResultShowListener(new CategoriesResultShowListener() {
-            @Override
-            public void categoriesResultShowPerformed(CategoriesResultShowEvent evt) {
-                categoryData.setSelectedCategory(categoryResult.getSelectedCategory(), evt.refreshTree());
-            }
-        });
-        
-        userSearch.addUserSearchListener(new SearchListener() {
-            @Override
-            public void searchPerformed(SearchEvent evt) {
-                userResult.setUserResultBusiness(userSearch.getUserResultBusiness());
-            }
-        });
-        
-        userResult.addUserResultShowListener(new ResultShowListener() {
-            @Override
-            public void resultShowPerformed(ResultShowEvent evt) {
-                userData.setSelectedUser(userResult.getSelectedUser());
-            }
-        });
     }
 
     /** This method is called from within the constructor to
@@ -110,11 +82,6 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelStatus = new javax.swing.JPanel();
-        seperaterStatus = new javax.swing.JSeparator();
-        progressBar = new javax.swing.JProgressBar();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         panelSearch = new javax.swing.JPanel();
         panelData = new javax.swing.JPanel();
         panelResults = new javax.swing.JPanel();
@@ -135,40 +102,7 @@ public class MainForm extends javax.swing.JFrame {
         menuHelp = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        javax.swing.GroupLayout panelStatusLayout = new javax.swing.GroupLayout(panelStatus);
-        panelStatus.setLayout(panelStatusLayout);
-        panelStatusLayout.setHorizontalGroup(
-            panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStatusLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 767, Short.MAX_VALUE)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addComponent(seperaterStatus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 957, Short.MAX_VALUE)
-        );
-        panelStatusLayout.setVerticalGroup(
-            panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStatusLayout.createSequentialGroup()
-                .addComponent(seperaterStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(panelStatusLayout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel1)
-                            .addContainerGap())
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStatusLayout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap()))
-                    .addGroup(panelStatusLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addContainerGap())))
-        );
+        setTitle("HI-System");
 
         panelSearch.setBorder(javax.swing.BorderFactory.createTitledBorder("Suche"));
 
@@ -206,7 +140,7 @@ public class MainForm extends javax.swing.JFrame {
         );
         panelResultsLayout.setVerticalGroup(
             panelResultsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 311, Short.MAX_VALUE)
+            .addGap(0, 350, Short.MAX_VALUE)
         );
 
         btnQuickSearch.setText("Suchen");
@@ -325,7 +259,7 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(panelResults, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(panelSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,8 +267,7 @@ public class MainForm extends javax.swing.JFrame {
                                 .addComponent(txtSearchAttribute, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnQuickSearch))
-                            .addComponent(panelData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(panelStatus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(panelData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -350,8 +283,6 @@ public class MainForm extends javax.swing.JFrame {
                     .addComponent(panelData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelResults, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -387,7 +318,81 @@ public class MainForm extends javax.swing.JFrame {
         addComponentToPanel(panelSearch, childs[0]);
         addComponentToPanel(panelData, childs[1]);
         addComponentToPanel(panelResults, childs[2]);
-    }     
+    }  
+    
+    private void loadFeature(FeatureTypen typ)
+    {
+        if(typ == FeatureTypen.CATEGORIES)
+        {       
+            initCategories();
+            loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
+        }
+        else if(typ == FeatureTypen.HARDWARE)
+        {
+            initHardware();
+            loadChildPanels(new JPanel[] {hardwareSearch, hardwareData, hardwareResult} );
+        }
+        else if(typ == FeatureTypen.USERS && RightsManager.hasRight(Rights.ADMINISTRATOR))
+        {
+            initUsers();
+            loadChildPanels(new JPanel[] {userSearch, userData, userResult} );
+        }
+        this.setTitle("HI - System | " + typ.getName());
+    }
+    
+    private void initCategories() 
+    {
+        categorySearch = new CategorySearch();
+        categoryData = new CategoryData();
+        categoryResult = new CategoryResult();
+
+        categoryData.setRefreshOnExpand(true);
+        categoryData.setEditDeleteVisible(true);
+        categorySearch.addCategoriesSearchListener(new SearchListener() {
+            @Override
+            public void searchPerformed(SearchEvent evt) {
+                categoryResult.setCatResultBusiness(categorySearch.getCatResultBusiness());
+            }
+        });
+        
+        categoryResult.addCategoriesResultShowListener(new CategoriesResultShowListener() {
+            @Override
+            public void categoriesResultShowPerformed(CategoriesResultShowEvent evt) {
+                categoryData.setSelectedCategory(categoryResult.getSelectedCategory(), evt.refreshTree());
+            }
+        });
+    }
+
+    private void initHardware() 
+    {
+        hardwareSearch = new HardwareSearch();
+        hardwareData = new HardwareData();
+        hardwareResult = new HardwareResult();
+    }
+
+    private void initUsers() 
+    {
+        userSearch = new UserSearch();
+        userData = new UserData();
+        userResult = new UserResult();
+        
+        userData.setEditable(false);
+        
+        userSearch.addUserSearchListener(new SearchListener() {
+            @Override
+            public void searchPerformed(SearchEvent evt) {
+                userResult.setUserResultBusiness(userSearch.getUserResultBusiness());
+            }
+        });
+        
+        userResult.addUserResultShowListener(new ResultShowListener() {
+            @Override
+            public void resultShowPerformed(ResultShowEvent evt) {
+                userData.setEditable(true);
+                userData.setSelectedUser(userResult.getSelectedUser());
+            }
+        });
+    }
     
     private void showAndPerformQuickSearch()
     {
@@ -397,41 +402,40 @@ public class MainForm extends javax.swing.JFrame {
             @Override
             public void quickSearchPerformed(QuickSearchEvent evt) {
                 
+                loadFeature(evt.getFeature());
+                
                 if(evt.getFeature()== FeatureTypen.CATEGORIES)
                 {
-                    categoryData.setEditDeleteVisible(true);
-                    loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
+                    categoryData.setEditDeleteVisible(true);                    
                     categoryData.setSelectedCategory((Categories)evt.getObject(), false);
                 }
                 else if(evt.getFeature()== FeatureTypen.HARDWARE)
                 {                    
-                    loadChildPanels(new JPanel[] {hardwareSearch, hardwareData, hardwareResult} );
                 }
                 else if(evt.getFeature()== FeatureTypen.USERS)
                 {
-                    loadChildPanels(new JPanel[] {userSearch, userData, userResult} );
                     userData.setSelectedUser((Users)evt.getObject());
                 }
             }
         });
+        quickSearch.setLocation(50,50);
         quickSearch.setVisible(true);
     }
     /**Je nach Verwaltungsbereich wird das entsprechende Fenster zur Eingabe eines neuen 
       Datensatzes geöffnet*/
     private void menuItemHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHardwareActionPerformed
         //HardwarePanel anzeigen:
-        loadChildPanels(new JPanel[] {hardwareSearch, hardwareData, hardwareResult} );
+        loadFeature(FeatureTypen.HARDWARE);
     }//GEN-LAST:event_menuItemHardwareActionPerformed
 
     private void menuItemUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemUsersActionPerformed
         // UserPanel anzeigen:
-        loadChildPanels(new JPanel[] {userSearch, userData, userResult} );
+        loadFeature(FeatureTypen.USERS);
     }//GEN-LAST:event_menuItemUsersActionPerformed
 
     private void menuItemCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCategoriesActionPerformed
-        // KategoriePanel anzeigen:
-        categoryData.setEditDeleteVisible(true);
-        loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
+        // KategoriePanel anzeigen:        
+        loadFeature(FeatureTypen.CATEGORIES);
     }//GEN-LAST:event_menuItemCategoriesActionPerformed
 
     private void menuItemCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCloseActionPerformed
@@ -442,17 +446,21 @@ public class MainForm extends javax.swing.JFrame {
     private void menuItemMenuNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewUserActionPerformed
         //Fenster "neuen Benutzer anlegen" anzeigen
         NewUser newU = new NewUser(this,true);
+        newU.setLocation(50, 50);
         newU.setVisible(true);
     }//GEN-LAST:event_menuItemMenuNewUserActionPerformed
 
     private void menuItemMenuNewHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewHardwareActionPerformed
         //Fenster "neue Hardwarekomponente anlegen" anzeigen
         NewHardware newH = new NewHardware(this,true);
+        newH.setLocation(50, 50);
         newH.setVisible(true);
     }//GEN-LAST:event_menuItemMenuNewHardwareActionPerformed
 
     private void menuItemMenuNewCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMenuNewCategoryActionPerformed
         //Fenster "neue Kategorie anlegen" anzeigen
+        if(categoryData==null)
+            categoryData = new CategoryData();
         NewCategory newC = new NewCategory(this,true, categoryData.getExpandedRows());             
              newC.addCategoriesSearchListener(new CreateCategoriesListener() {
                 @Override
@@ -461,11 +469,13 @@ public class MainForm extends javax.swing.JFrame {
                     categoryData.setExpandedRows(evt.getExpandedRowsList());
                 }
             });
-            newC.setVisible(true);
+        newC.setLocation(50, 50);
+        newC.setVisible(true);
     }//GEN-LAST:event_menuItemMenuNewCategoryActionPerformed
 
     private void menuItemPasswordChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemPasswordChangeActionPerformed
         PasswordChange pwChange = new PasswordChange(this, true);
+        pwChange.setLocation(50,50);
         pwChange.setVisible(true);        
     }//GEN-LAST:event_menuItemPasswordChangeActionPerformed
 
@@ -514,8 +524,6 @@ public class MainForm extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnQuickSearch;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu menuHelp;
     private javax.swing.JMenuItem menuItemCategories;
@@ -532,10 +540,8 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JPanel panelData;
     private javax.swing.JPanel panelResults;
     private javax.swing.JPanel panelSearch;
-    private javax.swing.JPanel panelStatus;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JSeparator seperaterStatus;
     private javax.swing.JTextField txtSearchAttribute;
     // End of variables declaration//GEN-END:variables
+
 
 }

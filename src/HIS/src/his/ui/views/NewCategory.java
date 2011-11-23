@@ -110,6 +110,7 @@ public class NewCategory extends javax.swing.JDialog {
         catData = new his.ui.controls.CategoryData();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Neue Kategorien anlegen");
         setAlwaysOnTop(true);
         setIconImage(null);
         setModal(true);

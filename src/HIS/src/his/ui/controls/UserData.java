@@ -301,11 +301,17 @@ public class UserData extends javax.swing.JPanel {
                    listGroups.setRowSelectionInterval(i, i);
                }
             }
-        }
-        
-        
-        
-             
+        }   
+    }
+
+    public void setEditable(boolean b) {
+        txtFirstName.setEnabled(b);
+        txtName.setEnabled(b);
+        txtUserName.setEnabled(b);
+        listGroups.setEnabled(b);
+        btnChange.setEnabled(b);
+        btnDelete.setEnabled(b);
+        btnPasswordReset.setEnabled(b);
     }
     
     

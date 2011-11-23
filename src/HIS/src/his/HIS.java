@@ -84,7 +84,8 @@ public class HIS {
         
         //
         for(int i = 1; i<=10; i++){            
-            LoginView login = new LoginView(null, true);     
+            LoginView login = new LoginView(null, true);   
+            login.setLocation(50,50);
             login.setVisible(true);       
         
             if(login.isSucceeded()){

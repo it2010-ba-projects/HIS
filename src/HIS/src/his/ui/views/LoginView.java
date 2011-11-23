@@ -60,6 +60,7 @@ public class LoginView extends javax.swing.JDialog {
         txtUserPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Hardware Inventory System | Login");
 
         jLabel1.setText("Benutzername");
 
@@ -86,6 +87,12 @@ public class LoginView extends javax.swing.JDialog {
         btnCancel.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 btnCancelKeyPressed(evt);
+            }
+        });
+
+        txtUserPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtUserPasswordActionPerformed(evt);
             }
         });
 
@@ -175,6 +182,10 @@ public class LoginView extends javax.swing.JDialog {
     private void btnCancelKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnCancelKeyPressed
         cancel();
     }//GEN-LAST:event_btnCancelKeyPressed
+
+    private void txtUserPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserPasswordActionPerformed
+        login();
+    }//GEN-LAST:event_txtUserPasswordActionPerformed
 
     /**
      * @param args the command line arguments
