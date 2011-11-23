@@ -18,7 +18,6 @@
  */
 package his.ui.validations;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +44,7 @@ public class IsValidDateValidator extends AbstractValidator {
                 return false;
             try {
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat formatter = new SimpleDateFormat("dd.mm.yyyy");
+                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
                 Date d = formatter.parse(text);
                 cal.setLenient(false);
                 cal.setTime(d);

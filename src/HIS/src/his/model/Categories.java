@@ -68,7 +68,7 @@ public class Categories implements Serializable {
     @JoinTable(name = "categories_hardware", joinColumns = {
         @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "hardware_id", referencedColumnName = "id", nullable = false)})
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Hardware> hardwareCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", fetch = FetchType.LAZY)
     private Collection<Categories> categoriesCollection;

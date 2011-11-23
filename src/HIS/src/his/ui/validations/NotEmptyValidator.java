@@ -42,7 +42,9 @@ public class NotEmptyValidator extends AbstractValidator {
                 return false;
         }
         else if (c instanceof JComboBox) {
-            if (((JComboBox)c).getSelectedItem().toString().trim().isEmpty())
+            JComboBox cCombo = (JComboBox)c;
+            if (cCombo.getSelectedItem() != null && 
+                    cCombo.getSelectedItem().toString().trim().isEmpty())
                 return false;
         }
         return true;

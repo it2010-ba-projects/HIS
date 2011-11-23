@@ -20,14 +20,28 @@
 package his.ui.views;
 
 import his.HIS;
+import his.model.Categories;
 import his.model.Hardware;
 import his.model.Manufacturers;
+import his.model.Places;
+import his.model.States;
+import his.model.providers.CategoriesProvider;
 import his.model.providers.HardwareProvider;
+import his.model.providers.ManufacturersProvider;
+import his.model.providers.PlacesProvider;
+import his.model.providers.StatesProvider;
 import his.ui.validations.*;
+import java.awt.event.ItemEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.UUID;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
 
 /**
  *
@@ -41,6 +55,26 @@ public class NewHardware extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         parentHardware = null;
+        
+        categoryDataTree.setEditable(false);
+        
+        txtWarrantySpan.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                calculateWarrantyEnd();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                calculateWarrantyEnd();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                calculateWarrantyEnd();
+            }
+        });
     }
 
     /** This method is called from within the constructor to
@@ -80,6 +114,11 @@ public class NewHardware extends javax.swing.JDialog {
         setModal(true);
         setName("newHardwareDialog"); // NOI18N
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel8.setText("Garantiezeitraum");
 
@@ -111,6 +150,7 @@ public class NewHardware extends javax.swing.JDialog {
         });
 
         txtPurchaseDate.setToolTipText("Datumsformat: dd.mm.yyyy");
+        txtPurchaseDate.setInputVerifier(new IsValidDateValidator(this, txtPurchaseDate, "Kein gültiges Datum eingeben!\n(Format: dd.mm.yyyy)"));
 
         txtReferingTo.setEditable(false);
 
@@ -120,9 +160,16 @@ public class NewHardware extends javax.swing.JDialog {
 
         jLabel5.setText("gehört zu");
 
+        comboWarrantySpan.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Monat/e", "Jahr/e" }));
+        comboWarrantySpan.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboWarrantySpanItemStateChanged(evt);
+            }
+        });
+
         txtHardwareName.setInputVerifier(new NotEmptyValidator(this, txtHardwareName, "Gerätename darf nicht leer sein!"));
 
-        txtWarrantySpan.setInputVerifier(new IsEmptyOrPositiveNumericIntegerValidator(this, txtWarrantySpan, "Nur positive ganzzahlige Zahlen erlaubt."));
+        txtWarrantySpan.setInputVerifier(new IsEmptyOrNumericIntegerValidator(this, txtWarrantySpan, "Das Feld darf leer sein oder muss eine Zahl enthalten!"));
 
         jLabel1.setText("Gerätename");
 
@@ -136,8 +183,10 @@ public class NewHardware extends javax.swing.JDialog {
 
         jLabel2.setText("Hersteller");
 
+        comboPlace.setEditable(true);
         comboPlace.setFocusTraversalPolicyProvider(true);
 
+        comboManufacturer.setEditable(true);
         comboManufacturer.setFocusTraversalPolicyProvider(true);
         comboManufacturer.setInputVerifier(new NotEmptyValidator(this, comboManufacturer, "Es muss ein Hersteller ausgewählt werden!"));
 
@@ -153,70 +202,60 @@ public class NewHardware extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(500, 500, 500)
-                .addComponent(btnCreate))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(400, 400, 400)
-                .addComponent(btnCancel))
-            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createSequentialGroup()
+            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel2)
                         .addGap(198, 198, 198))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(comboManufacturer, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtHardwareName, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtReferingTo, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel6))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(txtPurchaseDate, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(comboWarrantySpan, 0, 83, Short.MAX_VALUE))
-                                    .addComponent(txtProductNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(btnSearch)
-                                    .addComponent(comboPlace, 0, 121, Short.MAX_VALUE)))))
-                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel7)
                         .addGap(173, 173, 173))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(139, 139, 139)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel1))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel6))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtHardwareName, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(txtReferingTo, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                                    .addComponent(comboManufacturer, 0, 236, Short.MAX_VALUE)
+                                    .addComponent(txtPurchaseDate, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtProductNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(comboWarrantySpan, 0, 179, Short.MAX_VALUE))
+                            .addComponent(jLabel4)
+                            .addComponent(comboPlace, 0, 227, Short.MAX_VALUE)
+                            .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel9))
-                .addGap(0, 0, 0))
+                    .addComponent(jLabel9)))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(615, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(100, 100, 100)
+                        .addComponent(btnCreate))
+                    .addComponent(btnCancel))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -226,9 +265,14 @@ public class NewHardware extends javax.swing.JDialog {
                         .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel9))
-                        .addGap(0, 0, 0)
+                            .addComponent(jLabel9)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel3)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -250,28 +294,24 @@ public class NewHardware extends javax.swing.JDialog {
                                     .addComponent(jLabel8))
                                 .addGap(5, 5, 5)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtPurchaseDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(comboWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPurchaseDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(comboWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, 0)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel7))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(btnCreate))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(btnCancel))
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(117, 117, 117)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4))))
+                                .addGap(96, 96, 96)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(12, 12, 12)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnCreate)
+                    .addComponent(btnCancel))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -297,20 +337,34 @@ public class NewHardware extends javax.swing.JDialog {
             this.setVisible(false);
         }
         else {
-            JOptionPane.showMessageDialog(this, "Das Formular enthält Fehler.\nHardware konnte nicht gespeichert werden.",
+            JOptionPane.showMessageDialog(rootPane, "Das Formular enthält Fehler.\nHardware konnte nicht gespeichert werden.",
                     "Speichern fehlgeschlagen", JOptionPane.ERROR_MESSAGE | JOptionPane.OK_OPTION );
         }
     }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        initializeData();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void comboWarrantySpanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboWarrantySpanItemStateChanged
+        // TODO Garantieende berechnen
+        if(ItemEvent.SELECTED == evt.getStateChange()) {            
+            calculateWarrantyEnd();
+        }
+    }//GEN-LAST:event_comboWarrantySpanItemStateChanged
     
     private boolean createHardware() {
         HardwareProvider hardwareProvider = new HardwareProvider();
+        CategoriesProvider categoryProvider = new CategoriesProvider();
         Hardware hardware = new Hardware();
+        Categories category;
         
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.mm.yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
         Date purchaseDate;
         
         try {
             purchaseDate = formatter.parse(txtPurchaseDate.getText().trim());
+            hardware.setPurchaseDate(purchaseDate);
         } catch (ParseException ex) {
             HIS.getLogger().error(ex);
             return false;
@@ -319,12 +373,13 @@ public class NewHardware extends javax.swing.JDialog {
         hardware.setName(txtHardwareName.getText().trim());
         hardware.setInventoryNumber(txtProductNumber.getText().trim());
         hardware.setPurchaseDate(purchaseDate);
-        // TODO: CreateOrGetManufacturer
-        hardware.setManufacturer(null);
+        Manufacturers manufacturer = CreateOrGetManufacturer(comboManufacturer.getSelectedItem().toString().trim());
+        hardware.setManufacturer(manufacturer);
         
-        if(!comboPlace.getSelectedItem().toString().trim().isEmpty()) {
-            // TODO: CreateOrGetPlace
-            hardware.setPlace(null);
+        if(comboPlace.getSelectedItem() != null && 
+                !comboPlace.getSelectedItem().toString().trim().isEmpty()) {
+            Places place =  CreateOrGetPlace(comboPlace.getSelectedItem().toString().trim());
+            hardware.setPlace(place);
         }
         
         if(!txtWarrantyEnd.getText().trim().isEmpty()) {
@@ -338,8 +393,50 @@ public class NewHardware extends javax.swing.JDialog {
         
         hardware.setHardware(parentHardware);
         
+        if (hardware.getCategoriesCollection() == null) {
+            hardware.setCategoriesCollection(new ArrayList<Categories>());
+            
+        }
+        
+        Collection<Categories> categoryCollection = hardware.getCategoriesCollection();        
+        category = categoryDataTree.getSelectedCategory();
+        
+        if(category != null) {
+            categoryCollection.add(category);
+            
+            if(category.getHardwareCollection() == null) {
+                category.setHardwareCollection(new ArrayList<Hardware>());
+            }
+            
+            Collection<Hardware> hardwareCollection = category.getHardwareCollection();
+            hardwareCollection.add(hardware);
+        }
+        else {
+            HIS.getLogger().error("Keine Kategorie ausgewählt!");
+            return false;
+        }
+        
+        Date warrantyEnd = null;
+        
+        if(!txtWarrantyEnd.getText().trim().isEmpty()) {
+            try {
+                warrantyEnd = formatter.parse(txtWarrantyEnd.getText().trim());                
+            } catch (ParseException ex) {
+                HIS.getLogger().debug(ex);
+            }            
+        }
+        
+        hardware.setWarrantyEnd(warrantyEnd);
+        
+        StatesProvider stateProvider = new StatesProvider();
+        States state = stateProvider.findByName("lagernd");
+        
+        hardware.setState(state);
+        
+        
         try {
             hardwareProvider.create(hardware);
+            categoryProvider.update(category);
         }
         catch (Exception e) {
             HIS.getLogger().debug(e);
@@ -424,5 +521,108 @@ public class NewHardware extends javax.swing.JDialog {
     private javax.swing.JTextField txtWarrantyEnd;
     private javax.swing.JTextField txtWarrantySpan;
     // End of variables declaration//GEN-END:variables
+
+    private Manufacturers CreateOrGetManufacturer(String manufacturerName) {
+        
+        ManufacturersProvider manufacturerProvider = new ManufacturersProvider();
+        Collection<Manufacturers> manufacturerCollection = manufacturerProvider.findByName(manufacturerName);
+        
+        Manufacturers manufacturer = null;
+        if (!manufacturerCollection.isEmpty()) {
+            manufacturer = manufacturerCollection.iterator().next();
+        }
+        else {
+            manufacturer = new Manufacturers();
+            manufacturer.setName(manufacturerName);
+            manufacturerProvider.create(manufacturer);
+        }
+        
+        return manufacturer;
+        
+    }
+    
+    
+    private Places CreateOrGetPlace(String placeName) {
+        
+        PlacesProvider placesProvider = new PlacesProvider();
+        Collection<Places> placesCollection = placesProvider.findByName(placeName);
+        
+        Places place = null;
+        if (!placesCollection.isEmpty()) {
+            place = placesCollection.iterator().next();
+        }
+        else {
+            place = new Places();
+            place.setName(placeName);
+            placesProvider.create(place);
+        }
+        
+        return place;
+    }
+
+    private void initializeData() {
+        
+        fillManufacturers();
+        fillPlaces();
+        
+        txtProductNumber.setText(UUID.randomUUID().toString());
+    }
+
+    private void fillManufacturers() {
+        ManufacturersProvider manufacturerProvider = new ManufacturersProvider();
+        Collection<Manufacturers> manufacturerCollection = manufacturerProvider.findAll();
+        
+        comboManufacturer.addItem("");
+        
+        for(Manufacturers m: manufacturerCollection) {                
+            comboManufacturer.addItem(m.getName());  
+        } 
+    }
+
+    private void fillPlaces() {
+        PlacesProvider placesProvider = new PlacesProvider();
+        Collection<Places> placesCollection = placesProvider.findAll();
+        
+        comboPlace.addItem("");
+        
+        for(Places p: placesCollection) {                
+            comboPlace.addItem(p.getName());  
+        } 
+    }
+
+    private void calculateWarrantyEnd() {
+        if(!(txtWarrantySpan.getText().trim().isEmpty() || txtPurchaseDate.getText().trim().isEmpty())) {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+            try {
+                Date date = formatter.parse(txtPurchaseDate.getText().trim());
+                Calendar cal = new GregorianCalendar();
+                cal.setLenient(true);
+                
+                cal.setTime(date);
+                                
+                int timeSpanUnit;
+                
+                if(comboWarrantySpan.getSelectedItem().toString().equals("Monat/e")) {
+                    timeSpanUnit = Calendar.MONTH;
+                }
+                else {
+                    timeSpanUnit = Calendar.YEAR;
+                }
+                
+                int timeSpan = Integer.parseInt(txtWarrantySpan.getText().trim());
+                
+                cal.add(timeSpanUnit, timeSpan);
+                
+                txtWarrantyEnd.setText(formatter.format(cal.getTime()));
+            } catch (ParseException ex) {
+                HIS.getLogger().warn(ex);
+            }
+        }
+        else {
+            txtWarrantyEnd.setText("");
+        }
+    }
+
+
     
 }
