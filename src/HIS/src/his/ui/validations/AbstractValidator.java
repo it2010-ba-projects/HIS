@@ -91,8 +91,6 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
                 ((WantsValidationStatus)parent).validateFailed(c);
 			
             c.setBackground(Color.PINK);
-            Border border = BorderFactory.createLineBorder(Color.RED);
-            c.setBorder(border);
             popup.setSize(0, 0);
             popup.setLocationRelativeTo(c);
             point = popup.getLocation();
@@ -105,7 +103,6 @@ public abstract class AbstractValidator extends InputVerifier implements KeyList
         }
         
         c.setBackground(Color.WHITE);
-        c.setBorder(null);
 		
         if(parent instanceof WantsValidationStatus)
             ((WantsValidationStatus)parent).validatePassed(c);
