@@ -165,7 +165,7 @@ public class UserResultBusiness {
                     Users u = it.next();
                     for(Groups group: lastSearchGroups)
                     {
-                        if(!u.getGroupsCollection().contains((group)))
+                        if(u.getGroupsCollection().contains((group)))
                                 dummyFound = true;
                     }
                     

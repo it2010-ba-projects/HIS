@@ -26,6 +26,7 @@ import his.model.providers.GroupsProvider;
 import his.model.providers.UsersProvider;
 import his.ui.NotEditableDefaultTableModel;
 import his.ui.validations.NotEmptyValidator;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.JOptionPane;
@@ -114,6 +115,7 @@ public class UserData extends javax.swing.JPanel {
 
             }
         ));
+        listGroups.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jScrollPane1.setViewportView(listGroups);
 
         txtUserName.setInputVerifier(new NotEmptyValidator(null, txtUserName, "Bitte Benutzernamen eintragen"));
@@ -298,7 +300,8 @@ public class UserData extends javax.swing.JPanel {
         for(Groups group : user.getGroupsCollection()){
             for(int i = 0; i < 4; i++){
                if(group.equals(defaultTableModel.getValueAt(i, 0))){
-                   listGroups.setRowSelectionInterval(i, i);
+                   listGroups.addRowSelectionInterval(i, i);
+                   
                }
             }
         }   
