@@ -19,15 +19,60 @@
  */
 package his.ui.controls;
 
+import his.HIS;
+import his.model.Categories;
+import his.model.Hardware;
+import his.model.Manufacturers;
+import his.model.Owners;
+import his.model.Places;
+import his.model.States;
+import his.model.providers.CategoriesProvider;
+import his.model.providers.HardwareProvider;
+import his.model.providers.ManufacturersProvider;
+import his.model.providers.OwnersProvider;
+import his.model.providers.PlacesProvider;
+import his.model.providers.StatesProvider;
+import his.ui.validations.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Franziska Staake
  */
 public class HardwareData extends javax.swing.JPanel {
-
+    private Hardware hardware;
+    private Hardware parentHardware;
+    private Component rootPane;
+    
     /** Creates new form HardwareData */
     public HardwareData() {
         initComponents();
+        fillOwners();
+        fillManufacturers();
+        fillPlaces();
+        fillStates();    
+        categoryDataTree.setEditable(false);
+        categoryDataTree.setEditDeleteVisible(false);
+        categoryDataTree.setRefreshVisible(false);
+        parentHardware = null;
+    }
+    
+    /**
+     * Legt die {@link Hardware} zur Anzeige fest.
+     * @param hardware {@link Hardware} zur Befüllung der Felder
+     */
+    public void setHardware(Hardware hardware) {
+        this.hardware = hardware;
+        fillForm();
     }
 
     /** This method is called from within the constructor to
@@ -46,31 +91,38 @@ public class HardwareData extends javax.swing.JPanel {
         txtRegardsTo = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txtManufacturer = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        txtProductNumber = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        txtOwner = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listCategories = new javax.swing.JList();
-        txtStatus = new javax.swing.JTextField();
-        txtWarrantySpan = new javax.swing.JTextField();
+        txtPurchaseDate = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         btnChange = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        txtPlace = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableHardwareHistory = new javax.swing.JTable();
+        comboOwner = new javax.swing.JComboBox();
+        comboPlace = new javax.swing.JComboBox();
+        comboManufacturer = new javax.swing.JComboBox();
+        comboState = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
+        txtWarrantySpan = new javax.swing.JTextField();
+        comboWarrantySpan = new javax.swing.JComboBox();
+        jLabel12 = new javax.swing.JLabel();
+        txtWarrantyEnd = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        categoryDataTree = new his.ui.controls.CategoryData();
 
         jLabel1.setText("Inventarnummer");
 
         txtInventoryNumber.setEditable(false);
 
+        txtName.setInputVerifier(new NotEmptyValidator(null, txtName, "Name darf nicht leer sein!"));
+
         jLabel2.setText("Name");
+
+        txtRegardsTo.setEditable(false);
 
         jLabel3.setText("gehört zu");
 
@@ -78,13 +130,11 @@ public class HardwareData extends javax.swing.JPanel {
 
         jLabel5.setText("Hersteller");
 
-        jLabel6.setText("Produktnummer");
-
         jLabel7.setText("Status");
 
         jLabel9.setText("Besitzer");
 
-        jScrollPane1.setViewportView(listCategories);
+        txtPurchaseDate.setInputVerifier(new IsValidDateValidator(null, txtPurchaseDate, "Kaufdatum darf nicht leer sein und muss ein gültiges Datum enthalten!"));
 
         jLabel8.setText("Garantiezeitraum");
 
@@ -93,6 +143,11 @@ public class HardwareData extends javax.swing.JPanel {
         jLabel11.setText("Gerätehistorie");
 
         btnChange.setText("Ändern");
+        btnChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Löschen");
 
@@ -109,6 +164,29 @@ public class HardwareData extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(tableHardwareHistory);
 
+        comboOwner.setEditable(true);
+
+        comboPlace.setEditable(true);
+
+        comboManufacturer.setEditable(true);
+        comboManufacturer.setInputVerifier(new NotEmptyValidator(null, comboManufacturer, "Hersteller darf nicht leer sein!"));
+
+        jLabel6.setText("Kaufdatum");
+
+        txtWarrantySpan.setInputVerifier(new IsEmptyOrNumericIntegerValidator(null, txtWarrantySpan, "Garantiezeitraum muss eine gültige Zahl enthalten."));
+
+        comboWarrantySpan.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Monat/e", "Jahr/e" }));
+
+        jLabel12.setText("Garantieende");
+
+        txtWarrantyEnd.setEditable(false);
+
+        jScrollPane1.setHorizontalScrollBar(null);
+        jScrollPane1.setInheritsPopupMenu(true);
+
+        categoryDataTree.setEditable(false);
+        jScrollPane1.setViewportView(categoryDataTree);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -116,46 +194,50 @@ public class HardwareData extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtRegardsTo, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(comboManufacturer, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtInventoryNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+                        .addComponent(comboPlace, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPurchaseDate, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel8)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addGap(265, 265, 265))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel6)
                             .addComponent(jLabel9)
-                            .addComponent(jLabel3)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtRegardsTo, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtOwner, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtManufacturer, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtProductNumber, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtInventoryNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel7)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel10)
-                                .addGap(131, 131, 131))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(152, 152, 152))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(173, 173, 173))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(101, 101, 101))
-                            .addComponent(txtWarrantySpan)
-                            .addComponent(txtPlace, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
-                            .addComponent(txtStatus)
-                            .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
-                            .addComponent(jLabel11)))
-                    .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 283, Short.MAX_VALUE))
+                            .addComponent(comboState, 0, 351, Short.MAX_VALUE)
+                            .addComponent(comboOwner, 0, 351, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel11)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnChange)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete)))
                 .addContainerGap())
         );
@@ -163,66 +245,92 @@ public class HardwareData extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel10)
-                        .addComponent(jLabel11))
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel11)))
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(txtInventoryNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel2)
-                                .addGap(4, 4, 4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
+                                .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtProductNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtInventoryNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtManufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtOwner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(comboManufacturer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(9, 9, 9)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtRegardsTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboPlace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboOwner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(9, 9, 9)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPurchaseDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel12))
+                        .addGap(4, 4, 4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(7, 7, 7)
-                                .addComponent(txtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtPlace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                                .addGap(2, 2, 2)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(comboWarrantySpan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtWarrantyEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(13, 13, 13))
+                    .addComponent(jScrollPane2, 0, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnDelete)
-                    .addComponent(btnChange))
-                .addContainerGap(30, Short.MAX_VALUE))
+                    .addComponent(btnChange)
+                    .addComponent(btnDelete))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
+        // Validation und Hardware erstellen
+        if(isDataValid() && updateHardware()) {
+            this.setVisible(false);
+        }
+        else {
+            JOptionPane.showMessageDialog(rootPane, "Das Formular enthält Fehler.\nHardware konnte nicht gespeichert werden.",
+                    "Speichern fehlgeschlagen", JOptionPane.ERROR_MESSAGE | JOptionPane.OK_OPTION );
+        }
+    }//GEN-LAST:event_btnChangeActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChange;
     private javax.swing.JButton btnDelete;
+    private his.ui.controls.CategoryData categoryDataTree;
+    private javax.swing.JComboBox comboManufacturer;
+    private javax.swing.JComboBox comboOwner;
+    private javax.swing.JComboBox comboPlace;
+    private javax.swing.JComboBox comboState;
+    private javax.swing.JComboBox comboWarrantySpan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -233,16 +341,265 @@ public class HardwareData extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JList listCategories;
     private javax.swing.JTable tableHardwareHistory;
     private javax.swing.JTextField txtInventoryNumber;
-    private javax.swing.JTextField txtManufacturer;
     private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtOwner;
-    private javax.swing.JTextField txtPlace;
-    private javax.swing.JTextField txtProductNumber;
+    private javax.swing.JTextField txtPurchaseDate;
     private javax.swing.JTextField txtRegardsTo;
-    private javax.swing.JTextField txtStatus;
+    private javax.swing.JTextField txtWarrantyEnd;
     private javax.swing.JTextField txtWarrantySpan;
     // End of variables declaration//GEN-END:variables
+
+    private void fillForm() {
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        
+        
+        txtInventoryNumber.setText(hardware.getInventoryNumber());
+        txtName.setText(hardware.getName());
+        txtPurchaseDate.setText(formatter.format(hardware.getPurchaseDate()));
+        comboManufacturer.setSelectedItem(hardware.getManufacturer().getName());
+        comboState.setSelectedItem(hardware.getState().getName());
+        categoryDataTree.setSelectedCategory(hardware.getCategoriesCollection().iterator().next(), true);
+        
+        if(hardware.getPlace() != null) {
+            comboPlace.setSelectedItem(hardware.getPlace().getName());
+        }
+        
+        if(hardware.getHardware() != null) {
+            txtRegardsTo.setText(hardware.getHardware().getName());
+        }        
+        
+        if(hardware.getWarrantyEnd() != null) {
+            txtWarrantyEnd.setText(formatter.format(hardware.getWarrantyEnd()));
+            calculateWarrantySpan();
+        }
+        
+        
+       
+    }
+
+    private void fillOwners() {
+        OwnersProvider ownersProvider = new OwnersProvider();
+        Collection<Owners> ownersCollection = ownersProvider.findAll();
+        
+        comboOwner.addItem("");
+        
+        for(Owners m: ownersCollection) {                
+            comboOwner.addItem(m.getName());  
+        } 
+    }
+
+    private void fillManufacturers() {
+        ManufacturersProvider manufacturerProvider = new ManufacturersProvider();
+        Collection<Manufacturers> manufacturerCollection = manufacturerProvider.findAll();
+        
+        comboManufacturer.addItem("");
+        
+        for(Manufacturers m: manufacturerCollection) {                
+            comboManufacturer.addItem(m.getName());  
+        } 
+    }
+
+    private void fillPlaces() {
+        PlacesProvider placesProvider = new PlacesProvider();
+        Collection<Places> placesCollection = placesProvider.findAll();
+        
+        comboPlace.addItem("");
+        
+        for(Places p: placesCollection) {                
+            comboPlace.addItem(p.getName());  
+        } 
+    }
+
+    private void fillStates() {
+        StatesProvider statesProvider = new StatesProvider();
+        Collection<States> statesCollection = statesProvider.findAll();
+                
+        for(States p: statesCollection) {                
+            comboState.addItem(p.getName());  
+        } 
+    }
+
+    private void calculateWarrantySpan() {
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar cal = new GregorianCalendar();
+        
+        cal.setTime(hardware.getPurchaseDate());
+        
+        Integer i = 0;
+        Date warrantyEnd = hardware.getWarrantyEnd();
+        while ( !warrantyEnd.equals( cal.getTime() ) ) {
+            i++;
+            cal.add(Calendar.MONTH, 1);
+        }
+        
+        txtWarrantySpan.setText(i.toString());
+        comboWarrantySpan.setSelectedItem("Monat/e");
+        
+    }
+    
+    private boolean updateHardware() {
+        HardwareProvider hardwareProvider = new HardwareProvider();
+        CategoriesProvider categoryProvider = new CategoriesProvider();
+        Categories category;
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+        Date purchaseDate;
+        
+        try {
+            purchaseDate = formatter.parse(txtPurchaseDate.getText().trim());
+            hardware.setPurchaseDate(purchaseDate);
+        } catch (ParseException ex) {
+            HIS.getLogger().error(ex);
+            return false;
+        }
+        
+        hardware.setName(txtName.getText().trim());
+        hardware.setInventoryNumber(txtInventoryNumber.getText().trim());
+        hardware.setPurchaseDate(purchaseDate);
+        Manufacturers manufacturer = CreateOrGetManufacturer(comboManufacturer.getSelectedItem().toString().trim());
+        hardware.setManufacturer(manufacturer);
+        
+        if(comboPlace.getSelectedItem() != null && 
+                !comboPlace.getSelectedItem().toString().trim().isEmpty()) {
+            Places place =  CreateOrGetPlace(comboPlace.getSelectedItem().toString().trim());
+            hardware.setPlace(place);
+        }
+        
+        if(comboOwner.getSelectedItem() != null &&
+                !comboOwner.getSelectedItem().toString().trim().isEmpty()) {
+            Owners owner = CreateOrGetOwner(comboOwner.getSelectedItem().toString().trim());
+            hardware.setOwner(owner);
+        }
+        
+        if(!txtWarrantyEnd.getText().trim().isEmpty()) {
+            try {
+                Date warrantyEnd = formatter.parse(txtWarrantyEnd.getText().trim());
+                hardware.setWarrantyEnd(warrantyEnd);
+            } catch (ParseException ex) {
+                HIS.getLogger().debug(ex);
+            }
+        }
+        
+        hardware.setHardware(parentHardware);
+        
+        hardware.setCategoriesCollection(new ArrayList<Categories>());
+        
+        Collection<Categories> categoryCollection = hardware.getCategoriesCollection();        
+        category = categoryDataTree.getSelectedCategory();
+        
+        if(category != null) {
+            categoryCollection.add(category);
+            
+            if(category.getHardwareCollection() == null) {
+                category.setHardwareCollection(new ArrayList<Hardware>());
+            }
+            
+            Collection<Hardware> hardwareCollection = category.getHardwareCollection();
+            hardwareCollection.add(hardware);
+        }
+        else {
+            HIS.getLogger().error("Keine Kategorie ausgewählt!");
+            return false;
+        }
+        
+        Date warrantyEnd = null;
+        
+        if(!txtWarrantyEnd.getText().trim().isEmpty()) {
+            try {
+                warrantyEnd = formatter.parse(txtWarrantyEnd.getText().trim());                
+            } catch (ParseException ex) {
+                HIS.getLogger().debug(ex);
+            }            
+        }
+        
+        hardware.setWarrantyEnd(warrantyEnd);
+        
+        StatesProvider stateProvider = new StatesProvider();
+        States state = stateProvider.findByName(comboState.getSelectedItem().toString());
+        
+        hardware.setState(state);
+        
+        
+        try {
+            hardwareProvider.update(hardware);
+            categoryProvider.update(category);
+        }
+        catch (Exception e) {
+            HIS.getLogger().debug(e);
+            HIS.getLogger().warn("Speichern der Hardware fehlgeschlagen.");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean isDataValid() {
+        boolean isDataValid = true;
+        isDataValid = this.txtName.getInputVerifier().verify(txtName);
+        isDataValid = this.txtInventoryNumber.getInputVerifier().verify(txtInventoryNumber) && isDataValid;
+        isDataValid = this.txtPurchaseDate.getInputVerifier().verify(txtPurchaseDate) && isDataValid;
+        isDataValid = this.comboManufacturer.getInputVerifier().verify(comboManufacturer) && isDataValid;
+        isDataValid = this.txtWarrantyEnd.getInputVerifier().verify(txtWarrantyEnd) && isDataValid;
+        isDataValid = this.txtWarrantySpan.getInputVerifier().verify(txtWarrantySpan) && isDataValid;
+        return isDataValid;
+    }
+    
+    private Manufacturers CreateOrGetManufacturer(String manufacturerName) {
+        
+        ManufacturersProvider manufacturerProvider = new ManufacturersProvider();
+        Collection<Manufacturers> manufacturerCollection = manufacturerProvider.findByName(manufacturerName);
+        
+        Manufacturers manufacturer = null;
+        if (!manufacturerCollection.isEmpty()) {
+            manufacturer = manufacturerCollection.iterator().next();
+        }
+        else {
+            manufacturer = new Manufacturers();
+            manufacturer.setName(manufacturerName);
+            manufacturerProvider.create(manufacturer);
+        }
+        
+        return manufacturer;
+        
+    }
+    
+    
+    private Places CreateOrGetPlace(String placeName) {
+        
+        PlacesProvider placesProvider = new PlacesProvider();
+        Collection<Places> placesCollection = placesProvider.findByName(placeName);
+        
+        Places place = null;
+        if (!placesCollection.isEmpty()) {
+            place = placesCollection.iterator().next();
+        }
+        else {
+            place = new Places();
+            place.setName(placeName);
+            placesProvider.create(place);
+        }
+        
+        return place;
+    }
+    
+    private Owners CreateOrGetOwner(String ownerName) {
+        
+        OwnersProvider ownersProvider = new OwnersProvider();
+        Collection<Owners> ownersCollection = ownersProvider.findByName(ownerName);
+        
+        Owners owner = null;
+        if (!ownersCollection.isEmpty()) {
+            owner = ownersCollection.iterator().next();
+        }
+        else {
+            owner = new Owners();
+            owner.setName(ownerName);
+            ownersProvider.create(owner);
+        }
+        
+        return owner;
+    }
 }

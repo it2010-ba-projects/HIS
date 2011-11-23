@@ -242,6 +242,13 @@ public final class CategoryData extends javax.swing.JPanel {
         repaint();
     }
     
+    public void setRefreshVisible(boolean visible)
+    {
+        btnRefresh.setVisible(visible);
+        validate();
+        repaint();
+    }
+    
     /**
      * Liest die aktuell selektierte {@link Categories} aus
      * @return null, wenn keine Selektion oder root
@@ -399,10 +406,10 @@ public final class CategoryData extends javax.swing.JPanel {
         treeCategories.setDragEnabled(true);
         treeCategories.setDropMode(javax.swing.DropMode.ON);
         treeCategories.addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
+            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
+            }
             public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
                 treeCategoriesTreeExpanded(evt);
-            }
-            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
             }
         });
         treeCategories.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -442,14 +449,13 @@ public final class CategoryData extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(txtChange, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(13, Short.MAX_VALUE))
+                        .addComponent(txtDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -458,11 +464,11 @@ public final class CategoryData extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 234, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 236, Short.MAX_VALUE)
                         .addComponent(txtChange)
                         .addGap(18, 18, 18)
                         .addComponent(txtDelete))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
