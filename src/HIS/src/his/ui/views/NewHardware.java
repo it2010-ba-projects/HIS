@@ -160,6 +160,11 @@ public class NewHardware extends javax.swing.JDialog {
         txtReferingTo.setEditable(false);
 
         btnSearch.setText("Suchen");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         jLabel9.setText("Kategorie");
 
@@ -363,11 +368,14 @@ public class NewHardware extends javax.swing.JDialog {
     }//GEN-LAST:event_formWindowOpened
 
     private void comboWarrantySpanItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboWarrantySpanItemStateChanged
-        // TODO Garantieende berechnen
         if(ItemEvent.SELECTED == evt.getStateChange()) {            
             calculateWarrantyEnd();
         }
     }//GEN-LAST:event_comboWarrantySpanItemStateChanged
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        JOptionPane.showMessageDialog(null, "Dies ist eine Beta-Version. Diese Funktionalität steht leider noch nicht zur Verfügung.");
+    }//GEN-LAST:event_btnSearchActionPerformed
     
     private boolean createHardware() {
         HardwareProvider hardwareProvider = new HardwareProvider();
