@@ -83,6 +83,8 @@ public class HardwareData extends javax.swing.JPanel {
                 calculateWarrantyEnd();
             }
         });
+        
+        this.setEnabled(false);
     }
     
     /**
@@ -91,7 +93,13 @@ public class HardwareData extends javax.swing.JPanel {
      */
     public void setHardware(Hardware hardware) {
         this.hardware = hardware;
-        fillForm();
+        if(hardware != null) {            
+            fillForm();
+        }
+        else {
+            resetForm();
+        }
+        this.setEnabled(true);
     }
 
     /** This method is called from within the constructor to
@@ -170,6 +178,11 @@ public class HardwareData extends javax.swing.JPanel {
         });
 
         btnDelete.setText("Löschen");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         tableHardwareHistory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -368,6 +381,13 @@ public class HardwareData extends javax.swing.JPanel {
             calculateWarrantyEnd();
         }
     }//GEN-LAST:event_comboWarrantySpanItemStateChanged
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        HardwareProvider hardwareProvider = new HardwareProvider();
+        hardwareProvider.delete(hardware);
+        this.setEnabled(false);
+        this.setHardware(null);
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChange;
@@ -686,5 +706,20 @@ public class HardwareData extends javax.swing.JPanel {
         else {
             txtWarrantyEnd.setText("");
         }
+    }
+
+    private void resetForm() {
+        txtInventoryNumber.setText("");
+        txtName.setText("");
+        txtPurchaseDate.setText("");
+        txtRegardsTo.setText("");
+        txtWarrantyEnd.setText("");
+        txtWarrantySpan.setText("");
+        
+        comboManufacturer.setSelectedItem("");
+        comboOwner.setSelectedItem("");
+        comboPlace.setSelectedItem("");
+        comboWarrantySpan.setSelectedIndex(0);
+        comboState.setSelectedIndex(0);
     }
 }
