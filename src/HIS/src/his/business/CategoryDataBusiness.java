@@ -101,49 +101,41 @@ public class CategoryDataBusiness {
         
         return node;
     }
-    
-    /**
-     * Erneuert das BusinessObjekt (ohne Speicherung)
-     * @param node MUSS die Root-Node sein
-     */
-    public void refreshDataObjectTree(DefaultMutableTreeNode node)
-    {
-        DefaultMutableTreeNode dummy;
-        if(node.getUserObject().equals(CATEGORY_ROOT_TEXT))
-        {
-            //delete every parent Categorie_parent from rootNode-Childs
-            for(Enumeration e = node.children(); e.hasMoreElements();)
-            {
-                dummy = (DefaultMutableTreeNode)e.nextElement();
-                ((Categories)dummy.getUserObject()).setCategory(null);
-                //update every child
-                for(Enumeration en = dummy.children();en.hasMoreElements();)
-                {
-                    refreshNode((DefaultMutableTreeNode)en.nextElement());
-                }
-            }
-            root = node;
-        }
-        else
-        {
-            HIS.getLogger().info("Aenderungen konnten nicht gespeichert werden, da nicht root-Node uebergeben wurde");
-        }
-    }
 
-    private void refreshNode(DefaultMutableTreeNode node) 
+    private void refreshNode(DefaultMutableTreeNode node, boolean check) 
     {
-        //add node to parent
-        ((Categories)node.getUserObject())
-                    .setCategory(
-                    ((Categories)
-                        ((DefaultMutableTreeNode)node.getParent())
-                        .getUserObject()
-                    )                    
-                );
-        //update every child
+        Categories cat = (Categories)node.getUserObject();
+        Categories parent = check?(Categories)((DefaultMutableTreeNode)node.getParent()).getUserObject():null;
+        
+        if(cat.getCategory() != null && parent == null)
+        {
+            cat.getCategory().getCategoriesCollection().remove(cat);
+            provider.update(cat.getCategory());
+            cat.setCategory(null);
+            provider.update(cat);
+        } 
+        else if(cat.getCategory() != null && cat.getCategory() != parent)
+        {
+            cat.getCategory().getCategoriesCollection().remove(cat);
+            provider.update(cat.getCategory());
+            
+            parent.getCategoriesCollection().add(cat);           
+            cat.setCategory(parent);
+            provider.update(cat);
+            provider.update(parent);                    
+        }
+        else if(cat.getCategory() == null && parent != null)
+        {
+            parent.getCategoriesCollection().add(cat);
+            cat.setCategory(parent);
+            
+            provider.update(parent);
+            provider.update(cat);
+        }
+        
         for(Enumeration e = node.children();e.hasMoreElements();)
         {
-            refreshNode((DefaultMutableTreeNode)e.nextElement());
+            refreshNode((DefaultMutableTreeNode)e.nextElement(), true);
         }        
     }
     
@@ -154,10 +146,10 @@ public class CategoryDataBusiness {
      */
     public void saveChangesFromTree()
     {        
-        for(Categories cat: categories)
+        for(Enumeration e = root.children(); e.hasMoreElements();)
         {
-             provider.update(cat);  
-        }
+            refreshNode((DefaultMutableTreeNode)e.nextElement(), false);               
+        }        
     }
     
     /**
