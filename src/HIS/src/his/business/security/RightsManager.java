@@ -20,7 +20,9 @@
 package his.business.security;
 
 import his.HIS;
+import his.model.States;
 import his.model.Users;
+import his.model.providers.StatesProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -80,5 +82,36 @@ public class RightsManager {
     public static Collection<Rights> getRights()
     {
         return getRights(HIS.getCurrentUser());
+    }
+    
+    public static Collection<States> getStates(Users user)
+    {
+        Collection<Rights> rights = RightsManager.getRights(user);
+        Collection<States> states = new ArrayList<>();
+        StatesProvider provider = new StatesProvider();
+        
+        if(rights.contains(Rights.ADMINISTRATOR))
+            states = provider.findAll();
+        
+        if(rights.contains(Rights.SERVICE) && states.isEmpty())
+        {
+            states.add(provider.findByName("lagernd"));
+            states.add(provider.findByName("im Einsatz"));
+            states.add(provider.findByName("Garantiereperatur"));
+            states.add(provider.findByName("ausgesondert"));
+        }
+        
+        if(rights.contains(Rights.SALES) && !rights.contains(Rights.ADMINISTRATOR))
+        {
+            states.add(provider.findByName("verkauft"));
+            states.add(provider.findByName("verschrottet"));
+        }
+        
+        return states;
+    }
+    
+    public static Collection<States> getStates()
+    {
+        return getStates(HIS.getCurrentUser());
     }
 }
