@@ -173,8 +173,7 @@ public final class CategoryData extends javax.swing.JPanel {
      */
     public void refreshTree()
     {   
-        if(catDataBusiness.getCategoriesTree() != null)
-            catDataBusiness.createCategoriesTree();
+        catDataBusiness = new CategoryDataBusiness();
         treeCategories.setModel(catDataBusiness.getCategoriesTree()); 
         fireComponentChanged(new ComponentChangedEvent(this));
     }

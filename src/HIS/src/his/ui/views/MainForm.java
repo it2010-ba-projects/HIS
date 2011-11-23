@@ -23,6 +23,7 @@ import his.business.FeatureTypen;
 import his.business.security.Rights;
 import his.business.security.RightsManager;
 import his.model.Categories;
+import his.model.Hardware;
 import his.model.Users;
 import his.ui.controls.CategoryData;
 import his.ui.controls.CategoryResult;
@@ -410,7 +411,8 @@ public class MainForm extends javax.swing.JFrame {
                     categoryData.setSelectedCategory((Categories)evt.getObject(), false);
                 }
                 else if(evt.getFeature()== FeatureTypen.HARDWARE)
-                {                    
+                {                
+                    hardwareData.setHardware((Hardware)evt.getObject());
                 }
                 else if(evt.getFeature()== FeatureTypen.USERS)
                 {

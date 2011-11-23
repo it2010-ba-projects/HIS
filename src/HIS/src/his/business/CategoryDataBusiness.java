@@ -27,6 +27,7 @@ import java.util.Enumeration;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
+import org.apache.log4j.lf5.viewer.categoryexplorer.CategoryNode;
 
 /**
  * Die Klasse stellt Business-Objekte fuer {@link Categories} bereit.
@@ -92,7 +93,10 @@ public class CategoryDataBusiness {
         
         for(Categories c: cat.getCategoriesCollection())
         {
-            createNodes(node, c);
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(c);
+            node.add(child);
+            
+            createNodes(child, c);
         }
         
         return node;
@@ -185,21 +189,13 @@ public class CategoryDataBusiness {
         model = new DefaultTreeModel(root);        
         //fuer alle Kategorien in der Collection
         for(Categories cat: categories)
-        {            
-            //wenn der parent == null
+        {                
             if(cat.getCategory() == null)
             {
-                //neue TreeNode erstellen und Kategorie als Inhalt hinzufuegen
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode(cat);
-                //zu root hinzufuegen                
-                root.add(node);                
+                root.add(node);               
                 
-                //fuer alle Child-Kategorien childNodes hinzufuegen
-                for(Categories childCat : categories)
-                {         
-                    if(childCat.getCategory() != null && childCat.getCategory().equals(cat))                        
-                        createNodes(node,childCat);
-                }                
+                createNodes(node, cat);               
             }
         }  
         return model;
@@ -207,23 +203,11 @@ public class CategoryDataBusiness {
     
     private void createNodes(DefaultMutableTreeNode parent,Categories category)
     {
-        //alle Child-Kategorien zu parent hinzufuegen
-        DefaultMutableTreeNode child = new DefaultMutableTreeNode(category); 
-        parent.add(child);
-        
-        //fuer alle childs
-        for(Categories cat: categories)
+        for(Categories cat: category.getCategoriesCollection())
         {
-            if(cat.getCategory()!=null &&cat.getCategory().equals(category))
-            {
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(cat);    
-                child.add(node);
-                for(Categories catChild : categories)
-                {
-                    if(catChild.getCategory() != null && catChild.getCategory().equals(cat))
-                        createNodes(node,catChild);
-                }
-            }
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(cat); 
+            parent.add(child); 
+            createNodes(child,cat);
         }
     }
 }

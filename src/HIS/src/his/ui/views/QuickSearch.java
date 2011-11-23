@@ -128,27 +128,27 @@ public class QuickSearch extends javax.swing.JDialog {
         
         for(Hardware h: all)
         {    
-           if(h.getName().toLowerCase().contains(searchText))
+           if(h.getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Hardware selbst",h});
            }       
-           else if(h.getInventoryNumber().toLowerCase().contains(searchText))
+           else if(h.getInventoryNumber().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Inventarnummer",h});
            }
-           else if(h.getManufacturer().getName().toLowerCase().contains(searchText))
+           else if(h.getManufacturer().getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Hersteller",h});
            } 
-           else if(h.getOwner().getName().toLowerCase().contains(searchText))
+           else if(h.getOwner().getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Besitzer",h});
            }
-           else if(h.getPlace().getName().toLowerCase().contains(searchText))
+           else if(h.getPlace().getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Ort",h});
            }
-           else if(h.getState().getName().toLowerCase().contains(searchText))
+           else if(h.getState().getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Status",h});
            }
@@ -184,15 +184,15 @@ public class QuickSearch extends javax.swing.JDialog {
                 continue;
             }
             
-            if(u.getFirstName().toLowerCase().contains(searchText))
+            if(u.getFirstName().toLowerCase().contains(searchText.toLowerCase()))
             {
                 model.addRow(new Object[]{"Benutzer","Vorname",u});
             }
-            else if(u.getLastName().toLowerCase().contains(searchText))
+            else if(u.getLastName().toLowerCase().contains(searchText.toLowerCase()))
             {
                 model.addRow(new Object[]{"Benutzer","Nachname",u});
             }
-            else if(u.getLogin().toLowerCase().contains(searchText))
+            else if(u.getLogin().toLowerCase().contains(searchText.toLowerCase()))
             {
                 model.addRow(new Object[]{"Benutzer","Benutzername",u});
             }
