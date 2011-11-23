@@ -225,9 +225,12 @@ public class NewCategory extends javax.swing.JDialog {
             if(parent != null)
             {
                 cat.setCategory(parent);
+                parent.getCategoriesCollection().add(cat);
+                cProv.update(parent);
             }
 
             cProv.create(cat);
+            
             expanding = catData.getExpandedRows();
             catData.setEditable(true);
             catData.refreshTree();

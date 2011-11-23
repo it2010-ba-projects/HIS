@@ -351,8 +351,7 @@ public final class CategoryData extends javax.swing.JPanel {
     
     private void saveTreeToDataBase()
     {
-       catDataBusiness.refreshDataObjectTree((DefaultMutableTreeNode)treeCategories.getModel().getRoot());
-                            catDataBusiness.saveChangesFromTree(); 
+        catDataBusiness.saveChangesFromTree(); 
     }
     
     private void deleteNode()
@@ -377,8 +376,14 @@ public final class CategoryData extends javax.swing.JPanel {
                         "Kategorie löschen",
                         JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION)
                 {
-                   provider.delete(cat); 
-                   this.refreshTree(); 
+                    if(cat.getCategory()!= null)
+                    {
+                        cat.getCategory().getCategoriesCollection().remove(cat);                        
+                        provider.update(cat.getCategory());
+                    }
+                    provider.delete(cat); 
+                    
+                    this.refreshTree(); 
                 }
             }
         }
@@ -554,7 +559,6 @@ public final class CategoryData extends javax.swing.JPanel {
                 new DropTargetAdapter() {
                     @Override
                     public void drop(DropTargetDropEvent dtde) {
- 
                         TreePath selectionPath = treeCategories.getSelectionPath();
                         TreePath sourcePath = selectionPath.getParentPath();
  
@@ -571,8 +575,15 @@ public final class CategoryData extends javax.swing.JPanel {
                                     .getLastPathComponent();
                             DefaultMutableTreeNode sourceParentNode = (DefaultMutableTreeNode) sourcePath
                                     .getLastPathComponent();
- 
-                            sourceParentNode.remove(selectedNode);
+                            
+                            for(Enumeration e = sourceParentNode.children();e.hasMoreElements(); )
+                            {
+                                DefaultMutableTreeNode node = (DefaultMutableTreeNode)e.nextElement();
+                                if(node.getUserObject() == selectedNode.getUserObject())
+                                {
+                                    sourceParentNode.remove(node);
+                                }
+                            }
                             targetParentNode.add(selectedNode);
  
                             dtde.dropComplete(true);
