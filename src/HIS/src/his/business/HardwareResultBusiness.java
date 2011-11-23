@@ -35,6 +35,7 @@ import java.util.Iterator;
  */
 public class HardwareResultBusiness {
     private Collection<Hardware> hardwares;
+    private String lastSearchName;
     private String lastSearchInventoryNumber;
     private String lastSearchManufacturer;
     private String lastSearchOwner;
@@ -90,6 +91,7 @@ public class HardwareResultBusiness {
      * @return Suchergebnis in Form einer {@link Collection} mit {@link Hardware}
      */
     public Collection<Hardware> searchHardware(
+            String name,
             String inventoryNumber,
             String manufacturer,
             String owner,
@@ -100,6 +102,7 @@ public class HardwareResultBusiness {
     {
         provider = new HardwareProvider();
         hardwares = new ArrayList<>();
+        lastSearchName = name==null?"":name;
         lastSearchInventoryNumber = inventoryNumber==null?"":inventoryNumber;
         lastSearchManufacturer = manufacturer==null?"":manufacturer;
         lastSearchOwner = owner==null?"":owner;
@@ -109,7 +112,8 @@ public class HardwareResultBusiness {
         lastSearchWarrenty = warrenty==null?new Date():warrenty;     
         
         //Leersuche seperat abfragen, da sonst zu grosse Datenmenge
-        if(lastSearchInventoryNumber.equals("")
+        if(lastSearchName.equals("")
+                && lastSearchInventoryNumber.equals("")
                 && lastSearchManufacturer.equals("")
                 && lastSearchOwner.equals("")
                 && lastSearchState.equals("")
@@ -120,9 +124,17 @@ public class HardwareResultBusiness {
             hardwares = provider.findAll();
         }
         
+        if(!lastSearchName.equals(""))
+        {
+            hardwares = provider.findByName(lastSearchName);
+        }
+        
         if(!lastSearchInventoryNumber.equals(""))
         {
-            hardwares.add(provider.findById(inventoryNumber));
+            Hardware h = provider.findByInventoryNumber(inventoryNumber);
+            
+            if(h!=null)
+                hardwares.add(provider.findByInventoryNumber(inventoryNumber));
         }
         
         if(!lastSearchManufacturer.equals(""))
@@ -134,7 +146,9 @@ public class HardwareResultBusiness {
                 while(it.hasNext())
                 {
                     Hardware h = it.next();
-                    if(!h.getManufacturer().getName().toLowerCase().contains(lastSearchManufacturer.toLowerCase()))
+                    if(h.getManufacturer()!= null 
+                            && !h.getManufacturer().getName().toLowerCase()
+                                .contains(lastSearchManufacturer.toLowerCase()))
                         it.remove();
                 }
             }
@@ -197,8 +211,7 @@ public class HardwareResultBusiness {
                 }                
             }
             else
-            {
-                 hardwares = new ArrayList<>();
+            {                 
                  for(Hardware h: provider.findByName(lastSearchBuildIn))
                  {
                      if(h.getHardwareCollection().contains(h))
@@ -257,6 +270,7 @@ public class HardwareResultBusiness {
     public Collection<Hardware> refreshSearch()
     {        
         return searchHardware(
+             lastSearchName,
              lastSearchInventoryNumber,
              lastSearchManufacturer,
              lastSearchOwner,

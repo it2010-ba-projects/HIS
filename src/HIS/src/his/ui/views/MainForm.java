@@ -19,8 +19,11 @@
  */
 package his.ui.views;
 
+import his.business.FeatureTypen;
 import his.business.security.Rights;
 import his.business.security.RightsManager;
+import his.model.Categories;
+import his.model.Users;
 import his.ui.controls.CategoryData;
 import his.ui.controls.CategoryResult;
 import his.ui.controls.CategorySearch;
@@ -38,6 +41,8 @@ import his.ui.events.ResultShowEvent;
 import his.ui.events.ResultShowListener;
 import his.ui.events.CreateCategoriesEvent;
 import his.ui.events.CreateCategoriesListener;
+import his.ui.events.QuickSearchEvent;
+import his.ui.events.QuickSearchListener;
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
 
@@ -117,13 +122,13 @@ public class MainForm extends javax.swing.JFrame {
         txtSearchAttribute = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuMenu = new javax.swing.JMenu();
-        menuItemHardware = new javax.swing.JMenuItem();
-        menuItemUsers = new javax.swing.JMenuItem();
-        menuItemCategories = new javax.swing.JMenuItem();
         menuItemNew = new javax.swing.JMenu();
         menuItemMenuNewUser = new javax.swing.JMenuItem();
         menuItemMenuNewHardware = new javax.swing.JMenuItem();
         menuItemMenuNewCategory = new javax.swing.JMenuItem();
+        menuItemUsers = new javax.swing.JMenuItem();
+        menuItemHardware = new javax.swing.JMenuItem();
+        menuItemCategories = new javax.swing.JMenuItem();
         menuItemClose = new javax.swing.JMenuItem();
         menuPreferences = new javax.swing.JMenu();
         menuItemPasswordChange = new javax.swing.JMenuItem();
@@ -205,37 +210,25 @@ public class MainForm extends javax.swing.JFrame {
         );
 
         btnQuickSearch.setText("Suchen");
+        btnQuickSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuickSearchActionPerformed(evt);
+            }
+        });
 
         txtSearchAttribute.setText("Schnellsuche");
+        txtSearchAttribute.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtSearchAttributeMouseClicked(evt);
+            }
+        });
+        txtSearchAttribute.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSearchAttributeActionPerformed(evt);
+            }
+        });
 
         menuMenu.setText("Menü");
-
-        menuItemHardware.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        menuItemHardware.setText("Hardwareverwaltung");
-        menuItemHardware.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemHardwareActionPerformed(evt);
-            }
-        });
-        menuMenu.add(menuItemHardware);
-
-        menuItemUsers.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
-        menuItemUsers.setText("Benutzerverwaltung");
-        menuItemUsers.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemUsersActionPerformed(evt);
-            }
-        });
-        menuMenu.add(menuItemUsers);
-
-        menuItemCategories.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
-        menuItemCategories.setText("Kategorieverwaltung");
-        menuItemCategories.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItemCategoriesActionPerformed(evt);
-            }
-        });
-        menuMenu.add(menuItemCategories);
 
         menuItemNew.setText("Neu");
 
@@ -267,6 +260,33 @@ public class MainForm extends javax.swing.JFrame {
         menuItemNew.add(menuItemMenuNewCategory);
 
         menuMenu.add(menuItemNew);
+
+        menuItemUsers.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemUsers.setText("Benutzerverwaltung");
+        menuItemUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemUsersActionPerformed(evt);
+            }
+        });
+        menuMenu.add(menuItemUsers);
+
+        menuItemHardware.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemHardware.setText("Hardwareverwaltung");
+        menuItemHardware.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemHardwareActionPerformed(evt);
+            }
+        });
+        menuMenu.add(menuItemHardware);
+
+        menuItemCategories.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemCategories.setText("Kategorieverwaltung");
+        menuItemCategories.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCategoriesActionPerformed(evt);
+            }
+        });
+        menuMenu.add(menuItemCategories);
 
         menuItemClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_B, java.awt.event.InputEvent.CTRL_MASK));
         menuItemClose.setText("Beenden");
@@ -369,6 +389,33 @@ public class MainForm extends javax.swing.JFrame {
         addComponentToPanel(panelResults, childs[2]);
     }     
     
+    private void showAndPerformQuickSearch()
+    {
+        QuickSearch quickSearch = new QuickSearch(this, false, txtSearchAttribute.getText());
+        quickSearch.addQuickSearchListener(new QuickSearchListener() {
+
+            @Override
+            public void quickSearchPerformed(QuickSearchEvent evt) {
+                
+                if(evt.getFeature()== FeatureTypen.CATEGORIES)
+                {
+                    categoryData.setEditDeleteVisible(true);
+                    loadChildPanels(new JPanel[] {categorySearch, categoryData, categoryResult} );
+                    categoryData.setSelectedCategory((Categories)evt.getObject(), false);
+                }
+                else if(evt.getFeature()== FeatureTypen.HARDWARE)
+                {                    
+                    loadChildPanels(new JPanel[] {hardwareSearch, hardwareData, hardwareResult} );
+                }
+                else if(evt.getFeature()== FeatureTypen.USERS)
+                {
+                    loadChildPanels(new JPanel[] {userSearch, userData, userResult} );
+                    userData.setSelectedUser((Users)evt.getObject());
+                }
+            }
+        });
+        quickSearch.setVisible(true);
+    }
     /**Je nach Verwaltungsbereich wird das entsprechende Fenster zur Eingabe eines neuen 
       Datensatzes geöffnet*/
     private void menuItemHardwareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHardwareActionPerformed
@@ -422,6 +469,18 @@ public class MainForm extends javax.swing.JFrame {
         pwChange.setVisible(true);        
     }//GEN-LAST:event_menuItemPasswordChangeActionPerformed
 
+    private void btnQuickSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuickSearchActionPerformed
+       showAndPerformQuickSearch();
+    }//GEN-LAST:event_btnQuickSearchActionPerformed
+
+    private void txtSearchAttributeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchAttributeActionPerformed
+        showAndPerformQuickSearch();
+    }//GEN-LAST:event_txtSearchAttributeActionPerformed
+
+    private void txtSearchAttributeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSearchAttributeMouseClicked
+        txtSearchAttribute.selectAll();
+    }//GEN-LAST:event_txtSearchAttributeMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -438,13 +497,7 @@ public class MainForm extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>

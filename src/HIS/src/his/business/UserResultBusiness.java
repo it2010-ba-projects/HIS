@@ -147,8 +147,9 @@ public class UserResultBusiness {
                 }
             }
             else
-            {   
-                users.add(provider.findByLogin(lastSearchLogin));                
+            {   Users u = provider.findByLogin(lastSearchLogin);
+                if(u!= null)                    
+                    users.add(u);                
             }
         }
         
