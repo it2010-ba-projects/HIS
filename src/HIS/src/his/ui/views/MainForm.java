@@ -369,6 +369,23 @@ public class MainForm extends javax.swing.JFrame {
         hardwareSearch = new HardwareSearch();
         hardwareData = new HardwareData();
         hardwareResult = new HardwareResult();
+        
+        hardwareSearch.addHardwareSearchListener(new SearchListener() {
+
+            @Override
+            public void searchPerformed(SearchEvent evt) {
+                hardwareResult.sethResBusiness(hardwareSearch.gethResBusiness());
+            }
+        });
+        
+        hardwareResult.addHardwareResultShowListener(new ResultShowListener() {
+
+            @Override
+            public void resultShowPerformed(ResultShowEvent evt) {
+                hardwareData.setHardware(hardwareResult.getSelectedHardware());
+            }
+        });
+        
     }
 
     private void initUsers() 

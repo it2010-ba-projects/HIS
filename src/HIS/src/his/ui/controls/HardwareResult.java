@@ -19,17 +19,115 @@
  */
 package his.ui.controls;
 
+import his.business.HardwareResultBusiness;
+import his.model.Categories;
+import his.model.Hardware;
+import his.ui.NotEditableDefaultTableModel;
+import his.ui.events.ResultShowEvent;
+import his.ui.events.ResultShowListener;
+import java.util.Iterator;
+
 /**
  *
  * @author Franziska Staake
  */
 public class HardwareResult extends javax.swing.JPanel {
-
+    private HardwareResultBusiness hResBusiness;
+    private Hardware selectedHardware;
     /** Creates new form UserResult */
     public HardwareResult() {
         initComponents();
     }
+    
+    protected javax.swing.event.EventListenerList resultShowListenerList =
+        new javax.swing.event.EventListenerList();
 
+    public void addHardwareResultShowListener(ResultShowListener listener) {
+        resultShowListenerList.add(ResultShowListener.class, listener);
+    }
+
+    public void removeHardwareResultShowListener(ResultShowListener listener) {
+        resultShowListenerList.remove(ResultShowListener.class, listener);
+    }
+
+    private void fireHardwareResultShow(ResultShowEvent evt) {
+        Object[] listeners = resultShowListenerList.getListenerList();
+        // Each listener occupies two elements - the first is the listener class
+        // and the second is the listener instance
+        for (int i=0; i<listeners.length; i+=2) {
+            if (listeners[i]==ResultShowListener.class) {
+                ((ResultShowListener)listeners[i+1]).resultShowPerformed(evt);
+            }
+        }
+    }
+    /**
+     * @return the hResBusiness
+     */
+    public HardwareResultBusiness gethResBusiness() {
+        return hResBusiness;
+    }
+
+    /**
+     * @param hResBusiness the hResBusiness to set
+     */
+    public void sethResBusiness(HardwareResultBusiness hResBusiness) {
+        this.hResBusiness = hResBusiness;
+        showResults();
+    }
+
+    /**
+     * @return the selectedHardware
+     */
+    public Hardware getSelectedHardware() {
+        return selectedHardware;
+    }
+    private void showResults() {
+        NotEditableDefaultTableModel model = new NotEditableDefaultTableModel();
+       
+        model.addColumn("Name");
+        model.addColumn("Hersteller");
+        model.addColumn("Kategorie");
+        model.addColumn("Ort");
+        model.addColumn("Besitzer");
+        model.addColumn("Status");
+               
+       
+        for(Hardware h : hResBusiness.getHardwares())
+        {
+            String categories = "";
+            Iterator<Categories> it = h.getCategoriesCollection().iterator();
+            
+            while(it.hasNext())
+            {
+                Categories cat = it.next();
+                if(cat !=null)
+                {
+                    categories += cat.getName();
+                    if(it.hasNext())
+                    {
+                        categories += ", ";
+                    }
+                }
+            }
+            
+            model.addRow(new Object[] {h,
+                                h.getManufacturer().getName(),
+                                categories,
+                                h.getPlace().getName(),
+                                h.getOwner().getName(),
+                                h.getState().getName()});                       
+        }
+        
+        tableHardwareResult.setModel(model);
+    }
+    
+    private void selectHardwareAndShowIt()
+    {
+        selectedHardware = (Hardware)tableHardwareResult.getModel()
+                                .getValueAt(tableHardwareResult.getSelectedRow(),0);
+        fireHardwareResultShow(new ResultShowEvent(this));
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -68,6 +166,16 @@ public class HardwareResult extends javax.swing.JPanel {
 
             }
         ));
+        tableHardwareResult.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tableHardwareResultMousePressed(evt);
+            }
+        });
+        tableHardwareResult.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tableHardwareResultKeyReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(tableHardwareResult);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -76,21 +184,31 @@ public class HardwareResult extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(237, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tableHardwareResultMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableHardwareResultMousePressed
+        selectHardwareAndShowIt();
+    }//GEN-LAST:event_tableHardwareResultMousePressed
+
+    private void tableHardwareResultKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tableHardwareResultKeyReleased
+        selectHardwareAndShowIt();
+    }//GEN-LAST:event_tableHardwareResultKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable tableHardwareResult;
     // End of variables declaration//GEN-END:variables
+
 }

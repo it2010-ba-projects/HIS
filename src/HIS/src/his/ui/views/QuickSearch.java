@@ -108,13 +108,14 @@ public class QuickSearch extends javax.swing.JDialog {
     
     private void searchAndAddHardware(String searchText) {
         hResBusiness = new HardwareResultBusiness();
-        Collection<Hardware> names = hResBusiness.searchHardware(searchText, null, null, null, null, null, null, null);
-        Collection<Hardware> inventorys = hResBusiness.searchHardware(null, searchText, null, null, null, null, null, null);
-        Collection<Hardware> manufactures = hResBusiness.searchHardware(null, null, searchText, null, null, null, null, null);
-        Collection<Hardware> owners = hResBusiness.searchHardware(null, null, null, searchText, null, null, null, null);
-        Collection<Hardware> states = hResBusiness.searchHardware(null, null, null, null, searchText, null, null, null);
-        Collection<Hardware> buildIns = hResBusiness.searchHardware(null, null, null, null, null, searchText, null, null);
-        Collection<Hardware> places = hResBusiness.searchHardware(null, null, null, null, null, null, searchText, null);
+        Collection<Hardware> names = hResBusiness.searchHardware(searchText, null, null, null, null, null, null, null, null);
+        Collection<Hardware> inventorys = hResBusiness.searchHardware(null, searchText, null, null, null, null, null, null, null);
+        Collection<Hardware> manufactures = hResBusiness.searchHardware(null, null, searchText, null, null, null, null, null, null);
+        Collection<Hardware> owners = hResBusiness.searchHardware(null, null, null, searchText, null, null, null, null, null);
+        Collection<Hardware> states = hResBusiness.searchHardware(null, null, null, null, searchText, null, null, null, null);
+        Collection<Hardware> buildIns = hResBusiness.searchHardware(null, null, null, null, null, searchText, null, null, null);
+        Collection<Hardware> places = hResBusiness.searchHardware(null, null, null, null, null, null, searchText, null, null);
+        Collection<Hardware> categories = hResBusiness.searchHardware(null, null, null, null, null, null, null, searchText, null);
         Collection<Collection<Hardware>> listToMerge = new ArrayList<>();
         
         listToMerge.add(names);
@@ -124,6 +125,7 @@ public class QuickSearch extends javax.swing.JDialog {
         listToMerge.add(states);
         listToMerge.add(buildIns);
         listToMerge.add(places);
+        listToMerge.add(categories);
         Collection<Hardware> all = mergeHardware(listToMerge);
         
         for(Hardware h: all)
@@ -151,6 +153,10 @@ public class QuickSearch extends javax.swing.JDialog {
            else if(h.getState().getName().toLowerCase().contains(searchText.toLowerCase()))
            {
                model.addRow(new Object[]{"Hardware","Status",h});
+           }
+           else
+           {
+               model.addRow(new Object[]{"Hardware","Kategorie",h});
            }
         }
     }

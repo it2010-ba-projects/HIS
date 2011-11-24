@@ -19,6 +19,7 @@
  */
 package his.business;
 
+import his.model.Categories;
 import his.model.Hardware;
 import his.model.providers.HardwareProvider;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class HardwareResultBusiness {
     private String lastSearchState;
     private String lastSearchBuildIn;
     private String lastSearchPlace;
+    private String lastSearchCategory;
     private Date lastSearchWarrenty;
     private HardwareProvider provider;
     /**
@@ -87,6 +89,7 @@ public class HardwareResultBusiness {
      * @param state Status
      * @param buildIn Gehoert zu
      * @param place Ort
+     * @param category Kategorie
      * @param warrenty Garantieraum
      * @return Suchergebnis in Form einer {@link Collection} mit {@link Hardware}
      */
@@ -98,8 +101,10 @@ public class HardwareResultBusiness {
             String state,
             String buildIn,
             String place,
+            String category,
             Date warrenty)
     {
+        boolean init = false;
         provider = new HardwareProvider();
         hardwares = new ArrayList<>();
         lastSearchName = name==null?"":name;
@@ -109,7 +114,9 @@ public class HardwareResultBusiness {
         lastSearchState = state==null?"":state;
         lastSearchBuildIn = buildIn==null?"":buildIn;
         lastSearchPlace = place==null?"":place;
-        lastSearchWarrenty = warrenty==null?new Date():warrenty;     
+        lastSearchCategory = category==null?"":category;
+        Date date = new Date();
+        lastSearchWarrenty = warrenty==null?date:warrenty;     
         
         //Leersuche seperat abfragen, da sonst zu grosse Datenmenge
         if(lastSearchName.equals("")
@@ -119,14 +126,17 @@ public class HardwareResultBusiness {
                 && lastSearchState.equals("")
                 && lastSearchBuildIn.equals("")
                 && lastSearchPlace.equals("")
-                && lastSearchWarrenty.equals(new Date()))
+                && lastSearchCategory.equals("")
+                && lastSearchWarrenty.equals(date))
         {
             hardwares = provider.findAll();
+            init = true;
         }
         
         if(!lastSearchName.equals(""))
         {
             hardwares = provider.findByName(lastSearchName);
+            init = true;
         }
         
         if(!lastSearchInventoryNumber.equals(""))
@@ -135,6 +145,7 @@ public class HardwareResultBusiness {
             
             if(h!=null)
                 hardwares.add(provider.findByInventoryNumber(inventoryNumber));
+            init = true;
         }
         
         if(!lastSearchManufacturer.equals(""))
@@ -152,9 +163,10 @@ public class HardwareResultBusiness {
                         it.remove();
                 }
             }
-            else
+            else if(!init)
             {
                 hardwares = provider.findByManufacturer(lastSearchManufacturer);
+                init = true;
             }
         }
         
@@ -171,9 +183,10 @@ public class HardwareResultBusiness {
                         it.remove();
                 }
             }
-            else
+            else if(!init)
             {
                  hardwares = provider.findByOwner(lastSearchOwner);
+                init = true;
             }
         }
         
@@ -190,9 +203,58 @@ public class HardwareResultBusiness {
                         it.remove();
                 }
             }
-            else
+            else if(!init)
             {
                 hardwares = provider.findByState(lastSearchState);
+                init = true;
+            }
+        }
+        
+        if(!lastSearchCategory.equals(""))
+        {
+            if(hardwares.size()>0)
+            {
+                Iterator<Hardware> it = hardwares.iterator();
+                boolean found = false;
+                while(it.hasNext())
+                {
+                    Hardware h = it.next();
+                    Iterator<Categories> iter = h.getCategoriesCollection().iterator();
+                    while(iter.hasNext())
+                    {
+                        Categories cat = iter.next();
+                        if(cat != null && cat.getName().toLowerCase().contains(lastSearchCategory.toLowerCase()))
+                            found = true;                            
+                    }
+                    
+                    if(!found)
+                        it.remove();
+                    
+                    found = true;
+                }
+            }
+            else if(!init)
+            {
+                hardwares = provider.findAll();
+                Iterator<Hardware> it = hardwares.iterator();
+                boolean found = false;
+                while(it.hasNext())
+                {
+                    Hardware h = it.next();
+                    Iterator<Categories> iter = h.getCategoriesCollection().iterator();
+                    while(iter.hasNext())
+                    {
+                        Categories cat = iter.next();
+                        if(cat != null && cat.getName().toLowerCase().contains(lastSearchCategory.toLowerCase()))
+                            found = true;                            
+                    }
+                    
+                    if(!found)
+                        it.remove();
+                    
+                    found = false;
+                }
+                init = true;                
             }
         }
         
@@ -210,13 +272,14 @@ public class HardwareResultBusiness {
                         it.remove();
                 }                
             }
-            else
+            else if(!init)
             {                 
                  for(Hardware h: provider.findByName(lastSearchBuildIn))
                  {
                      if(h.getHardwareCollection().contains(h))
                          hardwares.add(h);
                  }
+                init = true;
             }
         }
         
@@ -229,17 +292,19 @@ public class HardwareResultBusiness {
                 while(it.hasNext())
                 {
                     Hardware h = it.next();
-                    if(!h.getHardware().getPlace().getName().toLowerCase().contains(lastSearchPlace.toLowerCase()))
+                    if(!h.getPlace().getName().toLowerCase().contains(lastSearchPlace.toLowerCase()))
                         it.remove();
                 } 
             }
-            else
+            else if(!init)
             {
                 hardwares = provider.findByPlace(lastSearchPlace);
+                init = true;
             }
         }
-        
-        if(!lastSearchWarrenty.before(Calendar.getInstance().getTime()))
+        Calendar before = Calendar.getInstance();
+        before.add(Calendar.HOUR, 1);
+        if(!lastSearchWarrenty.before(before.getTime()))
         {            
             if(hardwares.size()>0)
             {
@@ -253,11 +318,12 @@ public class HardwareResultBusiness {
                         it.remove();
                 } 
             }
-            else
+            else if(!init)
             {
                 hardwares = provider.findByWarrantyEnd(lastSearchWarrenty);
+                init = true;
             }
-        }        
+        }  
         return hardwares;
     }
     
@@ -277,6 +343,7 @@ public class HardwareResultBusiness {
              lastSearchState,
              lastSearchBuildIn,
              lastSearchPlace,
+             lastSearchCategory,
              lastSearchWarrenty);
     }
     
