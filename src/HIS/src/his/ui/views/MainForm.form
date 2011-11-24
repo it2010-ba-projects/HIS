@@ -17,7 +17,7 @@
                 <MenuItem class="javax.swing.JMenuItem" name="menuItemMenuNewUser">
                   <Properties>
                     <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Ctrl+U"/>
+                      <KeyStroke key="Alt+B"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Benutzer"/>
                   </Properties>
@@ -28,7 +28,7 @@
                 <MenuItem class="javax.swing.JMenuItem" name="menuItemMenuNewHardware">
                   <Properties>
                     <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Ctrl+G"/>
+                      <KeyStroke key="Alt+H"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hardwarekomponente"/>
                   </Properties>
@@ -39,7 +39,7 @@
                 <MenuItem class="javax.swing.JMenuItem" name="menuItemMenuNewCategory">
                   <Properties>
                     <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                      <KeyStroke key="Ctrl+C"/>
+                      <KeyStroke key="Alt+K"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Kategorie"/>
                   </Properties>
@@ -85,7 +85,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="menuItemClose">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+B"/>
+                  <KeyStroke key="Ctrl+Q"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Beenden"/>
               </Properties>
